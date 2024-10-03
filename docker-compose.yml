@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  snippets:
+    container_name: "snippets-service"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      DB_HOST: db_snippets
+      DB_PORT: 5432
+      DB_NAME: snippets-db
+      DB_USER: sa
+      DB_PASSWORD: password
+    depends_on:
+      - db_snippets
+      - parse_service
+      - permission_service
+    networks:
+      - app-network
+
+  db_snippets:
+    container_name: db_snippets
+    image: postgres:12
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: snippets-db
+    volumes:
+      - pgdata_snippets:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pgdata_snippets:
+    external: true
