@@ -33,6 +33,6 @@ jobs:
       - name: Trigger Infra Update
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
           repository: TeamVerdeIngSis/infra
           event-type: update-infra
