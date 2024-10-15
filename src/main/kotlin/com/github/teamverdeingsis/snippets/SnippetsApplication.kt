@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class SnippetsServiceApplication
+class SnippetsApplication
 
 fun main(args: Array<String>) {
-	runApplication<SnippetsServiceApplication>(*args)
+    runApplication<SnippetsApplication>(*args)
 }

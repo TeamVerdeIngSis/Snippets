@@ -9,3 +9,18 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-ppmfishyt4u8fel3.us.auth0.com/
+          audience: dev-ppmfishyt4u8fel3.us.auth0.com
+
+auth0:
+  audience: https://snippets-api
+  domain: dev-ppmfishyt4u8fel3.us.auth0.com
+
+# Add environment variables:
+# AUTH0_DOMAIN: your Auth0 domain (e.g., dev-xxxxxx.us.auth0.com)
+# AUTH0_AUDIENCE: audience set for your Auth0 API (e.g., https://team-verde-api)
