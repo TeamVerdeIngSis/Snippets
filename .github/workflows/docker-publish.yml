@@ -29,3 +29,10 @@ jobs:
           context: .
           tags: ghcr.io/teamverdeingsis/snippets:latest
           push: true
+
+      - name: Trigger Infra Update
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: TeamVerdeIngSis/infra
+          event-type: update-infra
