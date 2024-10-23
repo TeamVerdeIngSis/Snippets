@@ -20,26 +20,45 @@ repositories {
 }
 
 dependencies {
+	// Spring Boot Starter dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+	// Jakarta Persistence (for database interaction)
+	implementation 'jakarta.persistence:jakarta.persistence-api:3.0.0'
+
+	// Spring Data JPA (for database interaction with Spring Boot)
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// Kotlin specific dependencies
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+	// Security-related dependencies
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
 	implementation 'org.springframework.security:spring-security-config'
+
+	// Development tools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+	//postgresql
+	implementation 'org.postgresql:postgresql:42.5.1'
+
 }
 
 kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll '-Xjsr305=strict'
+	jvmToolchain {
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }
 
-tasks.named('test') {
+tasks.withType(Test) {
 	useJUnitPlatform()
 }
 
@@ -48,5 +67,5 @@ bootJar {
 }
 
 tasks.withType(org.springframework.boot.gradle.tasks.run.BootRun) {
-	mainClass.set("com.github.teamverdeingsis.snippets.SnippetsApplication")
+	mainClass.set('com.github.teamverdeingsis.snippets.SnippetsApplication')
 }

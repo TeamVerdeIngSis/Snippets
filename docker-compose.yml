@@ -1,36 +1,55 @@
-version: '3.8'
-
 services:
   snippets:
-    container_name: "snippets-service"
+    container_name: "snippets-service2"
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
-      # Referencing db_permission instead of db_snippets
       DB_HOST: db_permission
       DB_PORT: 5432
       DB_NAME: permission-db
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+
     networks:
       - app-network
+    depends_on:
+      - db_permission
+
+  db_permission:
+    container_name: db_permission3
+    image: postgres:12
+    ports:
+      - "5433:5432"  # Mapping PostgreSQL to port 5433 on the host
+    environment:
+      POSTGRES_USER: sa
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: permission-db
+    volumes:
+      - pgdata_permission:/var/lib/postgresql/data
+    networks:
+      - app-network
+
   api:
-    container_name: "asset_service"
+    container_name: "asset_service2"
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
     ports:
-      - "8080:8080"
+      - "8084:8080"
     environment:
       AZURE_HOST: "http://azurite"
       NEW_RELIC_APP_NAME: "asset-service"
       NEW_RELIC_AGENT_ENABLED: false
-
+    networks:
+      - app-network
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
-    container_name: "azurite"
+    container_name: "azurite2"
     hostname: azurite
     restart: always
     ports:
@@ -39,12 +58,15 @@ services:
       - "10002:10002"
     volumes:
       - blob:/workspace
-
+    networks:
+      - app-network
 
 networks:
   app-network:
     driver: bridge
 
 volumes:
+  pgdata_permission:
+    external: false
   blob:
     external: false

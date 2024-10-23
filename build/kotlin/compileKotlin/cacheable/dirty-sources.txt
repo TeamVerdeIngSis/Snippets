@@ -1,4 +1,0 @@
-C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\SnippetsApplication.kt
-C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\security\AudienceValidator.kt
-C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\controllers\SnippetsController.kt
-C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\security\OAuth2ResourceServerSecurityConfiguration.kt

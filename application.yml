@@ -1,15 +1,30 @@
 spring:
+  datasource:
+    # Database connection details for db_permission service
+    url: jdbc:postgresql://db_permission:5432/permission-db
+    username: ${DB_USER}       # Environment variable for database user
+    password: ${DB_PASSWORD}   # Environment variable for database password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10     # Adjust this based on your performance needs
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # Automatically update the schema based on entity definitions
+    show-sql: true              # Log SQL statements in the console (useful for debugging)
+    database-platform: org.hibernate.dialect.PostgreSQLDialect  # PostgreSQL-specific dialect
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-ppmfishyt4u8fel3.us.auth0.com/
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
           audience: dev-ppmfishyt4u8fel3.us.auth0.com
 
 auth0:
   audience: https://snippets-api
   domain: dev-ppmfishyt4u8fel3.us.auth0.com
 
-# Add environment variables:
-# AUTH0_DOMAIN: your Auth0 domain (e.g., dev-xxxxxx.us.auth0.com)
-# AUTH0_AUDIENCE: audience set for your Auth0 API (e.g., https://team-verde-api)
+logging:
+  level:
+    root: DEBUG
