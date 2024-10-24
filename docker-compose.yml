@@ -25,7 +25,7 @@ services:
     container_name: db_permission3
     image: postgres:12
     ports:
-      - "5433:5432"  # Mapping PostgreSQL to port 5433 on the host
+      - "5433:5432"
     environment:
       POSTGRES_USER: sa
       POSTGRES_PASSWORD: password

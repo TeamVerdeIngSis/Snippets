@@ -1,7 +1,6 @@
 package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.SnippetRequest
-import com.github.teamverdeingsis.snippets.exceptions.SnippetNotFoundException
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.http.HttpEntity
@@ -35,7 +34,8 @@ class SnippetService(
     }
 
     fun updateSnippet(id: String, snippetRequest: SnippetRequest): Snippet {
-        val snippet = snippetRepository.findById(id).orElseThrow { SnippetNotFoundException(id) }
+        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
+        }
 
         val assetId = uploadSnippetToAssetService(snippetRequest.content)
 
@@ -51,7 +51,9 @@ class SnippetService(
 
     fun getSnippet(id: String): Snippet {
         return snippetRepository.findById(id)
-            .orElseThrow { SnippetNotFoundException(id) }
+            .orElseThrow {
+                RuntimeException("Snippet with ID $id not found")
+            }
     }
 
 
