@@ -6,6 +6,7 @@ import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -58,16 +59,18 @@ class SnippetService(
             }
     }
     fun uploadSnippetToAssetService(content: String): String {
-        val assetServiceUrl = "http://api:8080/upload"
+        val assetServiceUrl = "http://asset_service:8080/v1/asset/snippets/my-snippet.ps"
         val headers = HttpHeaders().apply {
             contentType = MediaType.TEXT_PLAIN
         }
 
+        // Convertir el contenido a un tipo compatible con DataBuffer o Flow<DataBuffer>
         val request = HttpEntity(content, headers)
-        val response = restTemplate.postForEntity(assetServiceUrl, request, String::class.java)
 
-        if (response.statusCode == HttpStatus.OK) {
-            return response.body ?: throw RuntimeException("AssetService returned null asset ID")
+        val response = restTemplate.exchange(assetServiceUrl, HttpMethod.PUT, request, String::class.java)
+
+        return if (response.statusCode == HttpStatus.OK || response.statusCode == HttpStatus.CREATED) {
+            response.headers["Location"]?.firstOrNull() ?: throw RuntimeException("AssetService didn't return a location header")
         } else {
             throw RuntimeException("Failed to upload snippet to AssetService")
         }
