@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface SnippetRepository : JpaRepository<Snippet, String> {
     // CRUD methods inherited from JpaRepository
+    fun findByUserId(userId: String): List<Snippet>
 }

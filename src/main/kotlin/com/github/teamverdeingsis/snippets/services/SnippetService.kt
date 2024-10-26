@@ -3,6 +3,7 @@ package com.github.teamverdeingsis.snippets.services
 import com.github.teamverdeingsis.snippets.models.SnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -19,6 +20,7 @@ class SnippetService(
 
     fun createSnippet(snippetRequest: SnippetRequest): Snippet {
         val assetId = uploadSnippetToAssetService(snippetRequest.content)
+
 
         val snippet = Snippet(
             name = snippetRequest.name,
@@ -55,9 +57,7 @@ class SnippetService(
                 RuntimeException("Snippet with ID $id not found")
             }
     }
-
-
-    private fun uploadSnippetToAssetService(content: String): String {
+    fun uploadSnippetToAssetService(content: String): String {
         val assetServiceUrl = "http://api:8080/upload"
         val headers = HttpHeaders().apply {
             contentType = MediaType.TEXT_PLAIN
@@ -71,5 +71,8 @@ class SnippetService(
         } else {
             throw RuntimeException("Failed to upload snippet to AssetService")
         }
+    }
+    fun getAllSnippetsByUser(userId: String): List<Snippet> {
+        return snippetRepository.findByUserId(userId)
     }
 }
