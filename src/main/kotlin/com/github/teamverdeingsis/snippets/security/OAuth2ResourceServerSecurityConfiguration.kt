@@ -28,11 +28,14 @@ class OAuth2ResourceServerSecurityConfiguration(
                 it
                     .requestMatchers(HttpMethod.GET, "/api/snippets").hasAuthority("SCOPE_read:snippets")
                     .requestMatchers(HttpMethod.POST, "/api/snippets").hasAuthority("SCOPE_write:snippets")
+                    .requestMatchers(HttpMethod.GET, "/api/snippets/hello").permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2ResourceServer {
                 it.jwt()
             }
+
+        println("Security configuration: ${http}")
 
         return http.build()
     }

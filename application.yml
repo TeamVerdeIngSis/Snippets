@@ -27,10 +27,10 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
-          audience: dev-ppmfishyt4u8fel3.us.auth0.com
+          audience: ${AUTH0_AUDIENCE}
 
 auth0:
-  audience: https://snippets-api
+  audience: ${AUTH0_AUDIENCE}
   domain: dev-ppmfishyt4u8fel3.us.auth0.com
 
 logging:
