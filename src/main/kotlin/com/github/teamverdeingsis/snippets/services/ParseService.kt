@@ -23,7 +23,7 @@ class ParseService(
         }
 
         val request = HttpEntity(snippetRequest, headers)
-        val url = "http://localhost:8080/parse/validate"
+        val url = "http://parse:8080/validate"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }
@@ -35,7 +35,7 @@ class ParseService(
         }
 
         val request = HttpEntity(snippetRequest, headers)
-        val url = "$parseServiceUrl/execute"
+        val url = "http://parse:8080/execute"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }
@@ -47,7 +47,7 @@ class ParseService(
         }
 
         val request = HttpEntity(snippetRequest, headers)
-        val url = "$parseServiceUrl/format"
+        val url = "http://parse:8080/format"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }
@@ -59,7 +59,7 @@ class ParseService(
         }
 
         val request = HttpEntity(snippetRequest, headers)
-        val url = "$parseServiceUrl/analyze"
+        val url = "http://parse:8080/analyze"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }
