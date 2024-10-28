@@ -1,7 +1,7 @@
 package com.github.teamverdeingsis.snippets.controllers
 
 import com.github.teamverdeingsis.snippets.models.Snippet
-import com.github.teamverdeingsis.snippets.models.SnippetRequest
+import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,10 +18,10 @@ class SnippetController(
 ) {
 
     @PostMapping("/create")
-    fun createSnippet(@RequestBody snippetRequest: SnippetRequest, jwt: Jwt ): ResponseEntity<Snippet> {
-        println("Creating snippet: $snippetRequest") // Debug log
+    fun createSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest, jwt: Jwt ): ResponseEntity<Snippet> {
+        println("Creating snippet: $createSnippetRequest") // Debug log
         val userId = jwt.subject ?: throw RuntimeException("User ID not found in JWT")
-        val snippet = snippetService.createSnippet(snippetRequest, userId)
+            val snippet = snippetService.createSnippet(createSnippetRequest, userId)
         println("Snippet created: $snippet") // Debug log
         return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
     }
@@ -35,9 +35,9 @@ class SnippetController(
     @PutMapping("/{id}")
     fun updateSnippet(
         @PathVariable id: String,
-        @RequestBody snippetRequest: SnippetRequest
+        @RequestBody createSnippetRequest: CreateSnippetRequest
     ): ResponseEntity.BodyBuilder {
-        val updatedSnippet = snippetService.updateSnippet(id, snippetRequest)
+        val updatedSnippet = snippetService.updateSnippet(id, createSnippetRequest)
         return ResponseEntity.ok()
     }
 
@@ -53,26 +53,26 @@ class SnippetController(
     }
 
     @PostMapping("/validate")
-    fun validateSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
-        val result = snippetService.validateSnippet(snippetRequest)
+    fun validateSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
+        val result = snippetService.validateSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
 
     @PostMapping("/execute")
-    fun executeSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
-        val result = snippetService.executeSnippet(snippetRequest)
+    fun executeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
+        val result = snippetService.executeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
 
     @PostMapping("/format")
-    fun formatSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
-        val result = snippetService.formatSnippet(snippetRequest)
+    fun formatSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
+        val result = snippetService.formatSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
 
     @PostMapping("/analyze")
-    fun analyzeSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
-        val result = snippetService.analyzeSnippet(snippetRequest)
+    fun analyzeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
+        val result = snippetService.analyzeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
 

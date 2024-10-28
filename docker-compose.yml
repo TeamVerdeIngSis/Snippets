@@ -1,11 +1,10 @@
 services:
-  snippets:
-    container_name: "snippets-service2"
+  snippets_service:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8082:8080"
     environment:
       DB_HOST: db_permission3
       DB_PORT: 5432
@@ -13,31 +12,47 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH_SERVER_URI: ${AUTH_SERVER_URI}
+      AUTH_CLIENT_ID: ${AUTH_CLIENT_ID}
+      AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${AUTH_SERVER_URI}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
-    networks:
-      - app-network
-    depends_on:
-      - db_permission
 
-  db_permission:
-    container_name: db_permission3
+  snippets_db:
     image: postgres:12
+    platform: linux/amd64
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER: sa
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: permission-db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: snippets_db
     volumes:
-      - pgdata_permission:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - snippets_db_data:/var/lib/postgresql/data
 
-networks:
-  app-network:
-    driver: bridge
+
+  api:
+    image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    platform: linux/amd64
+    ports:
+      - "8080:8080"
+    environment:
+      AZURE_HOST: "http://azurite"
+      NEW_RELIC_APP_NAME: "asset-service"
+      NEW_RELIC_AGENT_ENABLED: false
+
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    hostname: azurite
+    restart: always
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - blob:/workspace
 
 volumes:
-  pgdata_permission:
+  snippets_db_data:
     external: false
