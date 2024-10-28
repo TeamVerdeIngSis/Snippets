@@ -21,9 +21,7 @@ data class Snippet(
     @ManyToOne
     @JoinColumn(name = "language_id")
     val language: Language
-) {
-    constructor(name: String,author: String,conformance: Conformance,assetId: String) : this(0, "", "", Conformance.PENDING, "", Language(0, "", "", "", emptyList()))
-}
+)
 
 enum class Conformance {
     PENDING,
@@ -41,7 +39,5 @@ data class Language(
     val extension: String,
 
     @OneToMany(mappedBy = "language")
-    val snippets: List<Snippet>
-) {
-    constructor( name: String,version: String,extension: String ): this(null, "", "", "", emptyList())
-}
+    val snippets: List<Snippet> = emptyList()
+)
