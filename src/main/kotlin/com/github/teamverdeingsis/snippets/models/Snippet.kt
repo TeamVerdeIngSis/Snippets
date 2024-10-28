@@ -19,7 +19,7 @@ data class Snippet(
     var assetId: String,
 
     @ManyToOne
-    @JoinColumn(name = "language_id")
+    @JoinColumn(name = "language_name", referencedColumnName = "name")
     val language: Language
 )
 
@@ -29,11 +29,10 @@ enum class Conformance {
     NOT_COMPLIANT
 }
 
+
 @Entity
 data class Language(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long? = null,
     val name: String,
     val version: String,
     val extension: String,

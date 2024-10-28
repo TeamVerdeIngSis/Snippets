@@ -1,6 +1,7 @@
 package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
+import com.github.teamverdeingsis.snippets.models.Language
 import com.github.teamverdeingsis.snippets.models.SnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
@@ -24,11 +25,17 @@ class SnippetService(
     fun createSnippet(snippetRequest: SnippetRequest, userId: String): Snippet {
         val assetId = uploadSnippetToAssetService(snippetRequest.content)
         val user = permissionsService.getUsernameById(userId)
+        val language = Language(
+            name = snippetRequest.language,
+            version = snippetRequest.version,
+            extension = snippetRequest.extension
+        )
         val snippet = Snippet(
             name = snippetRequest.name,
             author = user,
             conformance = Conformance.PENDING,
             assetId = assetId,
+            language = language
         )
         return snippetRepository.save(snippet)
     }
