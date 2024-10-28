@@ -42,7 +42,6 @@ class SnippetService(
     fun updateSnippet(id: String, snippetRequest: SnippetRequest) {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
-        val asset = assetService.getAsset(snippet.assetId, "snippets")
         assetService.updateAsset(snippet.assetId, "snippets", snippetRequest.content)
     }
 
@@ -57,7 +56,6 @@ class SnippetService(
         val headers = HttpHeaders().apply {
             contentType = MediaType.TEXT_PLAIN
         }
-
         // Convertir el contenido a un tipo compatible con DataBuffer o Flow<DataBuffer>
         val request = HttpEntity(content, headers)
 
