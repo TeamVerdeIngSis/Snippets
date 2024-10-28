@@ -15,15 +15,13 @@ data class Snippet(
     val id: Long = 0,
     val name: String,
     val author: String,
-    val conformance: Conformance,
+    var conformance: Conformance = Conformance.PENDING,
     var assetId: String,
 
     @ManyToOne
     @JoinColumn(name = "language_id")
     val language: Language
-) {
-    constructor(): this(0, "", "", Conformance.PENDING, "", Language(0, "", "", "", emptyList()))
-}
+)
 
 enum class Conformance {
     PENDING,
@@ -41,7 +39,5 @@ data class Language(
     val extension: String,
 
     @OneToMany(mappedBy = "language")
-    val snippets: List<Snippet>
-) {
-    constructor(): this(null, "", "", "", emptyList())
-}
+    val snippets: List<Snippet> = emptyList()
+)
