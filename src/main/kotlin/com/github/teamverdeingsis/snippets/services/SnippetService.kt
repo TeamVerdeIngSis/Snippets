@@ -2,7 +2,7 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.Language
-import com.github.teamverdeingsis.snippets.models.SnippetRequest
+import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.http.HttpEntity
@@ -23,16 +23,16 @@ class SnippetService(
     private val parseService: ParseService
 ) {
 
-    fun createSnippet(snippetRequest: SnippetRequest, userId: String): Snippet {
-        val assetId = uploadSnippetToAssetService(snippetRequest.content)
+    fun createSnippet(createSnippetRequest: CreateSnippetRequest, userId: String): Snippet {
+        val assetId = uploadSnippetToAssetService(createSnippetRequest.content)
         val user = permissionsService.getUsernameById(userId)
         val language = Language(
-            name = snippetRequest.language,
-            version = snippetRequest.version,
-            extension = snippetRequest.extension
+            name = createSnippetRequest.language,
+            version = "1.0",
+            extension = createSnippetRequest.extension
         )
         val snippet = Snippet(
-            name = snippetRequest.name,
+            name = createSnippetRequest.name,
             author = user,
             conformance = Conformance.PENDING,
             assetId = assetId,
@@ -40,11 +40,11 @@ class SnippetService(
         )
         return snippetRepository.save(snippet)
     }
-    fun updateSnippet(id: String, snippetRequest: SnippetRequest) {
+    fun updateSnippet(id: String, createSnippetRequest: CreateSnippetRequest) {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
         val asset = assetService.getAsset(snippet.assetId, "snippets")
-        assetService.updateAsset(snippet.assetId, "snippets", snippetRequest.content)
+        assetService.updateAsset(snippet.assetId, "snippets", createSnippetRequest.content)
     }
 
     fun getSnippet(id: String): Snippet {
@@ -74,23 +74,23 @@ class SnippetService(
         return snippetRepository.findByUserId(userId)
     }
 
-    fun validateSnippet(snippetRequest: SnippetRequest): String {
-        val response = parseService.validateSnippet(snippetRequest)
+    fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
+        val response = parseService.validateSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Validation failed")
     }
 
-    fun executeSnippet(snippetRequest: SnippetRequest): String {
-        val response = parseService.executeSnippet(snippetRequest)
+    fun executeSnippet(createSnippetRequest: CreateSnippetRequest): String {
+        val response = parseService.executeSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Execution failed")
     }
 
-    fun formatSnippet(snippetRequest: SnippetRequest): String {
-        val response = parseService.formatSnippet(snippetRequest)
+    fun formatSnippet(createSnippetRequest: CreateSnippetRequest): String {
+        val response = parseService.formatSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Formatting failed")
     }
 
-    fun analyzeSnippet(snippetRequest: SnippetRequest): String {
-        val response = parseService.analyzeSnippet(snippetRequest)
+    fun analyzeSnippet(createSnippetRequest: CreateSnippetRequest): String {
+        val response = parseService.analyzeSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Analysis failed")
     }
 }
