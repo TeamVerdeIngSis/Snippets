@@ -1,42 +1,46 @@
 package com.github.teamverdeingsis.snippets.services
 
+import com.fasterxml.jackson.databind.util.JSONPObject
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
 class AssetService(private val restTemplate: RestTemplate){
-    public fun getAsset(id: String,directory:String): String {
-        val assetServiceUrl = "http://localhost:8084/v1/asset/$directory/$id"
+    public fun addAsset(content:String,directory:String, assetId:String): ResponseEntity<String> {
+        val assetServiceUrl = "http://asset_service:8080/v1/asset/$directory/$assetId"
+        return restTemplate.postForEntity(assetServiceUrl, content, String::class.java)
+    }
+    public fun updateAsset(assetId: String,directory: String, content: String): ResponseEntity<String> {
+        val assetServiceUrl = "http://asset_service:8080/v1/asset/$directory/$assetId"
         try {
-            return restTemplate.getForObject(assetServiceUrl, String::class.java)!!
-        } catch (e: Exception) {
-            throw RuntimeException("Asset with ID $id not found")
+            restTemplate.put(assetServiceUrl, content, String::class.java)
+            return ResponseEntity.ok().body("Asset with ID $assetId updated")
+        }
+        catch (e: Exception){
+            throw RuntimeException("Asset with ID $assetId not found")
         }
     }
-    public fun addAsset(id: String,directory:String,content:String): String {
-        val assetServiceUrl = "http://localhost:8084/v1/asset/$directory/$id"
+
+    public fun deleteAsset(assetId: String,directory: String): ResponseEntity<String> {
+        val assetServiceUrl = "http://asset_service:8080/v1/asset/$directory/$assetId"
         try {
-            restTemplate.postForObject(assetServiceUrl, content, String::class.java)!!
-            return "Asset with ID $id added"
-        } catch (e: Exception) {
-            throw RuntimeException("Asset with ID $id not found")
+            restTemplate.delete(assetServiceUrl)
+            return ResponseEntity.ok().body("Asset with ID $assetId deleted")
+        }
+        catch (e: Exception){
+            throw RuntimeException("Asset with ID $assetId not found")
         }
     }
-    public fun updateAsset(id: String,directory:String,content:String):String {
-        val assetServiceUrl = "http://localhost:8084/v1/asset/$directory/$id"
+    public fun getAsset(assetId: String,directory: String): ResponseEntity<String> {
+        val assetServiceUrl = "http://asset_service:8080/v1/asset/$directory/$assetId"
         try {
-             restTemplate.put(assetServiceUrl, content, String::class.java)
-            return "Asset with ID $id updated"
-        } catch (e: Exception) {
-            throw RuntimeException("Asset with ID $id not found")
+            return restTemplate.getForEntity(assetServiceUrl, String::class.java)
+        }
+        catch (e: Exception){
+            throw RuntimeException("Asset with ID $assetId not found")
         }
     }
-    public fun deleteAsset(id: String,directory:String) {
-        val assetServiceUrl = "http://localhost:8084/v1/asset/$directory/$id"
-        try {
-            return restTemplate.delete(assetServiceUrl)
-        } catch (e: Exception) {
-            throw RuntimeException("Asset with ID $id not found")
-        }
-    }
+
+
 }
