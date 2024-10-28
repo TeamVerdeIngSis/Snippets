@@ -52,4 +52,28 @@ class SnippetController(
         return ResponseEntity.ok(snippets)
     }
 
+    @PostMapping("/validate")
+    fun validateSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
+        val result = snippetService.validateSnippet(snippetRequest)
+        return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/execute")
+    fun executeSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
+        val result = snippetService.executeSnippet(snippetRequest)
+        return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/format")
+    fun formatSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
+        val result = snippetService.formatSnippet(snippetRequest)
+        return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/analyze")
+    fun analyzeSnippet(@RequestBody snippetRequest: SnippetRequest): ResponseEntity<String> {
+        val result = snippetService.analyzeSnippet(snippetRequest)
+        return ResponseEntity.ok(result)
+    }
+
 }

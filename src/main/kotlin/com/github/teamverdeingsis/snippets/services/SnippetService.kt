@@ -19,7 +19,8 @@ class SnippetService(
     private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
-    private val assetService: AssetService
+    private val assetService: AssetService,
+    private val parseService: ParseService
 ) {
 
     fun createSnippet(snippetRequest: SnippetRequest, userId: String): Snippet {
@@ -71,5 +72,25 @@ class SnippetService(
     }
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
         return snippetRepository.findByUserId(userId)
+    }
+
+    fun validateSnippet(snippetRequest: SnippetRequest): String {
+        val response = parseService.validateSnippet(snippetRequest)
+        return response.body ?: throw RuntimeException("Validation failed")
+    }
+
+    fun executeSnippet(snippetRequest: SnippetRequest): String {
+        val response = parseService.executeSnippet(snippetRequest)
+        return response.body ?: throw RuntimeException("Execution failed")
+    }
+
+    fun formatSnippet(snippetRequest: SnippetRequest): String {
+        val response = parseService.formatSnippet(snippetRequest)
+        return response.body ?: throw RuntimeException("Formatting failed")
+    }
+
+    fun analyzeSnippet(snippetRequest: SnippetRequest): String {
+        val response = parseService.analyzeSnippet(snippetRequest)
+        return response.body ?: throw RuntimeException("Analysis failed")
     }
 }
