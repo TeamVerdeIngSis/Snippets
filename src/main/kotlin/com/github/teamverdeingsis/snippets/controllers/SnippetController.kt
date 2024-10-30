@@ -26,11 +26,16 @@ class SnippetController(
         return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
     }
 
+    @PostMapping("/delete/{id}")
+    fun delete(@PathVariable id: String): ResponseEntity<Void> {
+        snippetService.delete(id)
+        return ResponseEntity.noContent().build()
+    }
+
     @PostMapping("/hello")
     fun hello(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, World!")
     }
-
 
     @PutMapping("/{id}")
     fun updateSnippet(
@@ -46,6 +51,7 @@ class SnippetController(
         val snippet = snippetService.getSnippet(id)
         return ResponseEntity.ok(snippet)
     }
+
     @GetMapping("/user/{userId}")
     fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<List<Snippet>> {
         val snippets = snippetService.getAllSnippetsByUser(userId)

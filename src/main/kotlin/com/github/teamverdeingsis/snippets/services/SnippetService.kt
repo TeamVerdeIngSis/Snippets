@@ -40,6 +40,14 @@ class SnippetService(
         )
         return snippetRepository.save(snippet)
     }
+
+    fun delete(id: String) {
+        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
+        }
+        snippetRepository.delete(snippet)
+        assetService.deleteAsset(snippet.assetId, "snippets")
+    }
+
     fun updateSnippet(id: String, createSnippetRequest: CreateSnippetRequest) {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
