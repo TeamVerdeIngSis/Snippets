@@ -33,7 +33,7 @@ class SnippetService(
         )
         val snippet = Snippet(
             name = createSnippetRequest.name,
-            author = user,
+            userId = user,
             conformance = Conformance.PENDING,
             assetId = assetId,
             language = language

@@ -18,17 +18,21 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
   snippets_db:
-    image: postgres:12
+    image: postgres
     platform: linux/amd64
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: snippets_db
     volumes:
       - snippets_db_data:/var/lib/postgresql/data
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
@@ -39,7 +43,6 @@ services:
       AZURE_HOST: "http://azurite"
       NEW_RELIC_APP_NAME: "asset-service"
       NEW_RELIC_AGENT_ENABLED: false
-
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
