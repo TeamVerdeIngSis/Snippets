@@ -11,10 +11,10 @@ import jakarta.persistence.OneToMany
 @Entity
 data class Snippet(
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.UUID)
+    val id: String? = null,
     val name: String,
-    val author: String,
+    val userId: String,
     var conformance: Conformance = Conformance.PENDING,
     var assetId: String,
 

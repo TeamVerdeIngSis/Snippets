@@ -6,9 +6,7 @@ services:
     ports:
       - "8082:8080"
     environment:
-      DB_HOST: db_permission3
-      DB_PORT: 5432
-      DB_NAME: permission-db
+      DB_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
@@ -17,30 +15,32 @@ services:
       AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
       spring.security.oauth2.resourceserver.jwt.issuer-uri: ${AUTH_SERVER_URI}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
   snippets_db:
-    image: postgres:12
-    platform: linux/amd64
+    image: postgres
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: snippets_db
     volumes:
       - snippets_db_data:/var/lib/postgresql/data
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
-    platform: linux/amd64
     ports:
       - "8080:8080"
     environment:
       AZURE_HOST: "http://azurite"
       NEW_RELIC_APP_NAME: "asset-service"
       NEW_RELIC_AGENT_ENABLED: false
-
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
@@ -55,4 +55,6 @@ services:
 
 volumes:
   snippets_db_data:
+    external: false
+  blob:
     external: false

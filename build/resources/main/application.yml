@@ -1,0 +1,39 @@
+spring:
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  datasource:
+    url: jdbc:postgresql://snippets_db:5432/snippets_db
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10     # Adjust this based on your performance needs
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    filter:
+      chain:
+        enabled: false
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+          audience: ${AUTH0_AUDIENCE}
+
+auth0:
+  audience: ${AUTH0_AUDIENCE}
+  domain: dev-ppmfishyt4u8fel3.us.auth0.com
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG

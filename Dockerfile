@@ -1,11 +1,12 @@
-# Dockerfile for Kotlin Spring Boot Project using Multi-Stage Build
-FROM gradle:7.6-jdk17 AS builder
+# First stage: Build the application
+FROM gradle:8-jdk21 AS build
+
 COPY . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build --no-daemon
 
 # Second stage: Create a lightweight image for running the application
-FROM openjdk:17-jdk-slim
-COPY --from=builder /home/gradle/src/build/libs/*.jar app.jar
-EXPOSE 8080
+FROM openjdk:21-slim
+EXPOSE 8082
+COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
