@@ -70,8 +70,9 @@ class SnippetService(
             throw RuntimeException("Failed to upload snippet to AssetService")
         }
     }
+
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
-        return snippetRepository.findByUserId(userId)
+        return permissionsService.getAllUserSnippets(userId)
     }
 
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
