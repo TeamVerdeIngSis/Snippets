@@ -30,9 +30,14 @@ class SecurityConfiguration(
         http.authorizeHttpRequests {
             it
                 .requestMatchers("/").permitAll()
-                .requestMatchers(POST, "/api/snippets/create").authenticated()
-                .requestMatchers(POST, "/api/snippets/create1").authenticated()
-
+                .requestMatchers(POST, "/api/snippets/create").hasAuthority("SCOPE_write:snippets")
+                .requestMatchers(GET, "/snippet").hasAuthority("SCOPE_read:snippets")
+                .requestMatchers(GET, "/snippet/*").hasAuthority("SCOPE_read:snippets")
+                .requestMatchers(POST, "/snippet").hasAuthority("SCOPE_write:snippets")
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/docs/**").permitAll()
+                .requestMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
         }
             .oauth2ResourceServer { it.jwt(withDefaults()) }
