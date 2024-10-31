@@ -22,14 +22,22 @@ class SnippetController(
     fun hello(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, World!")
     }
-    @PostMapping("/create")
-    fun createSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest, jwt: Jwt ): ResponseEntity<Snippet> {
-        println("Creating snippet: $createSnippetRequest") // Debug log
-        val userId = jwt.subject ?: throw RuntimeException("User ID not found in JWT")
-            val snippet = snippetService.createSnippet(createSnippetRequest, userId)
-        println("Snippet created: $snippet") // Debug log
-        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
-    }
+//    @PostMapping("/create")
+//    fun createSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest, jwt: Jwt ): ResponseEntity<Snippet> {
+//        println("Creating snippet: $createSnippetRequest") // Debug log
+//        val userId = jwt.subject ?: throw RuntimeException("User ID not found in JWT")
+//            val snippet = snippetService.createSnippet(createSnippetRequest, userId)
+//        println("Snippet created: $snippet") // Debug log
+//        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
+//    }
+@PostMapping("/create")
+fun create(
+    @RequestBody snippetRequest: CreateSnippetRequest,
+    @RequestHeader("Authorization") token: String
+): ResponseEntity<Snippet> {
+    val snippet = snippetService.createSnippet(snippetRequest, token)
+    return ResponseEntity.ok(snippet)
+}
 
     @PostMapping("/delete/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Void> {
