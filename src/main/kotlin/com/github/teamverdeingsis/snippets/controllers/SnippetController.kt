@@ -41,19 +41,6 @@ fun create(
     val snippet = snippetService.createSnippet(snippetRequest, token)
     return ResponseEntity.ok(snippet)
 }
-    @PostMapping("/create1")
-    fun createSnippet(
-        @RequestBody createSnippetRequest: CreateSnippetRequest,
-        @RequestHeader("Authorization") token: String
-    ): ResponseEntity<Snippet> {
-        // Remueve el prefijo "Bearer " del token
-        val tokenValue = token.removePrefix("Bearer ")
-
-        val userId = getUserIdFromToken(tokenValue) // Implementa esta función para extraer el `subject`
-        val snippet = snippetService.createSnippet(createSnippetRequest, userId)
-        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
-    }
-
 
     @PostMapping("/delete/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Void> {

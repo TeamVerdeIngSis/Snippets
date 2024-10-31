@@ -1,4 +1,5 @@
 package com.github.teamverdeingsis.snippets.security
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,7 +31,7 @@ class SecurityConfiguration(
         http.authorizeHttpRequests {
             it
                 .requestMatchers("/").permitAll()
-                .requestMatchers(POST, "/api/snippets/create").hasAuthority("SCOPE_write:snippets")
+                .requestMatchers(POST, "/api/snippets/create").authenticated()
                 .anyRequest().authenticated()
         }
             .oauth2ResourceServer { it.jwt(withDefaults()) }
