@@ -61,11 +61,11 @@ fun filterChain(http: HttpSecurity): SecurityFilterChain {
         jwtDecoder.setJwtValidator(withAudience)
 
         // Debugging JWT claims
-        jwtDecoder.setJwtValidator { jwt ->
-            println("JWT Audience: ${jwt.audience}")
-            println("JWT Claims: ${jwt.claims}")
-            DelegatingOAuth2TokenValidator(withIssuer, audienceValidator).validate(jwt)
-        }
+//        jwtDecoder.setJwtValidator { jwt ->
+//            println("JWT Audience: ${jwt.audience}")
+//            println("JWT Claims: ${jwt.claims}")
+//            DelegatingOAuth2TokenValidator(withIssuer, audienceValidator).validate(jwt)
+//        }
 
         return jwtDecoder
     }
