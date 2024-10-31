@@ -80,7 +80,13 @@ class SnippetService(
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
-        return permissionsService.getAllUserSnippets(userId)
+        val snippetsID = permissionsService.getAllUserSnippets(userId)
+        val snippets = emptyList<Snippet>()
+        for (id in snippetsID){
+            val snippet= getSnippet(id.toString())
+            snippets.plus(snippet)
+        }
+        return snippets
     }
 
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {

@@ -13,19 +13,14 @@ class PermissionsSerivce(private val restTemplate: RestTemplate, private val sni
         return "Permissions for user $userId on snippet $snippetId"
     }
 
-    public fun getAllUserSnippets(userId: String): List<Snippet> {
+    public fun getAllUserSnippets(userId: String): List<UUID> {
         val url = "http://localhost:8082/api/snippets/user/$userId/snippets"
         val response = restTemplate.getForEntity(url, Array<UUID>::class.java)
         if(!response.statusCode.is2xxSuccessful){
             //No snippets found
             throw RuntimeException("User with ID $userId not found")
         }
-        val snippets = emptyList<Snippet>()
-        for (id in response.body!!){
-            val snippet= snippetService.getSnippet(id.toString())
-            snippets.plus(snippet)
-        }
-        return snippets
+        return response.body!!.toList()
     }
 
     
