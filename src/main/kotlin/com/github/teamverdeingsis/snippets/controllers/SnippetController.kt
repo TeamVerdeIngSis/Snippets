@@ -17,6 +17,11 @@ class SnippetController(
     private val snippetService: SnippetService
 ) {
 
+
+    @PostMapping("/hello")
+    fun hello(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello, World!")
+    }
     @PostMapping("/create")
     fun createSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest, jwt: Jwt ): ResponseEntity<Snippet> {
         println("Creating snippet: $createSnippetRequest") // Debug log
@@ -32,10 +37,7 @@ class SnippetController(
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/hello")
-    fun hello(): ResponseEntity<String> {
-        return ResponseEntity.ok("Hello, World!")
-    }
+
 
     @PutMapping("/{id}")
     fun updateSnippet(
