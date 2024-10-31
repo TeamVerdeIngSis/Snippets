@@ -31,7 +31,6 @@ class SecurityConfiguration(
             it
                 .requestMatchers("/").permitAll()
                 .requestMatchers(POST, "/api/snippets/create").hasAuthority("SCOPE_write:snippets")
-                .requestMatchers(POST, "/api/snippets/create1").hasAuthority("SCOPE_write:snippets")
                 .anyRequest().authenticated()
         }
             .oauth2ResourceServer { it.jwt(withDefaults()) }

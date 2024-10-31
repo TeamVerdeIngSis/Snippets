@@ -6,6 +6,8 @@ import com.github.teamverdeingsis.snippets.services.SnippetService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.web.bind.annotation.*
 
 
@@ -39,13 +41,15 @@ fun create(
     val snippet = snippetService.createSnippet(snippetRequest, token)
     return ResponseEntity.ok(snippet)
 }
-
     @PostMapping("/create1")
     fun createSnippet(
         @RequestBody createSnippetRequest: CreateSnippetRequest,
-        jwt: Jwt
+        @RequestHeader("Authorization") token: String
     ): ResponseEntity<Snippet> {
-        val userId = jwt.subject ?: throw RuntimeException("User ID not found in JWT")
+        // Remueve el prefijo "Bearer " del token
+        val tokenValue = token.removePrefix("Bearer ")
+
+        val userId = getUserIdFromToken(tokenValue) // Implementa esta función para extraer el `subject`
         val snippet = snippetService.createSnippet(createSnippetRequest, userId)
         return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
     }
@@ -56,8 +60,6 @@ fun create(
         snippetService.delete(id)
         return ResponseEntity.noContent().build()
     }
-
-
 
     @PutMapping("/{id}")
     fun updateSnippet(
@@ -104,4 +106,9 @@ fun create(
         return ResponseEntity.ok(result)
     }
 
+    fun getUserIdFromToken(token: String): String {
+        val jwtDecoder: JwtDecoder = NimbusJwtDecoder.withIssuerLocation("https://dev-ppmfishyt4u8fel3.us.auth0.com/").build()
+        val decodedJwt = jwtDecoder.decode(token)
+        return decodedJwt.subject ?: throw RuntimeException("User ID not found in JWT")
+    }
 }
