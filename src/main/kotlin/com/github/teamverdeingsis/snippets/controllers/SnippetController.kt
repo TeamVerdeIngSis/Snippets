@@ -18,7 +18,7 @@ class SnippetController(
 ) {
 
 
-    @PostMapping("/hello")
+    @GetMapping("/hello")
     fun hello(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, World!")
     }
