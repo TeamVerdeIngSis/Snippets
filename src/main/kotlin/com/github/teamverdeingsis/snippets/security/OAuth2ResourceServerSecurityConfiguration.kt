@@ -30,6 +30,7 @@ class SecurityConfiguration(
         http.authorizeHttpRequests {
             it
                 .requestMatchers("/").permitAll()
+                .requestMatchers(POST, "/api/snippets/create").hasAuthority("SCOPE_write:snippets")
                 .requestMatchers(GET, "/snippet").hasAuthority("SCOPE_read:snippets")
                 .requestMatchers(GET, "/snippet/*").hasAuthority("SCOPE_read:snippets")
                 .requestMatchers(POST, "/snippet").hasAuthority("SCOPE_write:snippets")
