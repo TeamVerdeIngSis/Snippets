@@ -1,12 +1,11 @@
 package com.github.teamverdeingsis.snippets.services
 
-import com.github.teamverdeingsis.snippets.models.Snippet
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Service
-class PermissionsSerivce(private val restTemplate: RestTemplate, private val snippetService: SnippetService) {
+class PermissionsSerivce(private val restTemplate: RestTemplate) {
 
     //tienen que pegarle al puerto donde esta el servicio de permisos y asi pegarle a los endpoints
     public fun getPermissions(userId: String, snippetId: String): String {
