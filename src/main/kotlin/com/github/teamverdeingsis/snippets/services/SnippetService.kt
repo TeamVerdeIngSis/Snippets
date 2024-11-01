@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate
 class SnippetService(
     private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
-    private val permissionsService: PermissionsSerivce,
+    private val permissionsService: PermissionsService,
     private val assetService: AssetService,
     private val parseService: ParseService
 ) {

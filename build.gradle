@@ -19,8 +19,15 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = 'GitHubPackages'
+		url = uri("https://maven.pkg.github.com/austral-ingsis/class-redis-streams")
+		credentials {
+			username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+			password = project.findProperty('gpr.key') ?: System.getenv('GITHUB_TOKEN')
+		}
+	}
 }
-
 dependencies {
 	implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 	// Spring Boot Starter dependencies
@@ -52,8 +59,8 @@ dependencies {
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	//postgresql
 	runtimeOnly 'org.postgresql:postgresql:42.7.2'
-
-
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	implementation 'org.austral.ingsis:redis-streams-mvc:0.1.13'
 }
 
 kotlin {

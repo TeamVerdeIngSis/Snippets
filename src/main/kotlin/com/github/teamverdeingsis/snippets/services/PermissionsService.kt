@@ -5,7 +5,7 @@ import org.springframework.web.client.RestTemplate
 import java.util.*
 
 @Service
-class PermissionsSerivce(private val restTemplate: RestTemplate) {
+class PermissionsService(private val restTemplate: RestTemplate) {
 
     //tienen que pegarle al puerto donde esta el servicio de permisos y asi pegarle a los endpoints
     public fun getPermissions(userId: String, snippetId: String): String {

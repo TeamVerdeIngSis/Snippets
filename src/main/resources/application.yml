@@ -2,6 +2,10 @@ spring:
 
   mvc:
     throw-exception-if-no-handler-found: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   web:
     resources:
       add-mappings: false
