@@ -22,7 +22,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
         return response.body!!.toList()
     }
 
-    
+
     public fun addPermission(userId: String, snippetId: String, permission: String): String {
         return "Permission $permission added for user $userId on snippet $snippetId"
     }
@@ -43,6 +43,4 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
             throw RuntimeException("User with ID $userId not found")
         }
     }
-
-
 }
