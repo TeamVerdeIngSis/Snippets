@@ -1,52 +1,55 @@
 package com.github.teamverdeingsis.snippets.controllers
 
-import com.github.teamverdeingsis.snippets.models.Snippet
-import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
-import com.github.teamverdeingsis.snippets.services.SnippetService
+
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.security.oauth2.jwt.JwtDecoder
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
-import org.springframework.web.bind.annotation.*
-
-
-
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.Snippet
+import com.github.teamverdeingsis.snippets.services.SnippetService
 
 @RestController
-@RequestMapping("/api/snippets")
-class SnippetController(
-    private val snippetService: SnippetService
-) {
+@RequestMapping("/snippets")
+class SnippetController(private val snippetService: SnippetService) {
 
 
     @GetMapping("/hello")
     fun hello(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, World!")
     }
-//    @PostMapping("/create")
-//    fun createSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest, jwt: Jwt ): ResponseEntity<Snippet> {
-//        println("Creating snippet: $createSnippetRequest") // Debug log
-//        val userId = jwt.subject ?: throw RuntimeException("User ID not found in JWT")
-//            val snippet = snippetService.createSnippet(createSnippetRequest, userId)
-//        println("Snippet created: $snippet") // Debug log
-//        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
-//    }
 
-@PostMapping("/create")
-fun create(
-    @RequestBody snippetRequest: CreateSnippetRequest,
-    @RequestHeader("Authorization") token: String
-): ResponseEntity<Snippet> {
-    val snippet = snippetService.createSnippet(snippetRequest, token)
-    return ResponseEntity.ok(snippet)
-}
+
+    @PostMapping("/create")
+    fun create(
+        @RequestBody snippetRequest: CreateSnippetRequest,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<Snippet> {
+        val snippet = snippetService.createSnippet(snippetRequest)
+        return ResponseEntity.ok(snippet)
+    }
+
+    @PostMapping("/create1")
+    fun createSnippet(
+        @RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<Snippet> {
+        val snippet = snippetService.createSnippet(createSnippetRequest)
+        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
+    }
+
 
     @PostMapping("/delete/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<Void> {
         snippetService.delete(id)
         return ResponseEntity.noContent().build()
     }
+
+
 
     @PutMapping("/{id}")
     fun updateSnippet(
@@ -93,9 +96,4 @@ fun create(
         return ResponseEntity.ok(result)
     }
 
-    fun getUserIdFromToken(token: String): String {
-        val jwtDecoder: JwtDecoder = NimbusJwtDecoder.withIssuerLocation("https://dev-ppmfishyt4u8fel3.us.auth0.com/").build()
-        val decodedJwt = jwtDecoder.decode(token)
-        return decodedJwt.subject ?: throw RuntimeException("User ID not found in JWT")
-    }
 }

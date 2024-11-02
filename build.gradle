@@ -1,15 +1,12 @@
 plugins {
-	id 'org.springframework.boot' version '3.3.4'
-	id 'io.spring.dependency-management' version '1.1.6'
 	id 'org.jetbrains.kotlin.jvm' version '1.9.25'
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
-	id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.25'
+	id 'org.springframework.boot' version '3.3.0'
+	id 'io.spring.dependency-management' version '1.1.6'
 }
 
-group = 'com.github.teamverdeingsis'
-version = '0.0.13-SNAPSHOT'
-
-
+group = 'teamVerde'
+version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
@@ -17,55 +14,48 @@ java {
 	}
 }
 
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-	// Spring Boot Starter dependencies
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-
-	// Jakarta Persistence (for database interaction)
-	implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
-
-	// Spring Data JPA (for database interaction with Spring Boot)
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-	// Kotlin specific dependencies
-	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-
-	// Security-related dependencies
-	implementation 'org.springframework.security:spring-security-oauth2-jose'
-	implementation 'org.springframework.security:spring-security-config'
-
-	// Development tools
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-	// Test dependencies
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-	//postgresql
-	runtimeOnly 'org.postgresql:postgresql:42.7.2'
-
-
-}
-
-kotlin {
-	jvmToolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
 	}
 }
 
-tasks.withType(Test) {
-	useJUnitPlatform()
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
-bootJar {
-	enabled = true
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+	implementation 'org.jetbrains.kotlin:kotlin-reflect'
+	implementation 'org.postgresql:postgresql:42.7.2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
+
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll '-Xjsr305=strict'
+	}
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
 }

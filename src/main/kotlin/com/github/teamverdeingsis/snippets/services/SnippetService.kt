@@ -5,13 +5,11 @@ import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Language
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -22,19 +20,16 @@ class SnippetService(
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
-    private val parseService: ParseService,
-    @Qualifier("jwtDecoder") private val jwtDecoder: JwtDecoder
+    private val parseService: ParseService
 ) {
 
-    fun createSnippet(createSnippetRequest: CreateSnippetRequest, token: String): Snippet {
+    fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
         println("zaaaap")
-        val userID =  jwtDecoder.decode(token).subject ?: throw RuntimeException("User ID not found in JWT")
-        println("WOOOHOOO")
         val snippet = Snippet(
             name = createSnippetRequest.name,
-            userId = userID,
+            userId = "1",
             conformance = Conformance.PENDING,
-            assetId = uploadSnippetToAssetService(createSnippetRequest.content, token),
+            assetId = uploadSnippetToAssetService(createSnippetRequest.content),
             language = Language(createSnippetRequest.language, version = "1.1" ,createSnippetRequest.extension),
         )
         snippetRepository.save(snippet)
@@ -61,13 +56,12 @@ class SnippetService(
                 RuntimeException("Snippet with ID $id not found")
             }
     }
-    fun uploadSnippetToAssetService(content: String,token: String): String {
+    fun uploadSnippetToAssetService(content: String): String {
         val assetServiceUrl = "http://asset_service:8080/v1/asset/snippets/my-snippet.ps"
 
         println("aja aja aja ")
         val headers = HttpHeaders().apply {
             contentType = MediaType.TEXT_PLAIN
-            set("Authorization", token)
         }
         println("yyeeeeaaaah")
         // Convertir el contenido a un tipo compatible con DataBuffer o Flow<DataBuffer>
