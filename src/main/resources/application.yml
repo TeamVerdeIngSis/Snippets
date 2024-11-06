@@ -1,7 +1,6 @@
 spring:
   application:
     name: snippets-service
-
   datasource:
     url: jdbc:postgresql://localhost:5432/snippets_db
     username: snippets_user
@@ -22,3 +21,6 @@ spring:
     user:
       name: root
       password: root
+
+server:
+  port: 8083

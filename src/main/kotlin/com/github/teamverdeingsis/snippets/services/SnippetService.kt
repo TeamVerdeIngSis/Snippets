@@ -2,14 +2,8 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
-import com.github.teamverdeingsis.snippets.models.Language
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -29,25 +23,29 @@ class SnippetService(
             name = createSnippetRequest.name,
             userId = "1",
             conformance = Conformance.PENDING,
-            assetId = uploadSnippetToAssetService(createSnippetRequest.content),
-            language = Language(createSnippetRequest.language, version = "1.1" ,createSnippetRequest.extension),
+            languageName = createSnippetRequest.languageName,
+            languageVersion = createSnippetRequest.languageVersion,
+            languageExtension = createSnippetRequest.languageExtension
         )
+        println("HOLAHOLAHOLA")
         snippetRepository.save(snippet)
+        println("CHAUCHAUCHAU")
+        assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
         return snippet
     }
+
 
     fun delete(id: String) {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
         snippetRepository.delete(snippet)
-        assetService.deleteAsset(snippet.assetId, "snippets")
+        assetService.deleteAsset(id, "snippets")
     }
 
     fun updateSnippet(id: String, createSnippetRequest: CreateSnippetRequest) {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
-        val asset = assetService.getAsset(snippet.assetId, "snippets")
-        assetService.updateAsset(snippet.assetId, "snippets", createSnippetRequest.content)
+        assetService.updateAsset(id, "snippets", createSnippetRequest.content)
     }
 
     fun getSnippet(id: String): Snippet {
@@ -55,25 +53,6 @@ class SnippetService(
             .orElseThrow {
                 RuntimeException("Snippet with ID $id not found")
             }
-    }
-    fun uploadSnippetToAssetService(content: String): String {
-        val assetServiceUrl = "http://asset_service:8080/v1/asset/snippets/my-snippet.ps"
-
-        println("aja aja aja ")
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.TEXT_PLAIN
-        }
-        println("yyeeeeaaaah")
-        // Convertir el contenido a un tipo compatible con DataBuffer o Flow<DataBuffer>
-        val request = HttpEntity(content, headers)
-
-        val response = restTemplate.exchange(assetServiceUrl, HttpMethod.PUT, request, String::class.java)
-
-        return if (response.statusCode == HttpStatus.OK || response.statusCode == HttpStatus.CREATED) {
-            response.headers["Location"]?.firstOrNull() ?: throw RuntimeException("AssetService didn't return a location header")
-        } else {
-            throw RuntimeException("Failed to upload snippet to AssetService")
-        }
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
