@@ -22,15 +22,15 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @GetMapping("/hello")
     fun hello(): ResponseEntity<String> {
+        println("AAAAAAASFSAFJKSADKSAKDASK")
         return ResponseEntity.ok("Hello, World!")
     }
 
-
     @PostMapping("/create")
     fun create(
-        @RequestBody snippetRequest: CreateSnippetRequest,
-        @RequestHeader("Authorization") token: String
+        @RequestBody snippetRequest: CreateSnippetRequest
     ): ResponseEntity<Snippet> {
+        println("BBBBB")
         val snippet = snippetService.createSnippet(snippetRequest)
         return ResponseEntity.ok(snippet)
     }

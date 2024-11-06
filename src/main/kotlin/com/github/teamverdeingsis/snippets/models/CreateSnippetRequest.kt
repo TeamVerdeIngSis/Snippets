@@ -1,7 +1,11 @@
 package com.github.teamverdeingsis.snippets.models
 
+
 data class CreateSnippetRequest(
     val name: String,
     val content: String,
-    val language: String,
-    val extension: String)
+    val languageName: String,
+    val languageVersion: String,
+    val languageExtension: String
+)
+
