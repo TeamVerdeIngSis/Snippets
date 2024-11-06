@@ -13,6 +13,18 @@ java {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
+repositories {
+	mavenCentral()
+
+	maven {
+		name = "GitHubPackagesAustral"
+		url = uri("https://maven.pkg.github.com/austral-ingsis/class-redis-streams")
+		credentials {
+			username = project.findProperty("github.user") ?: System.getenv("GITHUB_ACTOR")
+			password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+		}
+	}
+}
 
 configurations {
 	compileOnly {
@@ -44,6 +56,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive") // reactive access to redis stream
+	implementation("org.springframework.boot:spring-boot-starter-webflux") // reactive webapp, requests simultaneously.
+	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions") //ktlin extensions for reactive programming.
+	implementation 'org.austral.ingsis:redis-streams-mvc:0.1.13'
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 }
 
 kotlin {
