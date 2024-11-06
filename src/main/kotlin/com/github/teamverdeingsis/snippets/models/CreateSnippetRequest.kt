@@ -9,3 +9,7 @@ data class CreateSnippetRequest(
     val languageExtension: String
 )
 
+data class UpdateSnippetRequest(
+    val content: String,
+    val snippetId: String
+)
