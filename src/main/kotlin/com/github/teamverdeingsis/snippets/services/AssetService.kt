@@ -1,6 +1,7 @@
 package com.github.teamverdeingsis.snippets.services
 
 
+import com.github.teamverdeingsis.snippets.models.Snippet
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
@@ -26,9 +27,11 @@ class AssetService(private val restTemplate: RestTemplate){
     }
     public fun updateAsset(assetId: String,directory: String, content: String): ResponseEntity<String> {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$assetId"
+        println("yoyoyo")
         try {
             restTemplate.put(assetServiceUrl, content, String::class.java)
-            return ResponseEntity.ok().body("Asset with ID $assetId updated")
+            println("vosvosvos")
+            return ResponseEntity.ok("Asset with ID $assetId updated")
         }
         catch (e: Exception){
             throw RuntimeException("Asset with ID $assetId not found")
