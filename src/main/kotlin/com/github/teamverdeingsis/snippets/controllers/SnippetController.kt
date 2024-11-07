@@ -15,6 +15,7 @@ import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
+import org.springframework.web.bind.annotation.CrossOrigin
 
 @RestController
 @RequestMapping("/snippets")
@@ -23,15 +24,14 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @GetMapping("/hello")
     fun hello(): ResponseEntity<String> {
-        println("AAAAAAASFSAFJKSADKSAKDASK")
         return ResponseEntity.ok("Hello, World!")
     }
 
+    @CrossOrigin(origins = arrayOf("http://localhost:5173"))
     @PostMapping("/create")
     fun create(
         @RequestBody snippetRequest: CreateSnippetRequest
     ): ResponseEntity<Snippet> {
-        println("BBBBB")
         val snippet = snippetService.createSnippet(snippetRequest)
         return ResponseEntity.ok(snippet)
     }
