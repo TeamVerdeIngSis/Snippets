@@ -12,7 +12,6 @@ data class Snippet(
     val name: String,
     val userId: String,
     var conformance: Conformance = Conformance.PENDING,
-    // Fields for language details
     val languageName: String,
     val languageExtension: String
 ) {
