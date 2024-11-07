@@ -17,22 +17,20 @@ class SnippetService(
     private val parseService: ParseService
 ) {
 
-    fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
-        println("zaaaap")
+    fun createSnippet(createSnippetRequest: CreateSnippetRequest, userId: String): Snippet {
         val snippet = Snippet(
             name = createSnippetRequest.name,
-            userId = "1",
+            userId = userId,
             conformance = Conformance.PENDING,
             languageName = createSnippetRequest.languageName,
             languageVersion = createSnippetRequest.languageVersion,
             languageExtension = createSnippetRequest.languageExtension
         )
-        println("HOLAHOLAHOLA")
         snippetRepository.save(snippet)
-        println("CHAUCHAUCHAU")
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
         return snippet
     }
+
 
 
     fun delete(id: String): String? {

@@ -44,6 +44,7 @@ dependencies {
 
 	// JWT Support
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
+	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
