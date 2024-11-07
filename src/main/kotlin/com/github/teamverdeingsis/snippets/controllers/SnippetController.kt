@@ -50,7 +50,6 @@ class SnippetController(private val snippetService: SnippetService) {
     }
 
 
-
     @PutMapping("/{id}")
     fun updateSnippet(
         @PathVariable id: String,
