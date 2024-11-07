@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
+import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
+import org.springframework.web.bind.annotation.CrossOrigin
 
 @RestController
 @RequestMapping("/snippets")
@@ -22,15 +25,14 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @GetMapping("/hello")
     fun hello(): ResponseEntity<String> {
-        println("AAAAAAASFSAFJKSADKSAKDASK")
         return ResponseEntity.ok("Hello, World!")
     }
 
+    @CrossOrigin(origins = arrayOf("http://localhost:5173"))
     @PostMapping("/create")
     fun create(
         @RequestBody snippetRequest: CreateSnippetRequest
     ): ResponseEntity<Snippet> {
-        println("BBBBB")
         val snippet = snippetService.createSnippet(snippetRequest)
         return ResponseEntity.ok(snippet)
     }
@@ -44,23 +46,21 @@ class SnippetController(private val snippetService: SnippetService) {
 
 
     @PostMapping("/delete/{id}")
-    fun delete(@PathVariable id: String): ResponseEntity<Void> {
-        snippetService.delete(id)
-        return ResponseEntity.noContent().build()
+    fun delete(@PathVariable id: String): ResponseEntity<String> {
+        return ResponseEntity.ok(snippetService.delete(id))
     }
 
 
     @PutMapping("/{id}")
     fun updateSnippet(
-        @PathVariable id: String,
-        @RequestBody createSnippetRequest: CreateSnippetRequest
-    ): ResponseEntity.BodyBuilder {
-        val updatedSnippet = snippetService.updateSnippet(id, createSnippetRequest)
-        return ResponseEntity.ok()
+        @RequestBody updateSnippetRequest: UpdateSnippetRequest, @PathVariable id: String,
+    ): String? {
+        val updatedSnippet = snippetService.updateSnippet(updateSnippetRequest.snippetId, updateSnippetRequest.content)
+        return ResponseEntity.ok(updatedSnippet).body
     }
 
     @GetMapping("/{id}")
-    fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
+    fun getSnippet(@PathVariable id: String): ResponseEntity<String> {
         val snippet = snippetService.getSnippet(id)
         return ResponseEntity.ok(snippet)
     }
@@ -74,6 +74,13 @@ class SnippetController(private val snippetService: SnippetService) {
     @PostMapping("/validate")
     fun validateSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.validateSnippet(createSnippetRequest)
+        return ResponseEntity.ok(result)
+    }
+
+
+    @PostMapping("/share")
+    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest): ResponseEntity<String> {
+        val result = snippetService.shareSnippet(shareSnippetRequest)
         return ResponseEntity.ok(result)
     }
 
@@ -94,5 +101,7 @@ class SnippetController(private val snippetService: SnippetService) {
         val result = snippetService.analyzeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
+
+
 
 }

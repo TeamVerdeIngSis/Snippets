@@ -2,6 +2,7 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.stereotype.Service
@@ -18,45 +19,49 @@ class SnippetService(
 ) {
 
     fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
-        println("zaaaap")
         val snippet = Snippet(
             name = createSnippetRequest.name,
             userId = "1",
             conformance = Conformance.PENDING,
-            languageName = createSnippetRequest.languageName,
-            languageVersion = createSnippetRequest.languageVersion,
-            languageExtension = createSnippetRequest.languageExtension
+            languageName = createSnippetRequest.language,
+            languageExtension = createSnippetRequest.extension
         )
-        println("HOLAHOLAHOLA")
         snippetRepository.save(snippet)
-        println("CHAUCHAUCHAU")
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
+        permissionsService.addPermission("1", snippet.id, "WRITE")
         return snippet
     }
 
 
-    fun delete(id: String) {
+    fun shareSnippet(shareSnippetRequest: ShareSnippetRequest): String {
+        return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
+    }
+
+
+
+    fun delete(id: String): String? {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
         snippetRepository.delete(snippet)
-        assetService.deleteAsset(id, "snippets")
+        return assetService.deleteAsset(id, "snippets").body
     }
 
-    fun updateSnippet(id: String, createSnippetRequest: CreateSnippetRequest) {
-        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
-        }
-        assetService.updateAsset(id, "snippets", createSnippetRequest.content)
+    fun updateSnippet(id: String, content: String): String?{
+        return assetService.updateAsset(id, "snippets", content).body
     }
 
-    fun getSnippet(id: String): Snippet {
-        return snippetRepository.findById(id)
-            .orElseThrow {
-                RuntimeException("Snippet with ID $id not found")
-            }
+    fun getSnippet(id: String): String {
+        println("AJA AJA AJA")
+        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
+        println("La ignorancia es felicidad")
+        val content = assetService.getAsset(id, "snippets")
+        return "$snippet\n$content"
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
+        println("WOOOHOOOO")
         val snippetsID = permissionsService.getAllUserSnippets(userId)
+
         val snippets = emptyList<Snippet>()
         for (id in snippetsID){
             val snippet= getSnippet(id.toString())
