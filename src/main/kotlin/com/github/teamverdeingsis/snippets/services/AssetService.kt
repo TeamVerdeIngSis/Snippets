@@ -24,10 +24,9 @@ class AssetService(private val restTemplate: RestTemplate){
     }
     public fun updateAsset(assetId: String,directory: String, content: String): ResponseEntity<String> {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$assetId"
-        println("yoyoyo")
+
         try {
             restTemplate.put(assetServiceUrl, content, String::class.java)
-            println("vosvosvos")
             return ResponseEntity.ok("Asset with ID $assetId updated")
         }
         catch (e: Exception){
@@ -55,7 +54,7 @@ class AssetService(private val restTemplate: RestTemplate){
         }
     }
     fun assetExists(directory: String,snippetId: String): Boolean {
-        println("BOCABOCABOCA")
+
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$snippetId"
         try {
             restTemplate.getForObject(assetServiceUrl, String::class.java)
