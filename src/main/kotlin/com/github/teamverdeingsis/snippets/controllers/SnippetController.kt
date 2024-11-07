@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
@@ -77,6 +78,13 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
+
+    @PostMapping("/share")
+    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest): ResponseEntity<String> {
+        val result = snippetService.shareSnippet(shareSnippetRequest)
+        return ResponseEntity.ok(result)
+    }
+
     @PostMapping("/execute")
     fun executeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.executeSnippet(createSnippetRequest)
@@ -94,5 +102,7 @@ class SnippetController(private val snippetService: SnippetService) {
         val result = snippetService.analyzeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
+
+
 
 }
