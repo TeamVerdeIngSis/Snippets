@@ -51,25 +51,18 @@ class SnippetService(
     }
 
     fun getSnippet(id: String): Snippet {
-        println("AJA AJA AJA")
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
-        println("La ignorancia es felicidad")
         return snippet
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
-        println("WOOOHOOOO")
+
         val snippetsIDs = permissionsService.getAllUserSnippets(userId)
-        println(snippetsIDs)
         val snippets = emptyList<Snippet>().toMutableList()
         for (id in snippetsIDs){
             val snippet= getSnippet(id.snippetId)
-            println("marroc")
-            println(snippet)
             snippets += snippet
         }
-        println("Levadura")
-        println(snippets.toString())
         return snippets
     }
 

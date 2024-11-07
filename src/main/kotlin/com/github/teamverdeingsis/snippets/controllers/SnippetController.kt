@@ -69,7 +69,6 @@ class SnippetController(private val snippetService: SnippetService) {
     @GetMapping("/user/{userId}")
     fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<String> {
         val snippets = snippetService.getAllSnippetsByUser(userId)
-        println(snippets.toString())
         return ResponseEntity.ok(snippets.toString())
     }
 
