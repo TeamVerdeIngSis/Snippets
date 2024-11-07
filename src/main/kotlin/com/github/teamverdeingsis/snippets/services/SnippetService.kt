@@ -2,6 +2,7 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.stereotype.Service
@@ -27,8 +28,15 @@ class SnippetService(
         )
         snippetRepository.save(snippet)
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
+        permissionsService.addPermission("1", snippet.id, "WRITE")
         return snippet
     }
+
+
+    fun shareSnippet(shareSnippetRequest: ShareSnippetRequest): String {
+        return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
+    }
+
 
 
     fun delete(id: String): String? {
