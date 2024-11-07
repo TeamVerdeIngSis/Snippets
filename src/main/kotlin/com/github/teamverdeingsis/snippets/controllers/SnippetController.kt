@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.SaveLintingRules
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
@@ -103,6 +104,9 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
-
-
+    @PostMapping("/saveLintingRules")
+    fun saveLintingRules(@RequestBody lintingRules: SaveLintingRules): ResponseEntity<String> {
+        val result = snippetService.createLintingRule(lintingRules)
+        return ResponseEntity.ok(result)
+    }
 }
