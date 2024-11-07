@@ -10,17 +10,14 @@ import org.springframework.web.client.getForObject
 @Service
 class AssetService(private val restTemplate: RestTemplate){
     public fun addAsset(content:String,directory:String, snippetId:String): ResponseEntity<String> {
-        println("HEYHEYHEY")
         val dir = directory
         val snipId = snippetId
-        println(dir)
-        println(snipId)
+
         if (assetExists(directory,snippetId)) {
-            println("NONONONONO")
             throw RuntimeException("Asset with ID $snippetId already exists")
         }
         val assetServiceUrl = "http://localhost:8080/v1/asset/$dir/$snipId"
-        println("CCCCCC")
+
         restTemplate.put(assetServiceUrl, content, String::class.java)
         return ResponseEntity.ok().body("Asset with ID $snippetId added")
 

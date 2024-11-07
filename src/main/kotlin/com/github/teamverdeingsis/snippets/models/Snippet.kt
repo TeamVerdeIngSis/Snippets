@@ -14,7 +14,6 @@ data class Snippet(
     var conformance: Conformance = Conformance.PENDING,
     // Fields for language details
     val languageName: String,
-    val languageVersion: String,
     val languageExtension: String
 ) {
     constructor() : this(
@@ -22,7 +21,6 @@ data class Snippet(
         name = "",
         userId = "",
         languageName = "",
-        languageVersion = "",
         languageExtension = ""
     )
 }
