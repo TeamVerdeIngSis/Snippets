@@ -1,25 +1,23 @@
 package com.github.teamverdeingsis.snippets.services
 
 
-import com.github.teamverdeingsis.snippets.models.Snippet
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForObject
 
 @Service
 class AssetService(private val restTemplate: RestTemplate){
-    public fun addAsset(content:String,directory:String, snippetId:String): ResponseEntity<String> {
+    public fun addAsset(content:String, directory:String, id:String): ResponseEntity<String> {
         val dir = directory
-        val snipId = snippetId
+        val snipId = id
 
-        if (assetExists(directory,snippetId)) {
-            throw RuntimeException("Asset with ID $snippetId already exists")
+        if (assetExists(directory,id)) {
+            throw RuntimeException("Asset with ID $id already exists")
         }
         val assetServiceUrl = "http://localhost:8080/v1/asset/$dir/$snipId"
 
         restTemplate.put(assetServiceUrl, content, String::class.java)
-        return ResponseEntity.ok().body("Asset with ID $snippetId added")
+        return ResponseEntity.ok().body("Asset with ID $id added")
 
     }
     public fun updateAsset(assetId: String,directory: String, content: String): ResponseEntity<String> {
@@ -65,6 +63,4 @@ class AssetService(private val restTemplate: RestTemplate){
             return false
         }
     }
-
-
 }
