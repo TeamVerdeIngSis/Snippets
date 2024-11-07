@@ -22,9 +22,8 @@ class SnippetService(
             name = createSnippetRequest.name,
             userId = userId,
             conformance = Conformance.PENDING,
-            languageName = createSnippetRequest.languageName,
-            languageVersion = createSnippetRequest.languageVersion,
-            languageExtension = createSnippetRequest.languageExtension
+            languageName = createSnippetRequest.language,
+            languageExtension = createSnippetRequest.extension
         )
         snippetRepository.save(snippet)
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
