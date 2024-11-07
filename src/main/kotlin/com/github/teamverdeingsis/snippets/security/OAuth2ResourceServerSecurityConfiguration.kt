@@ -18,18 +18,16 @@ import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class OAuth2ResourceServerSecurityConfiguration(
-    @Value("\${auth0.audience}") val audience: String,
-    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String
-) {
+class OAuth2ResourceServerSecurityConfiguration(@Value("\${auth0.audience}")
+                                                val audience: String,
+                                                @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+                                                val issuer: String,) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.authorizeHttpRequests {
             it
-                .requestMatchers("/").permitAll()
-                .requestMatchers(GET, "/api/snippets").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(GET, "/api/snippets/*").hasAuthority("SCOPE_read:snippets")
-                .requestMatchers(POST, "/api/snippets").hasAuthority("SCOPE_write:snippets")
+                .requestMatchers(POST, "/snippets/create").hasAuthority("SCOPE_write:snippets")
+                .requestMatchers(POST, "/snippets/delete/{id}").hasAuthority("SCOPE_read:snippets")
                 .anyRequest().authenticated()
         }
             .oauth2ResourceServer { it.jwt(withDefaults()) }

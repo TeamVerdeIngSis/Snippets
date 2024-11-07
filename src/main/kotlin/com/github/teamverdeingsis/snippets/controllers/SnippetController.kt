@@ -15,6 +15,8 @@ import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import java.security.Principal
 
 @RestController
 @RequestMapping("/snippets")
@@ -29,26 +31,20 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @PostMapping("/create")
     fun create(
-        @RequestBody snippetRequest: CreateSnippetRequest
+        @RequestBody snippetRequest: CreateSnippetRequest,
+        principal: Principal
     ): ResponseEntity<Snippet> {
-        println("BBBBB")
-        val snippet = snippetService.createSnippet(snippetRequest)
+        val userId = (principal as JwtAuthenticationToken).tokenAttributes["userId"] as String
+        val snippet = snippetService.createSnippet(snippetRequest, userId)
         return ResponseEntity.ok(snippet)
     }
 
-    @PostMapping("/create1")
-    fun createSnippet(
-        @RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<Snippet> {
-        val snippet = snippetService.createSnippet(createSnippetRequest)
-        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
-    }
 
 
     @PostMapping("/delete/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<String> {
         return ResponseEntity.ok(snippetService.delete(id))
     }
-
 
 
     @PutMapping("/{id}")
