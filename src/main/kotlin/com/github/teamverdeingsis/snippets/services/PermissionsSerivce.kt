@@ -15,13 +15,11 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     }
 
     public fun getAllUserSnippets(userId: String): List<Permission> {
-        println("llegue a getAllUserSnippets")
+
         val url = "http://localhost:8082/api/permissions/user/$userId"
         val response = restTemplate.getForEntity(url, Array<Permission>::class.java)
-        println(response)
         if(!response.statusCode.is2xxSuccessful){
-            //No snippets found
-            println("uh que paso")
+
             throw RuntimeException("User with ID $userId not found")
         }
         return response.body!!.toList()
@@ -31,13 +29,11 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     public fun addPermission(userId: String, snippetId: String, permission: String): String {
         val url = "http://localhost:8082/api/permissions/create"
         val request = CreatePermissionRequest(userId, snippetId, permission)
-        println("llegue a createPermissionRequest")
+
         val response = restTemplate.postForEntity(url, request, String::class.java)
         if(!response.statusCode.is2xxSuccessful){
-            println("LALALALA")
             throw RuntimeException("User with ID $userId not found")
         }
-        println("hohohoho")
         return response.body!!
 
     }

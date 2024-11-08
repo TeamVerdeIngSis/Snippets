@@ -62,15 +62,15 @@ class SnippetController(private val snippetService: SnippetService) {
     }
 
     @GetMapping("/{id}")
-    fun getSnippet(@PathVariable id: String): ResponseEntity<String> {
+    fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
         val snippet = snippetService.getSnippet(id)
         return ResponseEntity.ok(snippet)
     }
 
     @GetMapping("/user/{userId}")
-    fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<List<Snippet>> {
+    fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<String> {
         val snippets = snippetService.getAllSnippetsByUser(userId)
-        return ResponseEntity.ok(snippets)
+        return ResponseEntity.ok(snippets.toString())
     }
 
     @PostMapping("/validate")
