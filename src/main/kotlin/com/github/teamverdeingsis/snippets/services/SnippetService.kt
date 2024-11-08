@@ -22,14 +22,14 @@ class SnippetService(
     fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
         val snippet = Snippet(
             name = createSnippetRequest.name,
-            userId = "1",
+            userId = "2",
             conformance = Conformance.PENDING,
             languageName = createSnippetRequest.language,
             languageExtension = createSnippetRequest.extension
         )
         snippetRepository.save(snippet)
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
-        permissionsService.addPermission("1", snippet.id, "WRITE")
+        permissionsService.addPermission("2", snippet.id, "WRITE")
         return snippet
     }
 
@@ -51,22 +51,18 @@ class SnippetService(
         return assetService.updateAsset(id, "snippets", content).body
     }
 
-    fun getSnippet(id: String): String {
-        println("AJA AJA AJA")
+    fun getSnippet(id: String): Snippet {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
-        println("La ignorancia es felicidad")
-        val content = assetService.getAsset(id, "snippets")
-        return "$snippet\n$content"
+        return snippet
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
-        println("WOOOHOOOO")
-        val snippetsID = permissionsService.getAllUserSnippets(userId)
 
-        val snippets = emptyList<Snippet>()
-        for (id in snippetsID){
-            val snippet= getSnippet(id.toString())
-            snippets.plus(snippet)
+        val snippetsIDs = permissionsService.getAllUserSnippets(userId)
+        val snippets = emptyList<Snippet>().toMutableList()
+        for (id in snippetsIDs){
+            val snippet= getSnippet(id.snippetId)
+            snippets += snippet
         }
         return snippets
     }
