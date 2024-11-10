@@ -32,6 +32,10 @@ class SnippetController(private val snippetService: SnippetService) {
     fun helloPablo(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, Pablo!")
     }
+    @GetMapping("/hello/peter")
+    fun helloPeter(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello, Peter!")
+    }
 
     @CrossOrigin(origins = arrayOf("http://localhost:5173"))
     @PostMapping("/create")
