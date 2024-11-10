@@ -2,6 +2,7 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
@@ -84,5 +85,16 @@ class SnippetService(
     fun analyzeSnippet(createSnippetRequest: CreateSnippetRequest): String {
         val response = parseService.analyzeSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Analysis failed")
+    }
+    fun createLintingRules(lintingRulesRequest: RulesRequest): String {
+        val rulesInString = lintingRulesRequest.rules.toString()
+        assetService.addAsset(rulesInString, "linter",lintingRulesRequest.userId)
+        return "Linting rules saved"
+    }
+
+    fun createFormatRules(formatRulesRequest: RulesRequest): String {
+        val rulesInString = formatRulesRequest.rules.toString()
+        assetService.addAsset(rulesInString, "formatter",formatRulesRequest.userId)
+        return "Formatting rules saved"
     }
 }
