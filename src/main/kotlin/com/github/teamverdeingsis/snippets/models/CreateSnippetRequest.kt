@@ -1,7 +1,6 @@
 package com.github.teamverdeingsis.snippets.models
 
 import com.fasterxml.jackson.databind.JsonNode
-import kotlinx.serialization.json.Json
 
 
 data class CreateSnippetRequest(
@@ -33,7 +32,7 @@ data class Permission(
     val permission: String,
     val permissionId: String
 )
-data class SaveLintingRules(
+data class RulesRequest(
     val userId: String,
-    val lintingRules: JsonNode
+    val rules: JsonNode
 )

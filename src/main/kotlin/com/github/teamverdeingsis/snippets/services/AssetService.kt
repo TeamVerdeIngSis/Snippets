@@ -18,7 +18,6 @@ class AssetService(private val restTemplate: RestTemplate){
 
         restTemplate.put(assetServiceUrl, content, String::class.java)
         return ResponseEntity.ok().body("Asset with ID $id added")
-
     }
     public fun updateAsset(assetId: String,directory: String, content: String): ResponseEntity<String> {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$assetId"
