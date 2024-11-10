@@ -1,5 +1,7 @@
 package com.github.teamverdeingsis.snippets.models
 
+import com.fasterxml.jackson.databind.JsonNode
+
 
 data class CreateSnippetRequest(
     val name: String,
@@ -29,4 +31,8 @@ data class Permission(
     val snippetId: String,
     val permission: String,
     val permissionId: String
+)
+data class RulesRequest(
+    val userId: String,
+    val rules: JsonNode
 )
