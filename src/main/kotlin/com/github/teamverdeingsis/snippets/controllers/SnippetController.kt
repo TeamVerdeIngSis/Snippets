@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
@@ -103,6 +103,15 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
+    @PostMapping("/saveLintingRules")
+    fun saveLintingRules(@RequestBody lintingRulesRequest: RulesRequest): ResponseEntity<String> {
+        val result = snippetService.createLintingRules(lintingRulesRequest)
+        return ResponseEntity.ok(result)
+    }
 
-
+    @PostMapping("/saveFormatRules")
+    fun saveFormatRules(@RequestBody formattingRulesRequest: RulesRequest): ResponseEntity<String> {
+        val result = snippetService.createFormatRules(formattingRulesRequest)
+        return ResponseEntity.ok(result)
+    }
 }
