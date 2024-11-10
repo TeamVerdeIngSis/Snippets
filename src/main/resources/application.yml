@@ -2,7 +2,7 @@ spring:
   application:
     name: snippets-service
   datasource:
-    url: jdbc:postgresql://db-1:5432/snippets_db
+    url: jdbc:postgresql://db_1:5432/snippets_db
     username: snippets_user
     password: snippets_password
     driver-class-name: org.postgresql.Driver
