@@ -28,6 +28,7 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok("Hello, World!")
     }
 
+
     @CrossOrigin(origins = arrayOf("http://localhost:5173"))
     @PostMapping("/create")
     fun create(
