@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 class SnippetController(private val snippetService: SnippetService) {
 
 
-    @GetMapping("/hello")
+    @GetMapping("/hello/hey")
     fun hello(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, World!")
     }
