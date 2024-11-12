@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
@@ -23,9 +23,18 @@ import org.springframework.web.bind.annotation.CrossOrigin
 class SnippetController(private val snippetService: SnippetService) {
 
 
-    @GetMapping("/hello")
+    @GetMapping("/hello/hey")
     fun hello(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, World!")
+    }
+
+    @GetMapping("/hello/pablo")
+    fun helloPablo(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello, Pablo!")
+    }
+    @GetMapping("/hello/peter")
+    fun helloPeter(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello, Peter!")
     }
 
     @CrossOrigin(origins = arrayOf("http://localhost:5173"))
@@ -60,15 +69,15 @@ class SnippetController(private val snippetService: SnippetService) {
     }
 
     @GetMapping("/{id}")
-    fun getSnippet(@PathVariable id: String): ResponseEntity<String> {
+    fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
         val snippet = snippetService.getSnippet(id)
         return ResponseEntity.ok(snippet)
     }
 
     @GetMapping("/user/{userId}")
-    fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<List<Snippet>> {
+    fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<String> {
         val snippets = snippetService.getAllSnippetsByUser(userId)
-        return ResponseEntity.ok(snippets)
+        return ResponseEntity.ok(snippets.toString())
     }
 
     @PostMapping("/validate")
@@ -102,6 +111,15 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
+    @PostMapping("/saveLintingRules")
+    fun saveLintingRules(@RequestBody lintingRulesRequest: RulesRequest): ResponseEntity<String> {
+        val result = snippetService.createLintingRules(lintingRulesRequest)
+        return ResponseEntity.ok(result)
+    }
 
-
+    @PostMapping("/saveFormatRules")
+    fun saveFormatRules(@RequestBody formattingRulesRequest: RulesRequest): ResponseEntity<String> {
+        val result = snippetService.createFormatRules(formattingRulesRequest)
+        return ResponseEntity.ok(result)
+    }
 }
