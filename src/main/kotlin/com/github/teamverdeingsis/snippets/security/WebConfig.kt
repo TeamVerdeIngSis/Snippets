@@ -1,21 +1,18 @@
-import org.springframework.context.annotation.Bean
+package com.github.teamverdeingsis.snippets.security
+
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import org.springframework.web.filter.CorsFilter
+import org.springframework.web.servlet.config.annotation.CorsRegistry
+import org.springframework.web.servlet.config.annotation.EnableWebMvc
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class WebConfig {
-
-    @Bean
-    fun corsFilter(): CorsFilter {
-        val source = UrlBasedCorsConfigurationSource()
-        val config = CorsConfiguration()
-        config.allowCredentials = true
-        config.allowedOrigins = listOf("http://localhost:5173")
-        config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        config.allowedHeaders = listOf("*")
-        source.registerCorsConfiguration("/**", config)
-        return CorsFilter(source)
+@EnableWebMvc
+class WebConfig : WebMvcConfigurer {
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry
+            .addMapping("/*")
+            .allowedOrigins("")
+            .allowedMethods("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS")
+            .allowedHeaders("*")
     }
 }

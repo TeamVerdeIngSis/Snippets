@@ -9,9 +9,13 @@ import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
 import com.nimbusds.jwt.JWTParser
 
+
+
 @RestController
 @RequestMapping("/snippets")
-class SnippetController(private val snippetService: SnippetService) {
+class SnippetController(private val snippetService: SnippetService  ) {
+
+
 
     @GetMapping("/hello")
     fun hello(): ResponseEntity<String> {
@@ -19,7 +23,6 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok("Hello, World!")
     }
 
-    @CrossOrigin(origins = ["http://localhost:5173"])
     @PostMapping("/create")
     fun create(
         @RequestBody snippetRequest: CreateSnippetRequest,
