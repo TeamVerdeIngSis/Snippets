@@ -13,6 +13,4 @@ COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
 RUN mkdir -p /usr/local/newrelic
 ADD ./newrelic/newrelic.jar /usr/local/newrelic/newrelic.jar
 ADD ./newrelic/newrelic.yml /usr/local/newrelic/newrelic.yml
-
-ENTRYPOINT ["java","-javaagent:/usr/local/newrelic/newrelic.jar","-jar","/app/my-application.jar"]
-
+ENTRYPOINT ["java","-javaagent:/usr/local/newrelic/newrelic.jar","-jar","/app.jar"]
