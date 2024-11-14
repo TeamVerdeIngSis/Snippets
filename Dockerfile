@@ -10,6 +10,9 @@ FROM openjdk:21-slim
 EXPOSE 8082
 COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
 
-COPY ./newRelicAgent/newrelic.jar /app/newrelic.jar
-COPY ./newRelicAgent/newrelic.yml /app/newrelic.yml
-ENTRYPOINT ["java", "-jar", "/app.jar", "-javaagent:/app/newrelic.jar"]
+RUN mkdir -p /usr/local/newrelic
+ADD ./newrelic/newrelic.jar /usr/local/newrelic/newrelic.jar
+ADD ./newrelic/newrelic.yml /usr/local/newrelic/newrelic.yml
+
+ENTRYPOINT ["java","-javaagent:/usr/local/newrelic/newrelic.jar","-jar","/app/my-application.jar"]
+
