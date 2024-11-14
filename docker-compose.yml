@@ -38,6 +38,7 @@ services:
       NEW_RELIC_APP_NAME: "asset-service"
       NEW_RELIC_AGENT_ENABLED: false
 
+
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     hostname: azurite
