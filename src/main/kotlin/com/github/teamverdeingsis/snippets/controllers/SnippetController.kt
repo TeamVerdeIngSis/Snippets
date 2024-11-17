@@ -16,6 +16,7 @@ import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
+import com.nimbusds.jwt.JWTParser
 import org.springframework.web.bind.annotation.CrossOrigin
 
 @RestController
@@ -28,20 +29,22 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok("Hello, World!")
     }
 
-    @CrossOrigin(origins = arrayOf("http://localhost:5173"))
     @PostMapping("/create")
     fun create(
-        @RequestBody snippetRequest: CreateSnippetRequest
+        @RequestBody snippetRequest: CreateSnippetRequest,
+        @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<Snippet> {
-        val snippet = snippetService.createSnippet(snippetRequest)
-        return ResponseEntity.ok(snippet)
-    }
+        // Remover el prefijo "Bearer " del token
+        val token = authorization.removePrefix("Bearer ")
 
-    @PostMapping("/create1")
-    fun createSnippet(
-        @RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<Snippet> {
-        val snippet = snippetService.createSnippet(createSnippetRequest)
-        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
+        // Decodificar el token para obtener el userId
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
+
+        // Llamar a snippetService.createSnippet con el userId
+        val snippet = snippetService.createSnippet(snippetRequest, userId)
+
+        return ResponseEntity.ok(snippet)
     }
 
 
@@ -58,12 +61,6 @@ class SnippetController(private val snippetService: SnippetService) {
     ): String? {
         val updatedSnippet = snippetService.updateSnippet(updateSnippetRequest.snippetId, updateSnippetRequest.content)
         return ResponseEntity.ok(updatedSnippet).body
-    }
-
-    @GetMapping("/{id}")
-    fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
-        val snippet = snippetService.getSnippet(id)
-        return ResponseEntity.ok(snippet)
     }
 
     @GetMapping("/user/{userId}")
