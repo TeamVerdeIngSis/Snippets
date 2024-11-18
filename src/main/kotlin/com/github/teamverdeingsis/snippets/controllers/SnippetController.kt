@@ -43,7 +43,6 @@ class SnippetController(private val snippetService: SnippetService) {
 
         // Llamar a snippetService.createSnippet con el userId
         val snippet = snippetService.createSnippet(snippetRequest, userId)
-
         return ResponseEntity.ok(snippet)
     }
 
@@ -63,10 +62,17 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(updatedSnippet).body
     }
 
-    @GetMapping("/user/{userId}")
-    fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<String> {
+    @GetMapping("/")
+    fun getAllSnippetsByUser(@RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<List<Snippet>> {
+        // Remover el prefijo "Bearer " del token
+        val token = authorization.removePrefix("Bearer ")
+
+        // Decodificar el token para obtener el userId
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
         val snippets = snippetService.getAllSnippetsByUser(userId)
-        return ResponseEntity.ok(snippets.toString())
+        return ResponseEntity.ok(snippets)
     }
 
     @PostMapping("/validate")
