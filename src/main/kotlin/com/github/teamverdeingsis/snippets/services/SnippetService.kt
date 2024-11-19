@@ -19,6 +19,19 @@ class SnippetService(
     private val parseService: ParseService
 ) {
 
+    fun createSnippet(createSnippetRequest: CreateSnippetRequest, userId: String): Snippet {
+        val snippet = Snippet(
+            name = createSnippetRequest.name,
+            userId = userId,
+            conformance = Conformance.PENDING,
+            languageName = createSnippetRequest.language,
+            languageExtension = createSnippetRequest.extension
+        )
+        snippetRepository.save(snippet)
+        assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
+        permissionsService.addPermission(userId, snippet.id, "WRITE")
+        return snippet
+    }
 
     fun helloParse(): ResponseEntity<String>{
         val response = parseService.hey()
@@ -29,21 +42,6 @@ class SnippetService(
         val response = permissionsService.hey()
         return ResponseEntity.ok(response)
     }
-
-    fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
-        val snippet = Snippet(
-            name = createSnippetRequest.name,
-            userId = "2",
-            conformance = Conformance.PENDING,
-            languageName = createSnippetRequest.language,
-            languageExtension = createSnippetRequest.extension
-        )
-        snippetRepository.save(snippet)
-        assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
-        permissionsService.addPermission("2", snippet.id, "WRITE")
-        return snippet
-    }
-
 
     fun shareSnippet(shareSnippetRequest: ShareSnippetRequest): String {
         return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
@@ -67,13 +65,15 @@ class SnippetService(
         return snippet
     }
 
-    fun getAllSnippetsByUser(userId: String): List<Snippet> {
-
-        val snippetsIDs = permissionsService.getAllUserSnippets(userId)
-        val snippets = emptyList<Snippet>().toMutableList()
-        for (id in snippetsIDs){
+    fun getAllSnippetsByUser(userId: String): List<Snippet>? {
+        val snippetsID = permissionsService.getAllUserSnippets(userId)
+        val snippets = ArrayList<Snippet>()
+        if(snippetsID == null){
+            return emptyList()
+        }
+        for (id in snippetsID){
             val snippet= getSnippet(id.snippetId)
-            snippets += snippet
+            snippets.add(snippet)
         }
         return snippets
     }
