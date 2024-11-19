@@ -64,13 +64,13 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @GetMapping("/")
     fun getAllSnippetsByUser(@RequestHeader("Authorization") authorization: String
-    ): ResponseEntity<List<Snippet>> {
+    ): ResponseEntity<List<Snippet>?> {
         // Remover el prefijo "Bearer " del token
         val token = authorization.removePrefix("Bearer ")
 
         // Decodificar el token para obtener el userId
         val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
+        val userId = decodedJWT.jwtClaimsSet.subject
         val snippets = snippetService.getAllSnippetsByUser(userId)
         return ResponseEntity.ok(snippets)
     }
