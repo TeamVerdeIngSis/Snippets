@@ -8,17 +8,21 @@ services:
       dockerfile: Dockerfile
     platform: linux/amd64
     ports:
-      - '8082:8081'
+      - '8083:8083'
     environment:
-      POSTGRES_HOST: db
+      POSTGRES_HOST: snippets_db
       POSTGRES_DB: snippets_db
       POSTGRES_USER: snippets_user
       POSTGRES_PASSWORD: snippets_password
       POSTGRES_PORT: 5432
+      NEW_RELIC_LICENSE_KEY: 9466b3e637f7a092b89af15ad0772ea6FFFFNRAL
+      NEW_RELIC_APP_NAME: 'snippet-searcher'
+      NEW_RELIC_AGENT_ENABLED: true
+      NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
     depends_on:
-      - db
+      - snippets_db
 
-  db:
+  snippets_db:
     image: postgres:15
     container_name: postgres-snippets
     environment:
@@ -29,14 +33,14 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-  api:
+
+  asset_service:
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
     ports:
       - "8080:8080"
     environment:
       AZURE_HOST: "http://azurite"
-      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-      NEW_RELIC_APP_NAME: "api"
+      NEW_RELIC_APP_NAME: "asset-service"
       NEW_RELIC_AGENT_ENABLED: false
 
   azurite:
@@ -50,6 +54,15 @@ services:
     volumes:
       - blob:/workspace
 
+  parseservice: # Cambié el nombre para evitar subrayados
+    image: ghcr.io/teamverdeingsis/parse:latest
+    ports:
+      - "8081:8081"
+    environment:
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: 'parseService2'
+      NEW_RELIC_AGENT_ENABLED: true
+      NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
 volumes:
   db_data:
     external: false

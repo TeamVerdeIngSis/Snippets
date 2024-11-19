@@ -25,7 +25,8 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @GetMapping("/hello/hey")
     fun hello(): ResponseEntity<String> {
-        return ResponseEntity.ok("Hello, World!")
+        println("AAAA")
+        return snippetService.hello()
     }
 
     @GetMapping("/hello/pablo")
