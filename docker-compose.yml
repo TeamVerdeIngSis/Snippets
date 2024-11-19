@@ -15,7 +15,7 @@ services:
       POSTGRES_USER: snippets_user
       POSTGRES_PASSWORD: snippets_password
       POSTGRES_PORT: 5432
-      NEW_RELIC_LICENSE_KEY: 9466b3e637f7a092b89af15ad0772ea6FFFFNRAL
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
       NEW_RELIC_APP_NAME: 'snippet-searcher'
       NEW_RELIC_AGENT_ENABLED: true
       NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
