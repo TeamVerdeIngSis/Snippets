@@ -16,11 +16,11 @@ class ParseService(
     private val restTemplate: RestTemplate
 ) {
 
-    private val parseServiceUrl = "http://parse:8081/v1"
+    private val parseServiceUrl = "http://localhost:8081/v1"
 
 
     fun hey(): String? {
-        val url = "http://parseServiceInfra:8081/api/parser/hola"
+        val url = "http://localhost:8081/api/parser/hola"
         println("llegue a la funcion")
         val response = restTemplate.getForObject(url, String::class.java)
         if (response == null){
@@ -36,7 +36,7 @@ class ParseService(
         }
 
         val request = HttpEntity(createSnippetRequest, headers)
-        val url = "http://parseServiceInfra:8080/parse/validate"
+        val url = "http://localhost:8081/parse/validate"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }
