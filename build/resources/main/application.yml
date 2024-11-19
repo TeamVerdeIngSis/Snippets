@@ -23,6 +23,8 @@ spring:
           issuer-uri: https://dev-ppmfishyt4u8fel3.us.auth0.com/
           client-id: H5JTujo2v0txqNT9uI43tzas8ssxTGNp
           client-secret: ewadvcnj0rxmw0OtDeMPqx-15cK4TbdEXdHyc7dOxlC55TzMz2dbD36TgyRhAv-j
+          audience: https://snippet-service-api
+
 
 server:
   port: 8083
