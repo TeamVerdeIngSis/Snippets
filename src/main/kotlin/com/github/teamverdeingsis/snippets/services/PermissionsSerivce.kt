@@ -14,6 +14,17 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
         return "Permissions for user $userId on snippet $snippetId"
     }
 
+    public fun hey(): String? {
+        val url = "http://permissionsServiceInfra:8082/api/permissions/helloNga"
+        println("llegue a la funcion")
+        val response = restTemplate.getForObject(url, String::class.java)
+        if (response == null){
+            println("nada")
+        }
+        println("Response: $response")
+        return response
+    }
+
     public fun getAllUserSnippets(userId: String): List<Permission> {
 
         val url = "http://localhost:8082/api/permissions/user/$userId"

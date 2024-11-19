@@ -20,7 +20,7 @@ class ParseService(
 
 
     fun hey(): String? {
-        val url = "http://parseservice:8081/api/parser/hola"
+        val url = "http://parseServiceInfra:8081/api/parser/hola"
         println("llegue a la funcion")
         val response = restTemplate.getForObject(url, String::class.java)
         if (response == null){
