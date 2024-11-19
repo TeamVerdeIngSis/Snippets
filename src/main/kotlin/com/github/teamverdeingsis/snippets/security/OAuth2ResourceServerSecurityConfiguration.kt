@@ -34,6 +34,9 @@ class OAuth2ResourceServerSecurityConfiguration(
                 .requestMatchers(POST, "/snippets/delete/{id}").authenticated()
                 .requestMatchers(PUT, "/snippets/{id}").authenticated()
                 .requestMatchers(GET, "/snippets/").authenticated()
+                .requestMatchers(GET, "/snippets/hello/permissions").authenticated()
+                .requestMatchers(GET, "/snippets/hello/parse").authenticated()
+
 
                 .anyRequest().authenticated()
         }
