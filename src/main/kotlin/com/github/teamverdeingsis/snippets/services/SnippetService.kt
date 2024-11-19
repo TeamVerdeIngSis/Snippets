@@ -53,9 +53,12 @@ class SnippetService(
         return snippet
     }
 
-    fun getAllSnippetsByUser(userId: String): List<Snippet> {
+    fun getAllSnippetsByUser(userId: String): List<Snippet>? {
         val snippetsID = permissionsService.getAllUserSnippets(userId)
         val snippets = ArrayList<Snippet>()
+        if(snippetsID == null){
+            return emptyList()
+        }
         for (id in snippetsID){
             val snippet= getSnippet(id.snippetId)
             snippets.add(snippet)
