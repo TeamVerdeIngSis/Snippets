@@ -28,7 +28,7 @@ class SnippetController(private val snippetService: SnippetService) {
         println("AAAA")
         return snippetService.helloParse()
     }
-    @GetMapping("/hello/permisssions")
+    @GetMapping("/hello/permissions")
     fun helloPermissions(): ResponseEntity<String> {
         println("AAAA")
         return snippetService.helloPermissions()
