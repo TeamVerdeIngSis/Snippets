@@ -2,16 +2,17 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 
 @Service
 class SnippetService(
-    private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
@@ -32,10 +33,21 @@ class SnippetService(
         return snippet
     }
 
+    fun helloParse(): ResponseEntity<String>{
+        val response = parseService.hey()
+        return ResponseEntity.ok(response)
+    }
+
+    fun helloPermissions(): ResponseEntity<String>{
+        val response = permissionsService.hey()
+        return ResponseEntity.ok(response)
+    }
 
     fun shareSnippet(shareSnippetRequest: ShareSnippetRequest): String {
         return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
     }
+
+
 
     fun delete(id: String): String? {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
@@ -84,5 +96,16 @@ class SnippetService(
     fun analyzeSnippet(createSnippetRequest: CreateSnippetRequest): String {
         val response = parseService.analyzeSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Analysis failed")
+    }
+    fun createLintingRules(lintingRulesRequest: RulesRequest): String {
+        val rulesInString = lintingRulesRequest.rules.toString()
+        assetService.addAsset(rulesInString, "linter",lintingRulesRequest.userId)
+        return "Linting rules saved"
+    }
+
+    fun createFormatRules(formatRulesRequest: RulesRequest): String {
+        val rulesInString = formatRulesRequest.rules.toString()
+        assetService.addAsset(rulesInString, "formatter",formatRulesRequest.userId)
+        return "Formatting rules saved"
     }
 }

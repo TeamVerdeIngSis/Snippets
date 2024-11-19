@@ -8,25 +8,41 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
 import com.nimbusds.jwt.JWTParser
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.RequestHeader
 
 @RestController
 @RequestMapping("/snippets")
 class SnippetController(private val snippetService: SnippetService) {
 
 
-    @GetMapping("/hello")
-    fun hello(): ResponseEntity<String> {
-        return ResponseEntity.ok("Hello, World!")
+    @GetMapping("/hello/parse")
+    fun helloParse(): ResponseEntity<String> {
+        println("AAAA")
+        return snippetService.helloParse()
+    }
+    @GetMapping("/hello/permissions")
+    fun helloPermissions(): ResponseEntity<String> {
+        println("AAAA")
+        return snippetService.helloPermissions()
+    }
+
+    @GetMapping("/hello/pablo")
+    fun helloPablo(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello, Pablo!")
+    }
+    @GetMapping("/hello/peter")
+    fun helloPeter(): ResponseEntity<String> {
+        return ResponseEntity.ok("Hello, Peter!")
     }
 
     @PostMapping("/create")
@@ -106,6 +122,15 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
+    @PostMapping("/saveLintingRules")
+    fun saveLintingRules(@RequestBody lintingRulesRequest: RulesRequest): ResponseEntity<String> {
+        val result = snippetService.createLintingRules(lintingRulesRequest)
+        return ResponseEntity.ok(result)
+    }
 
-
+    @PostMapping("/saveFormatRules")
+    fun saveFormatRules(@RequestBody formattingRulesRequest: RulesRequest): ResponseEntity<String> {
+        val result = snippetService.createFormatRules(formattingRulesRequest)
+        return ResponseEntity.ok(result)
+    }
 }

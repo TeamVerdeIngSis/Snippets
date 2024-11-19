@@ -1,11 +1,8 @@
-auth0:
-  audience: https://snippet-service-api
-
 spring:
   application:
     name: snippets-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/snippets_db
+    url: jdbc:postgresql://db_1:5432/snippets_db
     username: snippets_user
     password: snippets_password
     driver-class-name: org.postgresql.Driver
@@ -15,6 +12,7 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
+
   sql:
     init:
       platform: postgres
