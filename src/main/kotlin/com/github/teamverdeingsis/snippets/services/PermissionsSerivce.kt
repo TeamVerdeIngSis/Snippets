@@ -28,6 +28,16 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
         return response.body!!.toList()
     }
 
+    public fun hey(): String? {
+        val url = "http://permissionsServiceInfra:8082/api/permissions/helloNga"
+        println("llegue a la funcion")
+        val response = restTemplate.getForObject(url, String::class.java)
+        if (response == null){
+            println("nada")
+        }
+        println("Response: $response")
+        return response
+    }
 
     public fun addPermission(userId: String, snippetId: String, permission: String): String {
         val url = "http://localhost:8082/api/permissions/create"

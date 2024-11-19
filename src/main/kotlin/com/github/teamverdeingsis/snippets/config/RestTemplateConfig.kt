@@ -1,5 +1,6 @@
 package com.github.teamverdeingsis.snippets.config
 
+import com.github.teamverdeingsis.snippets.interceptor.NewRelicInterceptor
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.client.RestTemplate
@@ -9,6 +10,8 @@ class RestTemplateConfig {
 
     @Bean
     fun restTemplate(): RestTemplate {
-        return RestTemplate()
+        val restTemplate = RestTemplate()
+        restTemplate.interceptors.add(NewRelicInterceptor())
+        return restTemplate
     }
 }
