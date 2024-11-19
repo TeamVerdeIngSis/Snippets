@@ -19,6 +19,7 @@ services:
       NEW_RELIC_APP_NAME: 'snippet-searcher'
       NEW_RELIC_AGENT_ENABLED: true
       NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
+
     depends_on:
       - snippets_db
 
