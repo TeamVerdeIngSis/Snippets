@@ -9,14 +9,26 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import org.springframework.web.client.getForObject
 
 @Service
 class ParseService(
     private val restTemplate: RestTemplate
 ) {
 
-    private val parseServiceUrl = "http://parse:8080/v1"
+    private val parseServiceUrl = "http://parse:8081/v1"
 
+
+    fun hey(): String? {
+        val url = "http://parseservice:8081/api/parser/hola"
+        println("llegue a la funcion")
+        val response = restTemplate.getForObject(url, String::class.java)
+        if (response == null){
+            println("nada")
+        }
+        println("Response: $response")
+        return response
+    }
     // funcion para validar un snippet
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val headers = HttpHeaders().apply {

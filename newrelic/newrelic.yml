@@ -13,7 +13,7 @@ common: &default_settings
   # account. For example, if your license key is 12345 use this:
   # license_key: '12345'
   # The key binds your agent's data to your account in the New Relic service.
-  license_key: '81da73b37114d376b6f292efe17e183aFFFFNRAL'
+  license_key:
 
   # Agent Enabled
   # Use this setting to disable the agent instead of removing it from the startup command.
@@ -29,7 +29,7 @@ common: &default_settings
   # app_name: My Application;My Application 2
   # This setting is required. Up to 3 different application names can be specified.
   # The first application name must be unique.
-  app_name: 'snippets-service'
+  app_name: 'snippet-searcher'
 
   # To enable high security, set this property to true. When in high
   # security mode, the agent will use SSL and obfuscated SQL. Additionally,
@@ -96,6 +96,8 @@ common: &default_settings
     # The agent will automatically forward application logs to New Relic in
     # a format that includes agent metadata for linking them to traces and errors.
     forwarding:
+      context_data:
+        enabled: true
 
       # When true, application logs will be forwarded to New Relic. The default is true.
       enabled: true
@@ -112,10 +114,10 @@ common: &default_settings
       # When true, application log metrics will be reported. The default is true.
       enabled: true
 
-    # The agent will add linking metadata to each log line in your application log files.
-    # This feature should only be used if you want to use a third party log forwarder, instead
-    # of the agent's built-in forwarding feature, to send your application log events to New Relic.
-    #local_decorating:
+      # The agent will add linking metadata to each log line in your application log files.
+      # This feature should only be used if you want to use a third party log forwarder, instead
+      # of the agent's built-in forwarding feature, to send your application log events to New Relic.
+      #local_decorating:
 
       # When true, the agent will decorate your application log files with linking metadata. The default is false.
       #enabled: false
@@ -197,7 +199,7 @@ common: &default_settings
     explain_enabled: true
 
     # Threshold for query execution time below which query plans will not
-    # not be captured.  Relevant only when `explain_enabled` is true.
+    # not be captured.  Relevant only when explain_enabled is true.
     # Default is 0.5 seconds.
     explain_threshold: 0.5
 
@@ -290,8 +292,8 @@ common: &default_settings
   #
   # Distributed tracing is replacing cross application tracing as the default
   # means of tracing between services. To continue using cross application
-  # tracing, enable it with `cross_application_tracer.enabled = true` and
-  # `distributed_tracing.enabled = false`
+  # tracing, enable it with cross_application_tracer.enabled = true and
+  # distributed_tracing.enabled = false
   cross_application_tracer:
 
     # Set to true to enable cross application tracing.
@@ -369,8 +371,8 @@ common: &default_settings
   # Names and values may not contain colons (:) or semicolons (;).
   labels:
 
-    # An example label
-    #label_name: label_value
+  # An example label
+  #label_name: label_value
 
 # Application Environments
 # ------------------------------------------
@@ -386,15 +388,15 @@ common: &default_settings
 
 development:
   <<: *default_settings
-  app_name: 'snippets-service (Development)'
+  app_name: 'snippet-searcher (Development)'
 
 test:
   <<: *default_settings
-  app_name: 'snippets-service (Test)'
+  app_name: 'snippet-searcher (Test)'
 
 production:
   <<: *default_settings
 
 staging:
   <<: *default_settings
-  app_name: 'snippets-service (Staging)'
+  app_name: 'snippet-searcher (Staging)'

@@ -6,19 +6,24 @@ import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 
 @Service
 class SnippetService(
-    private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
     private val parseService: ParseService
 ) {
 
+
+    fun hello(): ResponseEntity<String>{
+        val response = parseService.hey()
+        return ResponseEntity.ok(response)
+    }
     fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
         val snippet = Snippet(
             name = createSnippetRequest.name,
