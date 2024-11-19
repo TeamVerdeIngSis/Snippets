@@ -36,7 +36,7 @@ class ParseService(
         }
 
         val request = HttpEntity(createSnippetRequest, headers)
-        val url = "http://localhost:8080/parse/validate"
+        val url = "http://parseServiceInfra:8080/parse/validate"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }

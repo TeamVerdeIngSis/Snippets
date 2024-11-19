@@ -33,7 +33,8 @@ class OAuth2ResourceServerSecurityConfiguration(
                 .requestMatchers(POST, "/snippets/create").authenticated()
                 .requestMatchers(POST, "/snippets/delete/{id}").authenticated()
                 .requestMatchers(PUT, "/snippets/{id}").authenticated()
-                .requestMatchers(GET, "/snippets/user/{userId}").authenticated()
+                .requestMatchers(GET, "/snippets/").authenticated()
+
                 .anyRequest().authenticated()
         }
             .oauth2ResourceServer { it.jwt(withDefaults()) }
