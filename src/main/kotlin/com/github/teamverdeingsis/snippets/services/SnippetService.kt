@@ -20,10 +20,16 @@ class SnippetService(
 ) {
 
 
-    fun hello(): ResponseEntity<String>{
+    fun helloParse(): ResponseEntity<String>{
         val response = parseService.hey()
         return ResponseEntity.ok(response)
     }
+
+    fun helloPermissions(): ResponseEntity<String>{
+        val response = permissionsService.hey()
+        return ResponseEntity.ok(response)
+    }
+
     fun createSnippet(createSnippetRequest: CreateSnippetRequest): Snippet {
         val snippet = Snippet(
             name = createSnippetRequest.name,
