@@ -28,6 +28,7 @@ class SnippetService(
         )
         snippetRepository.save(snippet)
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
+        permissionsService.addPermission(userId, snippet.id, "WRITE")
         return snippet
     }
 
@@ -47,18 +48,17 @@ class SnippetService(
         return assetService.updateAsset(id, "snippets", content).body
     }
 
-    fun getSnippet(id: String): String {
+    fun getSnippet(id: String): Snippet {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
-        val content = assetService.getAsset(id, "snippets")
-        return "$snippet\n$content"
+        return snippet
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet> {
         val snippetsID = permissionsService.getAllUserSnippets(userId)
-        val snippets = emptyList<Snippet>()
+        val snippets = ArrayList<Snippet>()
         for (id in snippetsID){
-            val snippet= getSnippet(id.toString())
-            snippets.plus(snippet)
+            val snippet= getSnippet(id.snippetId)
+            snippets.add(snippet)
         }
         return snippets
     }
