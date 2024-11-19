@@ -1,0 +1,16 @@
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\server\CorrelationIdFilter.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\services\SnippetService.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\controllers\SnippetController.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\services\ParseService.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\SnippetsApplication.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\security\OAuth2ResourceServerSecurityConfiguration.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\services\PermissionsSerivce.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\models\Snippet.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\services\AssetService.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\security\WebConfig.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\interceptor\NewRelicInterceptor.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\security\AudienceValidator.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\repositories\SnippetRepository.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\config\RestTemplateConfig.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\server\RequestLogFilter.kt
+C:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\models\CreateSnippetRequest.kt
