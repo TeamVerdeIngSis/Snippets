@@ -23,8 +23,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 class OAuth2ResourceServerSecurityConfiguration(
-    @Value("\${auth0.audience}") val audience: String,
-    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String
+    @Value("https://snippet-service-api") val audience: String,
+    @Value("https://dev-ppmfishyt4u8fel3.us.auth0.com/}") val issuer: String
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
