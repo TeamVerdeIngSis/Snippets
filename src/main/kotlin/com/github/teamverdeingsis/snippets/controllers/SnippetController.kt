@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.FullSnippet
 import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
@@ -77,6 +78,13 @@ class SnippetController(private val snippetService: SnippetService) {
         val updatedSnippet = snippetService.updateSnippet(updateSnippetRequest.snippetId, updateSnippetRequest.content)
         return ResponseEntity.ok(updatedSnippet).body
     }
+    
+    @GetMapping("/user/{id}")
+    fun getSnippet(@PathVariable id: String): ResponseEntity<FullSnippet> {
+        val snippet = snippetService.getSnippetWithContent(id)
+        return ResponseEntity.ok(snippet)
+    }
+    
 
     @GetMapping("/")
     fun getAllSnippetsByUser(@RequestHeader("Authorization") authorization: String
