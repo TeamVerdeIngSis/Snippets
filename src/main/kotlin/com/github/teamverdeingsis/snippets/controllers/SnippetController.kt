@@ -80,12 +80,11 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(snippets.toString())
     }
 
-    @PostMapping("/validate")
-    fun validateSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
-        val result = snippetService.validateSnippet(createSnippetRequest)
+    @PostMapping("/validate/{id}")
+    fun validateSnippet(@PathVariable id: String): ResponseEntity<String> {
+        val result = snippetService.validateSnippet(id)
         return ResponseEntity.ok(result)
     }
-
 
     @PostMapping("/share")
     fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest): ResponseEntity<String> {
@@ -93,19 +92,19 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/execute")
+    @PostMapping("/execute/{id}")
     fun executeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.executeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/format")
+    @PostMapping("/format/{id}")
     fun formatSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.formatSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/analyze")
+    @PostMapping("/analyze/{id}")
     fun analyzeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.analyzeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)

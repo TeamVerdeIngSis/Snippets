@@ -39,7 +39,6 @@ class SnippetService(
     }
 
 
-
     fun delete(id: String): String? {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
@@ -67,9 +66,21 @@ class SnippetService(
         return snippets
     }
 
-    fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
-        val response = parseService.validateSnippet(createSnippetRequest)
-        return response.body ?: throw RuntimeException("Validation failed")
+    fun validateSnippet(id: String): String {
+    val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
+    val createSnippetRequest = assetService.getAsset(id, "snippets")?.let {
+        CreateSnippetRequest(
+        name = snippet.name,
+        language = snippet.languageName,
+        extension = snippet.languageExtension,
+        content = it // Assuming this method exists to get the content
+    )
+    }
+    val response = createSnippetRequest?.let { parseService.validateSnippet(it) }
+        if (response != null) {
+            return response.body ?: throw RuntimeException("Validation failed")
+        }
+        throw RuntimeException("Validation failed")
     }
 
     fun executeSnippet(createSnippetRequest: CreateSnippetRequest): String {

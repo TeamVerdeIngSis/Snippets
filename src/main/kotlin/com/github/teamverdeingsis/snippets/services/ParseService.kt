@@ -15,7 +15,7 @@ class ParseService(
     private val restTemplate: RestTemplate
 ) {
 
-    private val parseServiceUrl = "http://parse:4000/v1"
+    private val parseServiceUrl = "http://localhost:4000"
 
     // funcion para validar un snippet
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
@@ -24,7 +24,7 @@ class ParseService(
         }
 
         val request = HttpEntity(createSnippetRequest, headers)
-        val url = "http://localhost:4000/parse/validate"
+        val url = "$parseServiceUrl/parser/validate"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
     }

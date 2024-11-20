@@ -16,7 +16,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
 
     public fun getAllUserSnippets(userId: String): List<Permission> {
 
-        val url = "http://localhost:8082/api/permissions/user/$userId"
+        val url = "http://localhost:8084/api/permissions/user/$userId"
         val response = restTemplate.getForEntity(url, Array<Permission>::class.java)
         if(!response.statusCode.is2xxSuccessful){
 
@@ -27,7 +27,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
 
 
     public fun addPermission(userId: String, snippetId: String, permission: String): String {
-        val url = "http://localhost:8082/api/permissions/create"
+        val url = "http://localhost:8084/api/permissions/create"
         val request = CreatePermissionRequest(userId, snippetId, permission)
 
         val response = restTemplate.postForEntity(url, request, String::class.java)
