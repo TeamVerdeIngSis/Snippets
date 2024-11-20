@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.FullSnippet
 import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
@@ -70,6 +71,7 @@ class SnippetController(private val snippetService: SnippetService) {
 
 
 
+
     @PutMapping("/{id}")
     fun updateSnippet(
         @RequestBody updateSnippetRequest: UpdateSnippetRequest, @PathVariable id: String,
@@ -77,14 +79,18 @@ class SnippetController(private val snippetService: SnippetService) {
         val updatedSnippet = snippetService.updateSnippet(updateSnippetRequest.snippetId, updateSnippetRequest.content)
         return ResponseEntity.ok(updatedSnippet).body
     }
+    
+    @GetMapping("/user/{id}")
+    fun getSnippet(@PathVariable id: String): ResponseEntity<FullSnippet> {
+        val snippet = snippetService.getSnippetWithContent(id)
+        return ResponseEntity.ok(snippet)
+    }
+    
 
     @GetMapping("/")
     fun getAllSnippetsByUser(@RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Snippet>?> {
-        // Remover el prefijo "Bearer " del token
         val token = authorization.removePrefix("Bearer ")
-
-        // Decodificar el token para obtener el userId
         val decodedJWT = JWTParser.parse(token)
         val userId = decodedJWT.jwtClaimsSet.subject
         val snippets = snippetService.getAllSnippetsByUser(userId)
@@ -99,7 +105,12 @@ class SnippetController(private val snippetService: SnippetService) {
 
 
     @PostMapping("/share")
-    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest): ResponseEntity<String> {
+    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest,
+                     @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<String> {
+        val token = authorization.removePrefix("Bearer ")
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject
         val result = snippetService.shareSnippet(shareSnippetRequest)
         return ResponseEntity.ok(result)
     }
