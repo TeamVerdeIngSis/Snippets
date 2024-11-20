@@ -71,6 +71,7 @@ class SnippetController(private val snippetService: SnippetService) {
 
 
 
+
     @PutMapping("/{id}")
     fun updateSnippet(
         @RequestBody updateSnippetRequest: UpdateSnippetRequest, @PathVariable id: String,
@@ -89,10 +90,7 @@ class SnippetController(private val snippetService: SnippetService) {
     @GetMapping("/")
     fun getAllSnippetsByUser(@RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Snippet>?> {
-        // Remover el prefijo "Bearer " del token
         val token = authorization.removePrefix("Bearer ")
-
-        // Decodificar el token para obtener el userId
         val decodedJWT = JWTParser.parse(token)
         val userId = decodedJWT.jwtClaimsSet.subject
         val snippets = snippetService.getAllSnippetsByUser(userId)
@@ -107,7 +105,12 @@ class SnippetController(private val snippetService: SnippetService) {
 
 
     @PostMapping("/share")
-    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest): ResponseEntity<String> {
+    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest,
+                     @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<String> {
+        val token = authorization.removePrefix("Bearer ")
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject
         val result = snippetService.shareSnippet(shareSnippetRequest)
         return ResponseEntity.ok(result)
     }
