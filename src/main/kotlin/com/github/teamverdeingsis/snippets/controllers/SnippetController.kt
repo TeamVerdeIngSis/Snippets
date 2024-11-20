@@ -16,16 +16,24 @@ import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.services.SnippetService
+import com.nimbusds.jwt.JWTParser
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.RequestHeader
 
 @RestController
 @RequestMapping("/snippets")
 class SnippetController(private val snippetService: SnippetService) {
 
 
-    @GetMapping("/hello/hey")
-    fun hello(): ResponseEntity<String> {
-        return ResponseEntity.ok("Hello, World!")
+    @GetMapping("/hello/parse")
+    fun helloParse(): ResponseEntity<String> {
+        println("AAAA")
+        return snippetService.helloParse()
+    }
+    @GetMapping("/hello/permissions")
+    fun helloPermissions(): ResponseEntity<String> {
+        println("AAAA")
+        return snippetService.helloPermissions()
     }
 
     @GetMapping("/hello/pablo")
@@ -37,20 +45,21 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok("Hello, Peter!")
     }
 
-    @CrossOrigin(origins = arrayOf("http://localhost:5173"))
     @PostMapping("/create")
     fun create(
-        @RequestBody snippetRequest: CreateSnippetRequest
+        @RequestBody snippetRequest: CreateSnippetRequest,
+        @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<Snippet> {
-        val snippet = snippetService.createSnippet(snippetRequest)
-        return ResponseEntity.ok(snippet)
-    }
+        // Remover el prefijo "Bearer " del token
+        val token = authorization.removePrefix("Bearer ")
 
-    @PostMapping("/create1")
-    fun createSnippet(
-        @RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<Snippet> {
-        val snippet = snippetService.createSnippet(createSnippetRequest)
-        return ResponseEntity.status(HttpStatus.CREATED).body(snippet)
+        // Decodificar el token para obtener el userId
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
+
+        // Llamar a snippetService.createSnippet con el userId
+        val snippet = snippetService.createSnippet(snippetRequest, userId)
+        return ResponseEntity.ok(snippet)
     }
 
 
@@ -68,16 +77,17 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(updatedSnippet).body
     }
 
-    @GetMapping("/{id}")
-    fun getSnippet(@PathVariable id: String): ResponseEntity<Snippet> {
-        val snippet = snippetService.getSnippet(id)
-        return ResponseEntity.ok(snippet)
-    }
+    @GetMapping("/")
+    fun getAllSnippetsByUser(@RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<List<Snippet>?> {
+        // Remover el prefijo "Bearer " del token
+        val token = authorization.removePrefix("Bearer ")
 
-    @GetMapping("/user/{userId}")
-    fun getAllSnippetsByUser(@PathVariable userId: String): ResponseEntity<String> {
+        // Decodificar el token para obtener el userId
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject
         val snippets = snippetService.getAllSnippetsByUser(userId)
-        return ResponseEntity.ok(snippets.toString())
+        return ResponseEntity.ok(snippets)
     }
 
     @PostMapping("/validate")
