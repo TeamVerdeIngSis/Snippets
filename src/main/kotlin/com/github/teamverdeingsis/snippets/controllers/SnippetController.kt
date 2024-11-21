@@ -86,6 +86,7 @@ class SnippetController(private val snippetService: SnippetService) {
     fun validateSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.validateSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
+
     }
 
     @PostMapping("/share")
