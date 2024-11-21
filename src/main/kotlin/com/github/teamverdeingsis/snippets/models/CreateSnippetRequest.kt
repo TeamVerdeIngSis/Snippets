@@ -1,8 +1,6 @@
 package com.github.teamverdeingsis.snippets.models
 
-import com.fasterxml.jackson.databind.JsonNode
 import java.util.*
-
 
 data class CreateSnippetRequest(
     val name: String,
@@ -12,8 +10,7 @@ data class CreateSnippetRequest(
 )
 
 data class UpdateSnippetRequest(
-    val content: String,
-    val snippetId: String
+    val content: String
 )
 
 data class CreatePermissionRequest(
@@ -33,10 +30,6 @@ data class Permission(
     val permission: String,
     val permissionId: String
 )
-data class RulesRequest(
-    val userId: String,
-    val rules: JsonNode
-)
 
 data class FullSnippet(
     val id: String,
@@ -47,3 +40,23 @@ data class FullSnippet(
     val languageExtension: String,
     val content: String
 )
+
+data class Rule(
+    val id: String,
+    val name: String,
+    val isActive: Boolean,
+    val value: Any? = null
+)
+
+data class SnippetMessage(
+    val snippetId: String,
+    val userId: String
+)
+
+data class UpdateConformanceRequest(
+    val snippetId: String,
+    val conformance: Conformance
+)
+
+
+

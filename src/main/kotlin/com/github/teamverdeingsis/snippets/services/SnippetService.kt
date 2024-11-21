@@ -1,16 +1,19 @@
 package com.github.teamverdeingsis.snippets.services
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.teamverdeingsis.snippets.factory.RulesFactory
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FullSnippet
-import com.github.teamverdeingsis.snippets.models.RulesRequest
+import com.github.teamverdeingsis.snippets.models.Rule
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+import com.nimbusds.jwt.JWTParser
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
-
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class SnippetService(
@@ -20,7 +23,13 @@ class SnippetService(
     private val parseService: ParseService
 ) {
 
-    fun createSnippet(createSnippetRequest: CreateSnippetRequest, userId: String): Snippet {
+    fun createSnippet(createSnippetRequest: CreateSnippetRequest, authorization: String): Snippet {
+        val token = authorization.removePrefix("Bearer ")
+
+        // Decodificar el token para obtener el userId
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
+
         val snippet = Snippet(
             name = createSnippetRequest.name,
             userId = userId,
@@ -31,15 +40,16 @@ class SnippetService(
         snippetRepository.save(snippet)
         assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
         permissionsService.addPermission(userId, snippet.id, "WRITE")
+        parseService.lintSnippet(snippet.id, authorization)
         return snippet
     }
 
-    fun helloParse(): ResponseEntity<String>{
+    fun helloParse(): ResponseEntity<String> {
         val response = parseService.hey()
         return ResponseEntity.ok(response)
     }
 
-    fun helloPermissions(): ResponseEntity<String>{
+    fun helloPermissions(): ResponseEntity<String> {
         val response = permissionsService.hey()
         return ResponseEntity.ok(response)
     }
@@ -48,28 +58,29 @@ class SnippetService(
         return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
     }
 
-
-
     fun delete(id: String): String? {
-        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
+        val snippet = snippetRepository.findById(id).getOrNull()
+        if (snippet == null) {
+            println("Nothing to delete")
+            return null
         }
         snippetRepository.delete(snippet)
+        println("Snippet with ID $id deleted")
         return assetService.deleteAsset(id, "snippets").body
     }
 
-    fun updateSnippet(id: String, content: String): String?{
+    fun updateSnippet(id: String, content: String): String? {
         return assetService.updateAsset(id, "snippets", content).body
     }
 
-    fun getSnippet(id: String): Snippet {
-        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
+    fun getSnippet(id: String): Snippet? {
+        val snippet = snippetRepository.findById(id).getOrNull()
         return snippet
     }
 
-    fun getSnippetWithContent(id: String): FullSnippet {
+    fun getSnippetWithContent(id: String): FullSnippet? {
         val content = assetService.getAsset(id, "snippets")
-        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
-
+        val snippet = snippetRepository.findById(id).getOrNull() ?: return null
         return FullSnippet(
             id = snippet.id,
             name = snippet.name,
@@ -77,19 +88,19 @@ class SnippetService(
             conformance = snippet.conformance,
             languageName = snippet.languageName,
             languageExtension = snippet.languageExtension,
-            content = content?: ""
+            content = content ?: ""
         )
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet>? {
         val snippetsID = permissionsService.getAllUserSnippets(userId)
         val snippets = ArrayList<Snippet>()
-        if(snippetsID == null){
+        if (snippetsID == null) {
             return emptyList()
         }
-        for (id in snippetsID){
-            val snippet= getSnippet(id.snippetId)
-            snippets.add(snippet)
+        for (id in snippetsID) {
+            val snippet = getSnippet(id.snippetId)
+            snippets.add(snippet ?: continue)
         }
         return snippets
     }
@@ -113,15 +124,62 @@ class SnippetService(
         val response = parseService.analyzeSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Analysis failed")
     }
-    fun createLintingRules(lintingRulesRequest: RulesRequest): String {
-        val rulesInString = lintingRulesRequest.rules.toString()
-        assetService.addAsset(rulesInString, "linter",lintingRulesRequest.userId)
-        return "Linting rules saved"
+
+    fun modifyLintingRules(userId: String, rules: List<Rule>): List<Rule> {
+        println("PARAAAAAAAAAAA")
+        println(userId)
+        println(rules)
+        val mapper = jacksonObjectMapper()
+        val rulesString = mapper.writeValueAsString(rules)
+        println("JEJEJEEJ")
+        if (assetService.assetExists("linting", userId)) {
+            println("che")
+            assetService.updateAsset(userId, "linting", rulesString)
+        }
+        println("cho")
+        assetService.addAsset(rulesString, "linting", userId)
+        println("chu")
+        return rules
     }
 
-    fun createFormatRules(formatRulesRequest: RulesRequest): String {
-        val rulesInString = formatRulesRequest.rules.toString()
-        assetService.addAsset(rulesInString, "formatter",formatRulesRequest.userId)
-        return "Formatting rules saved"
+    fun getLintingRules(userId: String): List<Rule> {
+        if (!assetService.assetExists("linting", userId)) {
+            return RulesFactory().getDefaultLintingRules()
+        }
+        val rulesString = assetService.getAsset(userId, "linting")
+        val mapper = jacksonObjectMapper()
+        return mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
+    }
+
+    fun getFormattingRules(userId: String): ResponseEntity<List<Rule>> {
+        if (!assetService.assetExists("format", userId)) {
+            return ResponseEntity.ok(RulesFactory().getDefaultFormattingRules())
+        }
+        val rulesString = assetService.getAsset(userId, "format")
+        val mapper = jacksonObjectMapper()
+        return ResponseEntity.ok(mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {}))
+    }
+    fun modifyFormattingRule(userId: String, rules: List<Rule>): List<Rule> {
+        println("PARAAAAAAAAAAA")
+        println(userId)
+        println(rules)
+        val mapper = jacksonObjectMapper()
+        val rulesString = mapper.writeValueAsString(rules)
+        println("JEJEJEEJ")
+        if (assetService.assetExists("format", userId)) {
+            assetService.updateAsset(userId, "format", rulesString)
+        }
+        assetService.addAsset(rulesString, "format", userId)
+        return rules
+    }
+
+
+    fun updateConformance(snippetId:String,conformance: Conformance){
+        val snippet = snippetRepository.findById(snippetId)
+        if (snippet.isPresent){
+            val snippetToUpdate = snippet.get()
+            snippetToUpdate.conformance = conformance
+            snippetRepository.save(snippetToUpdate)
+        }
     }
 }
