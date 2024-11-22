@@ -16,8 +16,12 @@ class SnippetService(
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
-    private val parseService: ParseService
 ) {
+    private lateinit var parseService: ParseService
+
+    fun setParseService(parseService: ParseService) {
+        this.parseService = parseService
+    }
 
     fun createSnippet(createSnippetRequest: CreateSnippetRequest, userId: String): Snippet {
         val snippet = Snippet(

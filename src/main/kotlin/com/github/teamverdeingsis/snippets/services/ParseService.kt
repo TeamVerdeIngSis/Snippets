@@ -1,6 +1,7 @@
 package com.github.teamverdeingsis.snippets.services
 
 
+import TestParseDTO
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpHeaders
@@ -9,14 +10,21 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.getForObject
 
 @Service
 class ParseService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
 ) {
-
     private val parseServiceUrl = "http://localhost:8081/v1"
+    private lateinit var snippetService: SnippetService
+
+    fun setSnippetService(snippetService: SnippetService) {
+        this.snippetService = snippetService
+    }
 
 
     fun hey(): String? {
@@ -75,5 +83,41 @@ class ParseService(
         val url = "$parseServiceUrl/analyze"
 
         return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
+    }
+    fun test(
+        token: String,
+        snippetId: String,
+        inputs: List<String>,
+        outputs: List<String>
+    ): List<String> {
+        val snippet = snippetService.getSnippet(snippetId)
+        val testDTO = TestParseDTO(
+            snippetId = snippet.id.toLong(),
+            inputs = inputs,
+            outputs = outputs
+        )
+
+        val headers = getJsonAuthorizedHeaders(token)
+        val entity = HttpEntity(testDTO, headers)
+
+        val response = restTemplate.exchange(
+            "http://parse:8081/api/parser/test",
+            HttpMethod.POST,
+            entity,
+            object : ParameterizedTypeReference<List<String>>() {}
+        )
+
+        return response.body ?: emptyList()
+    }
+    private fun getJsonHeaders(): MultiValueMap<String, String>? {
+        return HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+        }
+    }
+    private fun getJsonAuthorizedHeaders(token: String): MultiValueMap<String, String> {
+        return HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+            set("Authorization", token)
+        }
     }
 }
