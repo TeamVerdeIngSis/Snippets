@@ -60,7 +60,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     }
     public fun getUsernameById(userId: String): String {
         try {
-            val request = "http://localhost:8082/getUsernameById/$userId"
+            val request = "http://localhost :8082/getUsernameById/$userId"
             return restTemplate.getForObject(request, String::class.java)!!
         }
         catch (e: Exception){
