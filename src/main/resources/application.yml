@@ -22,7 +22,14 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://dev-ppmfishyt4u8fel3.us.auth0.com/
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
+stream:
+  linter:
+    key: "linter_stream"
 
 server:
   port: 8083

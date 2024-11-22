@@ -68,6 +68,11 @@ services:
       NEW_RELIC_APP_NAME: 'parseService2'
       NEW_RELIC_AGENT_ENABLED: true
       NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
 volumes:
   db_data:
     external: false
