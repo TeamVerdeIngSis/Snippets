@@ -51,8 +51,6 @@ class SnippetService(
         return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
     }
 
-
-
     fun delete(id: String): String? {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found")
         }
