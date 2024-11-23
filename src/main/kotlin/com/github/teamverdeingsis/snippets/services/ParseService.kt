@@ -19,7 +19,7 @@ class ParseService(
     private val restTemplate: RestTemplate
 ) {
 
-    private val parseServiceUrl = "http://localhost:8081/v1"
+    private val parseServiceUrl = "http://localhost:8089/v1"
 
     fun hey(): String? {
         val url = "http://localhost:8081/api/parser/hola"
@@ -82,7 +82,7 @@ class ParseService(
         val token = authorization.removePrefix("Bearer ")
         val decodedJWT = JWTParser.parse(token)
         val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
-        val url = "http://localhost:8081/api/parser/lint"
+        val url = "http://localhost:8089/api/parser/lint"
         val response = restTemplate.postForObject(url, SnippetMessage(snippetID, userId), String::class.java)
 
 
