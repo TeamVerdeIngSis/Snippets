@@ -24,12 +24,17 @@ import org.springframework.web.bind.annotation.RequestHeader
 @RequestMapping("/snippets")
 class SnippetController(private val snippetService: SnippetService) {
 
+
     @GetMapping("/hello/parse")
     fun helloParse(): ResponseEntity<String> {
+        println("AAAA")
         return snippetService.helloParse()
     }
     @GetMapping("/hello/permissions")
-    fun helloPermissions(): ResponseEntity<String> {
+    fun helloPermissions(
+        @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<String> {
+        println("AAAA")
         return snippetService.helloPermissions()
     }
 
@@ -47,9 +52,18 @@ class SnippetController(private val snippetService: SnippetService) {
         @RequestBody snippetRequest: CreateSnippetRequest,
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<Snippet> {
-        val snippet = snippetService.createSnippet(snippetRequest, authorization)
+        // Remover el prefijo "Bearer " del token
+        val token = authorization.removePrefix("Bearer ")
+
+        // Decodificar el token para obtener el userId
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
+
+        // Llamar a snippetService.createSnippet con el userId
+        val snippet = snippetService.createSnippet(snippetRequest, userId)
         return ResponseEntity.ok(snippet)
     }
+
 
     @PostMapping("/delete/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<String> {
@@ -75,7 +89,10 @@ class SnippetController(private val snippetService: SnippetService) {
     fun getAllSnippetsByUser(
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Snippet>?> {
+        // Remover el prefijo "Bearer " del token
         val token = authorization.removePrefix("Bearer ")
+
+        // Decodificar el token para obtener el userId
         val decodedJWT = JWTParser.parse(token)
         val userId = decodedJWT.jwtClaimsSet.subject
         val snippets = snippetService.getAllSnippetsByUser(userId)
@@ -86,8 +103,8 @@ class SnippetController(private val snippetService: SnippetService) {
     fun validateSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.validateSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
-
     }
+
 
     @PostMapping("/share")
     fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest,
