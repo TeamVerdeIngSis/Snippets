@@ -19,7 +19,7 @@ import org.springframework.web.client.getForObject
 class ParseService(
     private val restTemplate: RestTemplate,
 ) {
-    private val parseServiceUrl = "http://localhost:8081/v1"
+    private val parseServiceUrl = "http://localhost:8089/v1"
     private lateinit var snippetService: SnippetService
 
     fun setSnippetService(snippetService: SnippetService) {
@@ -101,7 +101,7 @@ class ParseService(
         val entity = HttpEntity(testDTO, headers)
 
         val response = restTemplate.exchange(
-            "http://parse:8081/api/parser/test",
+            "http://parse:8089/api/parser/test",
             HttpMethod.POST,
             entity,
             object : ParameterizedTypeReference<List<String>>() {}

@@ -24,12 +24,15 @@ class TestServiceUi(
     }
 
     fun addTestToSnippet(snippetId: String, name: String, input: List<String>, output: List<String>): TestDTO {
+        println("Buscando snippet con ID: $snippetId")
         val snippet = snippetRepository.findById(snippetId)
             .orElseThrow { IllegalArgumentException("Snippet not found") }
+        println("Snippet encontrado: $snippet")
         val test = Test(name = name, input = input, output = output, snippet = snippet)
         testRepo.save(test)
         return TestDTO(test)
     }
+
 
     fun deleteTestById(id: String) {
         testRepo.deleteById(id)
