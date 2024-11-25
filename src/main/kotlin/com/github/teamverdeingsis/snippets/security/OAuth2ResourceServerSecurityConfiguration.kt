@@ -34,7 +34,6 @@ class OAuth2ResourceServerSecurityConfiguration(
                 .requestMatchers(POST, "/snippets/delete/{id}").authenticated()
                 .requestMatchers(PUT, "/snippets/{id}").authenticated()
                 .requestMatchers(GET, "/snippets/").authenticated()
-
                 .anyRequest().authenticated()
         }
             .oauth2ResourceServer { it.jwt(withDefaults()) }

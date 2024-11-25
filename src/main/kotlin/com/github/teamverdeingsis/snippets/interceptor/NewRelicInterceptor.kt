@@ -1,7 +1,6 @@
 package com.github.teamverdeingsis.snippets.interceptor
 
 import com.github.teamverdeingsis.snippets.server.CorrelationIdFilter
-import com.newrelic.api.agent.NewRelic
 import com.newrelic.api.agent.Trace
 import org.slf4j.MDC
 import org.springframework.http.HttpRequest
@@ -19,8 +18,7 @@ class NewRelicInterceptor : ClientHttpRequestInterceptor {
 
         val id = MDC.get(CorrelationIdFilter.CORRELATION_ID_KEY) ?: UUID.randomUUID().toString()
         request.headers.add(CorrelationIdFilter.CORRELATION_ID_HEADER, id)
-        println("BBB")
-        println(id)
+
         return execution.execute(request, body)
     }
 }

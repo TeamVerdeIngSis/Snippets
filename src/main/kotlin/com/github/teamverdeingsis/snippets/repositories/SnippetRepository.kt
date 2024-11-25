@@ -4,7 +4,6 @@ import com.github.teamverdeingsis.snippets.models.Snippet
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
-
 @Repository
 interface SnippetRepository : JpaRepository<Snippet, String> {
     fun findByUserId(author: String): List<Snippet>

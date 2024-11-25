@@ -1,8 +1,10 @@
+auth0:
+  audience: https://snippet-service-api
 spring:
   application:
     name: snippets-service
   datasource:
-    url: jdbc:postgresql://db_1:5432/snippets_db
+    url: jdbc:postgresql://localhost:5432/snippets_db
     username: snippets_user
     password: snippets_password
     driver-class-name: org.postgresql.Driver
@@ -19,10 +21,16 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://dev-ppmfishyt4u8fel3.us.auth0.com
-          client-id: H5JTujo2v0txqNT9uI43tzas8ssxTGNp
-          client-secret: ewadvcnj0rxmw0OtDeMPqx-15cK4TbdEXdHyc7dOxlC55TzMz2dbD36TgyRhAv-j
-          audience: https://snippet-service-api
+          issuer-uri: https://dev-ppmfishyt4u8fel3.us.auth0.com/
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+stream:
+  lintingKey: "linter_stream"
+  formattingKey: "formatter_stream"
+
 
 
 server:
