@@ -1,5 +1,6 @@
 auth0:
   audience: https://snippet-service-api
+
 spring:
   application:
     name: snippets-service

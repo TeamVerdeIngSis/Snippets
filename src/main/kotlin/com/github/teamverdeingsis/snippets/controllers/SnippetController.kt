@@ -92,6 +92,9 @@ class SnippetController(private val snippetService: SnippetService) {
     fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest,
                      @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<String> {
+        val token = authorization.removePrefix("Bearer ")
+        val decodedJWT = JWTParser.parse(token)
+        val userId = decodedJWT.jwtClaimsSet.subject
         val result = snippetService.shareSnippet(shareSnippetRequest)
         return ResponseEntity.ok(result)
     }
@@ -102,11 +105,7 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
-    @PostMapping("/format")
-    fun formatSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
-        val result = snippetService.formatSnippet(createSnippetRequest)
-        return ResponseEntity.ok(result)
-    }
+
 
     @PostMapping("/analyze")
     fun analyzeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
@@ -114,20 +113,6 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
-
-    @GetMapping("/getFormattingRules")
-    fun getFormattingRules(@RequestHeader("Authorization") authorization: String): ResponseEntity<List<Rule>> {
-        val userId = AuthorizationDecoder.decode(authorization)
-        return snippetService.getFormattingRules(userId)
-    }
-
-    @PostMapping("/modifyFormattingRule")
-    fun modifyFormattingRule(
-        @RequestBody rules: List<Rule>,
-        @RequestHeader("Authorization") authorization: String
-    ): ResponseEntity<List<Rule>> {
-        return ResponseEntity.ok(snippetService.modifyFormattingRule(authorization, rules))
-    }
 
 
 }

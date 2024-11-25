@@ -67,6 +67,7 @@ class SnippetService(
             return null
         }
         snippetRepository.delete(snippet)
+        println("Snippet with ID $id deleted")
         return assetService.deleteAsset(id, "snippets").body
     }
 
@@ -116,43 +117,9 @@ class SnippetService(
         return response.body ?: throw RuntimeException("Execution failed")
     }
 
-    fun formatSnippet(createSnippetRequest: CreateSnippetRequest): String {
-        val response = parseService.formatSnippet(createSnippetRequest)
-        return response.body ?: throw RuntimeException("Formatting failed")
-    }
-
     fun analyzeSnippet(createSnippetRequest: CreateSnippetRequest): String {
         val response = parseService.analyzeSnippet(createSnippetRequest)
         return response.body ?: throw RuntimeException("Analysis failed")
     }
-
-
-
-    fun getFormattingRules(userId: String): ResponseEntity<List<Rule>> {
-        if (!assetService.assetExists("format", userId)) {
-            return ResponseEntity.ok(RulesFactory().getDefaultFormattingRules())
-        }
-        val rulesString = assetService.getAsset(userId, "format")
-        val mapper = jacksonObjectMapper()
-        return ResponseEntity.ok(mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {}))
-    }
-    fun modifyFormattingRule(authorization: String, rules: List<Rule>): List<Rule> {
-        val userId = AuthorizationDecoder.decode(authorization)
-
-        println("PARAAAAAAAAAAA")
-        println(userId)
-        println(rules)
-        val mapper = jacksonObjectMapper()
-        val rulesString = mapper.writeValueAsString(rules)
-        if (assetService.assetExists("format", userId)) {
-            assetService.updateAsset(userId, "format", rulesString)
-        }
-        assetService.addAsset(rulesString, "format", userId)
-        return rules
-    }
-
-
-
-
 
 }
