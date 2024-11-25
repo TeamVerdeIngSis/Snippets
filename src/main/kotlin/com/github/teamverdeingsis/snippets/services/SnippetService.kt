@@ -10,9 +10,14 @@ import com.github.teamverdeingsis.snippets.models.Rule
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import com.nimbusds.jwt.JWTParser
+import org.springframework.http.HttpEntity
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import java.net.http.HttpHeaders
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -24,11 +29,8 @@ class SnippetService(
 ) {
 
     fun createSnippet(createSnippetRequest: CreateSnippetRequest, authorization: String): Snippet {
-        val token = authorization.removePrefix("Bearer ")
 
-        // Decodificar el token para obtener el userId
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
+        val userId = AuthorizationDecoder.decode(authorization)
 
         val snippet = Snippet(
             name = createSnippetRequest.name,
@@ -65,7 +67,6 @@ class SnippetService(
             return null
         }
         snippetRepository.delete(snippet)
-        println("Snippet with ID $id deleted")
         return assetService.deleteAsset(id, "snippets").body
     }
 
@@ -125,31 +126,7 @@ class SnippetService(
         return response.body ?: throw RuntimeException("Analysis failed")
     }
 
-    fun modifyLintingRules(userId: String, rules: List<Rule>): List<Rule> {
-        println("PARAAAAAAAAAAA")
-        println(userId)
-        println(rules)
-        val mapper = jacksonObjectMapper()
-        val rulesString = mapper.writeValueAsString(rules)
-        println("JEJEJEEJ")
-        if (assetService.assetExists("linting", userId)) {
-            println("che")
-            assetService.updateAsset(userId, "linting", rulesString)
-        }
-        println("cho")
-        assetService.addAsset(rulesString, "linting", userId)
-        println("chu")
-        return rules
-    }
 
-    fun getLintingRules(userId: String): List<Rule> {
-        if (!assetService.assetExists("linting", userId)) {
-            return RulesFactory().getDefaultLintingRules()
-        }
-        val rulesString = assetService.getAsset(userId, "linting")
-        val mapper = jacksonObjectMapper()
-        return mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
-    }
 
     fun getFormattingRules(userId: String): ResponseEntity<List<Rule>> {
         if (!assetService.assetExists("format", userId)) {
@@ -159,13 +136,14 @@ class SnippetService(
         val mapper = jacksonObjectMapper()
         return ResponseEntity.ok(mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {}))
     }
-    fun modifyFormattingRule(userId: String, rules: List<Rule>): List<Rule> {
+    fun modifyFormattingRule(authorization: String, rules: List<Rule>): List<Rule> {
+        val userId = AuthorizationDecoder.decode(authorization)
+
         println("PARAAAAAAAAAAA")
         println(userId)
         println(rules)
         val mapper = jacksonObjectMapper()
         val rulesString = mapper.writeValueAsString(rules)
-        println("JEJEJEEJ")
         if (assetService.assetExists("format", userId)) {
             assetService.updateAsset(userId, "format", rulesString)
         }
@@ -174,12 +152,7 @@ class SnippetService(
     }
 
 
-    fun updateConformance(snippetId:String,conformance: Conformance){
-        val snippet = snippetRepository.findById(snippetId)
-        if (snippet.isPresent){
-            val snippetToUpdate = snippet.get()
-            snippetToUpdate.conformance = conformance
-            snippetRepository.save(snippetToUpdate)
-        }
-    }
+
+
+
 }

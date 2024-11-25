@@ -1,6 +1,5 @@
 package com.github.teamverdeingsis.snippets.controllers
 
-import com.github.teamverdeingsis.snippets.models.Conformance
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,8 +15,10 @@ import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
 import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
+import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import com.github.teamverdeingsis.snippets.services.SnippetService
 import com.nimbusds.jwt.JWTParser
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.RequestHeader
 
 @RestController
@@ -51,7 +52,7 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(snippet)
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<String> {
         return ResponseEntity.ok(snippetService.delete(id))
     }
@@ -75,9 +76,7 @@ class SnippetController(private val snippetService: SnippetService) {
     fun getAllSnippetsByUser(
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Snippet>?> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
+        val userId = AuthorizationDecoder.decode(authorization)
         val snippets = snippetService.getAllSnippetsByUser(userId)
         return ResponseEntity.ok(snippets)
     }
@@ -93,9 +92,6 @@ class SnippetController(private val snippetService: SnippetService) {
     fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest,
                      @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<String> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
         val result = snippetService.shareSnippet(shareSnippetRequest)
         return ResponseEntity.ok(result)
     }
@@ -118,50 +114,20 @@ class SnippetController(private val snippetService: SnippetService) {
         return ResponseEntity.ok(result)
     }
 
-    @GetMapping("/getLintingRules")
-    fun getLintingRules(@RequestHeader("Authorization") authorization: String): ResponseEntity<List<Rule>> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
-
-        // Delegar la operación al servicio
-        return ResponseEntity.ok(snippetService.getLintingRules(userId))
-    }
 
     @GetMapping("/getFormattingRules")
     fun getFormattingRules(@RequestHeader("Authorization") authorization: String): ResponseEntity<List<Rule>> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
-        // Delegar la operación al servicio
+        val userId = AuthorizationDecoder.decode(authorization)
         return snippetService.getFormattingRules(userId)
     }
 
-    @PostMapping("/modifyLintingRules")
-    fun modifyLintingRules(
-        @RequestBody rules: List<Rule>,
-        @RequestHeader("Authorization") authorization: String
-    ): ResponseEntity<List<Rule>> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
-        return ResponseEntity.ok(snippetService.modifyLintingRules(userId, rules))
-    }
     @PostMapping("/modifyFormattingRule")
     fun modifyFormattingRule(
         @RequestBody rules: List<Rule>,
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Rule>> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
-        return ResponseEntity.ok(snippetService.modifyFormattingRule(userId, rules))
+        return ResponseEntity.ok(snippetService.modifyFormattingRule(authorization, rules))
     }
 
-    @PostMapping("/updateConformance")
-    fun updateConformance(@RequestBody request: UpdateConformanceRequest): ResponseEntity<String> {
-        snippetService.updateConformance(request.snippetId, request.conformance)
-        return ResponseEntity.ok("Conformance updated")
-    }
 
 }

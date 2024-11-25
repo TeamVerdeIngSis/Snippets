@@ -47,30 +47,30 @@ class RulesFactory {
         return listOf(
             Rule(
                 id = "1",
-                name = "indentation",
+                name = "space-before-colon",
                 isActive = true,
-                value = 3 // Representa la cantidad de espacios de indentación
             ),
             Rule(
                 id = "2",
-                name = "open-if-block-on-same-line",
+                name = "space-after-colon",
                 isActive = false
             ),
             Rule(
                 id = "3",
-                name = "max-line-length",
+                name = "space-around-equals",
                 isActive = true,
-                value = 100
             ),
             Rule(
                 id = "4",
-                name = "no-trailing-spaces",
-                isActive = false
+                name = "newline-before-println",
+                isActive = false,
+                value= 0
             ),
             Rule(
                 id = "5",
-                name = "no-multiple-empty-lines",
-                isActive = false
+                name = "indentation",
+                isActive = false,
+                value = 4
             )
         )
     }

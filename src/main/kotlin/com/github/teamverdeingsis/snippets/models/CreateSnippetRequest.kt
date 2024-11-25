@@ -1,6 +1,6 @@
 package com.github.teamverdeingsis.snippets.models
 
-import java.util.*
+import com.fasterxml.jackson.annotation.JsonProperty
 
 data class CreateSnippetRequest(
     val name: String,
@@ -48,10 +48,12 @@ data class Rule(
     val value: Any? = null
 )
 
+
 data class SnippetMessage(
-    val snippetId: String,
-    val userId: String
+    @JsonProperty("userId") val userId: String,
+    @JsonProperty("snippetId") val snippetId: String
 )
+
 
 data class UpdateConformanceRequest(
     val snippetId: String,
@@ -59,4 +61,7 @@ data class UpdateConformanceRequest(
 )
 
 
-
+data class FormatSnippetRequest(
+    val snippetId: String,
+    val content: String
+)

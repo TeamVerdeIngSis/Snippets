@@ -28,8 +28,10 @@ spring:
       port: ${REDIS_PORT:6379}
 
 stream:
-  linter:
-    key: "linter_stream"
+  lintingKey: "linter_stream"
+  formattingKey: "formatter_stream"
+
+
 
 server:
   port: 8083
