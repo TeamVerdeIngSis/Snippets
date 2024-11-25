@@ -2,7 +2,6 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
-import com.github.teamverdeingsis.snippets.models.FullSnippet
 import com.github.teamverdeingsis.snippets.models.RulesRequest
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
@@ -14,6 +13,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class SnippetService(
+    private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
@@ -64,21 +64,6 @@ class SnippetService(
     fun getSnippet(id: String): Snippet {
         val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
         return snippet
-    }
-
-    fun getSnippetWithContent(id: String): FullSnippet {
-        val content = assetService.getAsset(id, "snippets")
-        val snippet = snippetRepository.findById(id).orElseThrow { RuntimeException("Snippet with ID $id not found") }
-
-        return FullSnippet(
-            id = snippet.id,
-            name = snippet.name,
-            userId = snippet.userId,
-            conformance = snippet.conformance,
-            languageName = snippet.languageName,
-            languageExtension = snippet.languageExtension,
-            content = content?: ""
-        )
     }
 
     fun getAllSnippetsByUser(userId: String): List<Snippet>? {

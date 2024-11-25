@@ -19,11 +19,7 @@ services:
       NEW_RELIC_APP_NAME: 'snippet-searcher'
       NEW_RELIC_AGENT_ENABLED: true
       NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
-      AUTH_SERVER_URI: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
-      AUTH_CLIENT_ID: ${AUTH0_CLIENT_ID}
-      AUTH_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
-      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
-      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+
     depends_on:
       - snippets_db
 
@@ -48,7 +44,7 @@ services:
       NEW_RELIC_APP_NAME: "api"
       NEW_RELIC_AGENT_ENABLED: false
 
-  azuriteSnippets:
+  azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     hostname: azurite
     restart: always

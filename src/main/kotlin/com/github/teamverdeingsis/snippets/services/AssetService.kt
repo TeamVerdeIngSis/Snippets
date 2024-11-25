@@ -14,13 +14,13 @@ class AssetService(private val restTemplate: RestTemplate){
         if (assetExists(directory,id)) {
             throw RuntimeException("Asset with ID $id already exists")
         }
-        val assetServiceUrl = "http://localhost:8080/v1/asset/$dir/$snipId"
+        val assetServiceUrl = "http://assetServiceInfra:8080/v1/asset/$dir/$snipId"
 
         restTemplate.put(assetServiceUrl, content, String::class.java)
         return ResponseEntity.ok().body("Asset with ID $id added")
     }
     public fun updateAsset(assetId: String,directory: String, content: String): ResponseEntity<String> {
-        val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$assetId"
+        val assetServiceUrl = "http://assetServiceInfra:8080/v1/asset/$directory/$assetId"
 
         try {
             restTemplate.put(assetServiceUrl, content, String::class.java)
@@ -32,7 +32,7 @@ class AssetService(private val restTemplate: RestTemplate){
     }
 
     public fun deleteAsset(snippetId: String,directory: String): ResponseEntity<String> {
-        val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$snippetId"
+        val assetServiceUrl = "http://assetServiceInfra:8080/v1/asset/$directory/$snippetId"
         try {
             restTemplate.delete(assetServiceUrl)
             return ResponseEntity.ok().body("Asset with ID $snippetId deleted")
@@ -42,7 +42,7 @@ class AssetService(private val restTemplate: RestTemplate){
         }
     }
     public fun getAsset(snippetId: String,directory: String): String?{
-        val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$snippetId"
+        val assetServiceUrl = "http://assetServiceInfra:8080/v1/asset/$directory/$snippetId"
         try {
             return restTemplate.getForObject(assetServiceUrl, String::class.java)
         }
@@ -52,7 +52,7 @@ class AssetService(private val restTemplate: RestTemplate){
     }
     fun assetExists(directory: String,snippetId: String): Boolean {
 
-        val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$snippetId"
+        val assetServiceUrl = "http://assetServiceInfra:8080/v1/asset/$directory/$snippetId"
         try {
             restTemplate.getForObject(assetServiceUrl, String::class.java)
             return true
