@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class SnippetService(
+    private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,

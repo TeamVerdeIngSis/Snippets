@@ -14,9 +14,9 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
         return "Permissions for user $userId on snippet $snippetId"
     }
 
-    public fun getAllUserSnippets(userId: String): List<Permission>? {
+    public fun getAllUserSnippets(userId: String): List<Permission> {
 
-        val url = "http://permissionsServiceInfra:8082/api/permissions/user/$userId"
+        val url = "http://localhost:8082/api/permissions/user/$userId"
         val response = restTemplate.getForEntity(url, Array<Permission>::class.java)
         if(!response.statusCode.is2xxSuccessful){
 

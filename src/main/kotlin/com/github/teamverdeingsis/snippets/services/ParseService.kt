@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
-import org.springframework.web.client.getForObject
 
 @Service
 class ParseService(
