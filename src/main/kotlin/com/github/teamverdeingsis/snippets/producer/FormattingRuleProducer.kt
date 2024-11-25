@@ -7,19 +7,13 @@ import org.austral.ingsis.redis.RedisStreamProducer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
-import java.time.Duration
-
-interface ProductCreatedProducer {
-    suspend fun publishEvent(authorization: String, snippetId: String)
-}
 
 @Component
-class LinterRuleProducer(
-   @Value("\${stream.lintingKey}") streamKey: String,
+class FormattingRuleProducer(
+    @Value("\${stream.formattingKey}") streamKey: String,
     redis: ReactiveRedisTemplate<String, String>,
     private val objectMapper: ObjectMapper
 ): ProductCreatedProducer, RedisStreamProducer(streamKey, redis)  {
-
     override suspend fun publishEvent(authorization: String, snippetId: String) {
         println("Llegue al publisher con estos valores: token=$authorization, snippetId=$snippetId")
 
@@ -32,4 +26,6 @@ class LinterRuleProducer(
         emit(serializedMessage).awaitSingle()
         println("Mensaje enviado exitosamente")
     }
+
 }
+

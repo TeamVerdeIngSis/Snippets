@@ -11,8 +11,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
 import com.github.teamverdeingsis.snippets.models.SnippetMessage
 import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
+import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import com.nimbusds.jwt.JWTParser
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.core.ParameterizedTypeReference
@@ -23,7 +25,7 @@ import org.springframework.web.client.getForObject
 class ParseService(
     private val restTemplate: RestTemplate
 ) {
-    private val parseServiceUrl = "http://localhost:8089/v1"
+    private val parseServiceUrl = "http://localhost:8081/v1"
     private lateinit var snippetService: SnippetService
 
     fun setSnippetService(snippetService: SnippetService) {
@@ -90,10 +92,10 @@ class ParseService(
     }
 
     fun lintSnippet(snippetID: String, authorization: String) {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject // Asumiendo que el userId está en "sub"
-        val url = "http://localhost:8089/api/parser/lint"
+
+
+        val userId = AuthorizationDecoder.decode(authorization)
+        val url = "http://localhost:8081/api/parser/lint"
         val response = restTemplate.postForObject(url, SnippetMessage(snippetID, userId), String::class.java)
 
 
@@ -106,7 +108,7 @@ class ParseService(
             Conformance.COMPLIANT
         }
 
-        val updateUrl = "http://localhost:8083/snippets/updateConformance"
+        val updateUrl = "http://localhost:8083/updateConformance"
         val requestBody = UpdateConformanceRequest(snippetID, conformance)
         val headers = HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
@@ -115,6 +117,34 @@ class ParseService(
         val request = HttpEntity(requestBody, headers)
         restTemplate.postForObject(updateUrl, request, String::class.java)
     }
+
+    fun formatSnippet(request: FormatSnippetRequest, authorization: String): String? {
+        println("Starting formatSnippet function")
+
+        val userId = AuthorizationDecoder.decode(authorization)
+        println("Decoded userId: $userId")
+
+        // Construye el cuerpo de la solicitud correctamente
+        val requestBody = mapOf(
+            "snippetId" to request.snippetId,
+            "userId" to userId,
+            "content" to request.content
+        )
+        println("Request body created: $requestBody")
+
+        val url = "http://localhost:8081/api/parser/format"
+        println("URL set: $url")
+
+        return try {
+            val response = restTemplate.postForObject(url, requestBody, String::class.java)
+            println("Response received: $response")
+            response
+        } catch (e: Exception) {
+            println("Error formatting snippet: ${e.message}")
+            null
+        }
+    }
+
 
     fun test(
         token: String,

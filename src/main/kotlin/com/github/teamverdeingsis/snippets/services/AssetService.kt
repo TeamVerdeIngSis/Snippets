@@ -8,7 +8,6 @@ import org.springframework.web.client.RestTemplate
 class AssetService(private val restTemplate: RestTemplate) {
     public fun addAsset(content: String, directory: String, id: String): ResponseEntity<String> {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$id"
-        println("Content received: $content")
         restTemplate.put(assetServiceUrl, content, String::class.java)
         return ResponseEntity.ok().body("Asset with ID $id added")
     }
