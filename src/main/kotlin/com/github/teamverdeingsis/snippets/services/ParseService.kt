@@ -153,11 +153,13 @@ class ParseService(
         outputs: List<String>
     ): List<String> {
         val snippet = snippetService.getSnippet(snippetId)
-        val testDTO = TestParseDTO(
-            snippetId = snippet.id.toLong(),
-            inputs = inputs,
-            outputs = outputs
-        )
+        val testDTO = snippet?.id?.let {
+            TestParseDTO(
+                snippetId = it.toLong(),
+                inputs = inputs,
+                outputs = outputs
+            )
+        }
 
         val headers = getJsonAuthorizedHeaders(token)
         val entity = HttpEntity(testDTO, headers)
