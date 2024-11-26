@@ -1,45 +1,42 @@
-# Ignorar carpetas y archivos generados por Gradle
-/build/
-.gradle/
-out/
-*.class
-*.jar
-*.war
-*.ear
+HELP.md
+.gradle
+gradle/gradle.properties
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+.env
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
-# IntelliJ IDEA
-.idea/
+### IntelliJ IDEA ###
+.idea
+*.iws
 *.iml
 *.ipr
-*.iws
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
 
-# Logs y archivos temporales
-*.log
-/tmp/
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
-# Archivos de configuración local
-.env
+### VS Code ###
+.vscode/
+
+### Kotlin ###
+.kotlin
 gradle.properties
-
-# Archivos de Docker
-.docker/
-docker-compose.override.yml
-
-# Archivos de caché y configuración de sistemas operativos
-.DS_Store
-Thumbs.db
-
-# Archivos generados por el sistema de control de versiones
-*.swp
-*.swo
-*.bak
-
-# Ignorar los volúmenes de Docker si son montados localmente
-db_data/
-blob/
-
-# Archivo de cobertura de pruebas
-jacoco.exec
-
-# Archivos de salida específicos de Kotlin/Java
-*.kotlin_module
