@@ -1,8 +1,7 @@
 package com.github.teamverdeingsis.snippets.services
 
-import com.github.teamverdeingsis.snippets.models.Conformance
-
 import TestParseDTO
+import com.github.teamverdeingsis.snippets.models.Conformance
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpHeaders
@@ -15,34 +14,31 @@ import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
 import com.github.teamverdeingsis.snippets.models.SnippetMessage
 import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
-import com.nimbusds.jwt.JWTParser
-import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.util.MultiValueMap
-import org.springframework.web.client.getForObject
 
 @Service
 class ParseService(
     private val restTemplate: RestTemplate
 ) {
-    private val parseServiceUrl = "http://localhost:8081/v1"
+
     private lateinit var snippetService: SnippetService
 
     fun setSnippetService(snippetService: SnippetService) {
         this.snippetService = snippetService
     }
-
+    private val parseServiceUrl = "http://localhost:8081/v1"
 
     fun hey(): String? {
         val url = "http://localhost:8081/api/parser/hola"
-        println("llegue a la funcion")
+
         val response = restTemplate.getForObject(url, String::class.java)
-        if (response == null){
+        if (response == null) {
             println("nada")
         }
-        println("Response: $response")
         return response
     }
+
     // funcion para validar un snippet
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val headers = HttpHeaders().apply {
@@ -60,7 +56,6 @@ class ParseService(
         val headers = HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
         }
-
         val request = HttpEntity(createSnippetRequest, headers)
         val url = "$parseServiceUrl/execute"
 

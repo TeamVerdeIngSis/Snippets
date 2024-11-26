@@ -1,11 +1,11 @@
-package com.github.teamverdeingsis.snippets.services;
+package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Test
 import com.github.teamverdeingsis.snippets.models.TestDTO
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.repositories.TestRepo
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service
 
 @Service
 class TestServiceUi(
@@ -14,7 +14,7 @@ class TestServiceUi(
     private val parseService: ParseService,
 ) {
 
-    fun getTestsBySnippetId(snippetId: String): List<Test> {
+    fun getTestsBySnippetId(token: String, snippetId: String): List<Test> {
         return testRepo.findTestBySnippetId(snippetId)
     }
 
@@ -23,18 +23,18 @@ class TestServiceUi(
             .orElseThrow { IllegalArgumentException("Test not found") }
     }
 
-    fun addTestToSnippet(snippetId: String, name: String, input: List<String>, output: List<String>): TestDTO {
+    fun addTestToSnippet(token: String, snippetId: String, name: String, input: List<String>, output: List<String>): TestDTO {
         println("Buscando snippet con ID: $snippetId")
         val snippet = snippetRepository.findById(snippetId)
             .orElseThrow { IllegalArgumentException("Snippet not found") }
         println("Snippet encontrado: $snippet")
         val test = Test(name = name, input = input, output = output, snippet = snippet)
+        println("Guardando test: $test")
         testRepo.save(test)
         return TestDTO(test)
     }
 
-
-    fun deleteTestById(id: String) {
+    fun deleteTestById(token: String, id: String) {
         testRepo.deleteById(id)
     }
 
@@ -50,7 +50,7 @@ class TestServiceUi(
     }
 
     fun executeAllSnippetTests(token: String, snippetId: String): Map<String, List<String>> {
-        val tests = getTestsBySnippetId(snippetId)
+        val tests = getTestsBySnippetId(token, snippetId)
         return tests.associate { test ->
             val errors = parseService.test(token, test.snippet.id, test.input, test.output)
             test.name to errors

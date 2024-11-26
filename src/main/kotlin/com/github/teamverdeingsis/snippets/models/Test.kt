@@ -11,12 +11,12 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
+import java.util.UUID
 
 @Entity
 data class Test(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    val id: String = "",
+    val id: String = UUID.randomUUID().toString(), // Generar UUID para el ID
     val name: String = "",
 
     @ElementCollection
@@ -34,5 +34,5 @@ data class Test(
     @JsonBackReference
     val snippet: Snippet
 ) {
-    constructor() : this("", "", listOf(), listOf(), Snippet())
+    constructor() : this(UUID.randomUUID().toString(), "", listOf(), listOf(), Snippet()) // Ajustar constructor también
 }

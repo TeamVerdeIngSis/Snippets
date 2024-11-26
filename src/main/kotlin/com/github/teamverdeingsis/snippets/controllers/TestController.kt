@@ -12,27 +12,34 @@ class TestController(
 ) {
 
     @GetMapping("/snippet/{id}")
-    fun getTestsBySnippetId(@PathVariable id: String): ResponseEntity<List<TestDTO>> {
-        val test = testService.getTestsBySnippetId(id)
+    fun getTestsBySnippetId(
+        @RequestHeader("Authorization") token: String,
+        @PathVariable id: String,
+    ): ResponseEntity<List<TestDTO>> {
+        val test = testService.getTestsBySnippetId(token, id)
         return ResponseEntity.ok(test.map { TestDTO(it) })
     }
 
     @PostMapping("/snippet/{id}")
     fun addTestToSnippet(
+        @RequestHeader("Authorization") token: String,
         @PathVariable id: String,
         @RequestBody testBody: Map<String, Any>
     ): ResponseEntity<TestDTO> {
+        println("Adding test to snippet with ID: $id")
         val name = testBody["name"] as? String ?: return ResponseEntity.badRequest().build()
         val input = testBody["input"] as? List<String> ?: emptyList()
         val output = testBody["output"] as? List<String> ?: emptyList()
 
-        val testDTO = testService.addTestToSnippet(id, name, input, output)
+        val testDTO = testService.addTestToSnippet(token, id, name, input, output)
         return ResponseEntity.ok(testDTO)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteTestById(@PathVariable id: String): ResponseEntity<Void> {
-        testService.deleteTestById(id)
+    fun deleteTestById(
+        @RequestHeader ("Authorization") token: String,
+        @PathVariable id: String): ResponseEntity<Void> {
+        testService.deleteTestById(token, id)
         return ResponseEntity.noContent().build()
     }
 
