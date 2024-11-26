@@ -3,6 +3,7 @@ version: '3.8'
 services:
 
   snippets_api:
+    container_name: "snippets-api"
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,31 +16,40 @@ services:
       POSTGRES_USER: snippets_user
       POSTGRES_PASSWORD: snippets_password
       POSTGRES_PORT: 5432
+
       NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
       NEW_RELIC_APP_NAME: 'snippet-searcher'
       NEW_RELIC_AGENT_ENABLED: true
       NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
+
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
       AUTH_SERVER_URI: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
       AUTH_CLIENT_ID: ${AUTH0_CLIENT_ID}
       AUTH_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
       spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
-      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     depends_on:
       - snippets_db
 
   snippets_db:
+    container_name: "snippet_db"
     image: postgres:15
+    platform: linux/amd64
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: snippets_db
       POSTGRES_USER: snippets_user
       POSTGRES_PASSWORD: snippets_password
-    ports:
-      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 
   asset_service:
+    container_name: "asset-service"
     image: ghcr.io/austral-ingsis/snippet-asset-service:latest
+    platform: linux/amd64
     ports:
       - "8080:8080"
     environment:
@@ -49,6 +59,7 @@ services:
       NEW_RELIC_AGENT_ENABLED: false
 
   azuriteSnippets:
+    container_name: "azurite-snippets"
     image: mcr.microsoft.com/azure-storage/azurite
     hostname: azurite
     restart: always
@@ -59,18 +70,11 @@ services:
     volumes:
       - blob:/workspace
 
-  parseservice: # Cambié el nombre para evitar subrayados
-    image: ghcr.io/teamverdeingsis/parse:latest
-    ports:
-      - "8081:8081"
-    environment:
-      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-      NEW_RELIC_APP_NAME: 'parseService2'
-      NEW_RELIC_AGENT_ENABLED: true
-      NEW_RELIC_LOG_EXTENSION_ADD_MDC: true
+
   redis:
     image: redis:6-alpine
     container_name: redis
+    platform: linux/amd64
     ports:
       - "6379:6379"
 volumes:
