@@ -12,6 +12,7 @@ class TestServiceUi(
     private val testRepo: TestRepo,
     private val snippetRepository: SnippetRepository,
     private val parseService: ParseService,
+    private val snippetService: SnippetService
 ) {
 
     fun getTestsBySnippetId(token: String, snippetId: String): List<Test> {
@@ -42,7 +43,8 @@ class TestServiceUi(
 
     fun executeTest(token: String, testId: String): ResponseEntity<String> {
         val test = getTestById(testId)
-        val results = parseService.test(token, test.snippet.id, test.input, test.output)
+        val snippet = snippetService.getSnippet(test.snippet.id)
+        val results = parseService.test(token, test.snippet.id, test.input, test.output,snippet)
 
         return if (results.isEmpty()) {
             ResponseEntity.ok("test passed")
@@ -53,8 +55,9 @@ class TestServiceUi(
 
     fun executeAllSnippetTests(token: String, snippetId: String): Map<String, List<String>> {
         val tests = getTestsBySnippetId(token, snippetId)
+        val snippet = snippetService.getSnippet(snippetId)
         return tests.associate { test ->
-            val errors = parseService.test(token, test.snippet.id, test.input, test.output)
+            val errors = parseService.test(token, test.snippet.id, test.input, test.output,snippet)
             test.name to errors
         }
     }

@@ -8,18 +8,21 @@ import com.github.teamverdeingsis.snippets.models.Rule
 import com.github.teamverdeingsis.snippets.producer.LinterRuleProducer
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
-
 import org.springframework.stereotype.Service
 
 @Service
-class LintingRulesService(private val assetService: AssetService, private val snippetRepository: SnippetRepository,private val snippetService: SnippetService, private val producer: LinterRuleProducer) {
+class LintingRulesService(
+    private val assetService: AssetService,
+    private val snippetRepository: SnippetRepository,
+    private val snippetService: SnippetService,
+    private val producer: LinterRuleProducer
+) {
 
     suspend fun modifyLintingRules(authorization: String, rules: List<Rule>): List<Rule> {
         println("voy a modificar las reglas")
         val userId = AuthorizationDecoder.decode(authorization)
 
         val mapper = jacksonObjectMapper()
-
         val rulesString = mapper.writeValueAsString(rules)
 
         if (assetService.assetExists("linting", userId)) {
@@ -42,9 +45,10 @@ class LintingRulesService(private val assetService: AssetService, private val sn
         val mapper = jacksonObjectMapper()
         return mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
     }
-    fun updateConformance(snippetId:String,conformance: Conformance){
+
+    fun updateConformance(snippetId: String, conformance: Conformance) {
         val snippet = snippetRepository.findById(snippetId)
-        if (snippet.isPresent){
+        if (snippet.isPresent) {
             val snippetToUpdate = snippet.get()
             snippetToUpdate.conformance = conformance
             snippetRepository.save(snippetToUpdate)
@@ -54,11 +58,13 @@ class LintingRulesService(private val assetService: AssetService, private val sn
     private suspend fun updateAllSnippetsStatus(authorization: String) {
         println("voy a actualizar todos los snippets a pending")
         val userId = AuthorizationDecoder.decode(authorization)
-        println("voy a publicar")
-        snippetService.getAllSnippetsByUser(userId)?.forEach {
-            updateConformance(it.id, Conformance.PENDING)
-            producer.publishEvent(authorization, it.id) }
+        val username = AuthorizationDecoder.decodeUsername(authorization)
 
+        println("voy a publicar")
+        snippetService.getAllSnippetsByUser(userId, username)?.forEach { snippet ->
+            updateConformance(snippet.snippet.id, Conformance.PENDING)
+            producer.publishEvent(authorization, snippet.snippet.id)
+        }
         println("publiqué")
     }
 }
