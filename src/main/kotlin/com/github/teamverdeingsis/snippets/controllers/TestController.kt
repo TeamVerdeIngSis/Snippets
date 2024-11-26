@@ -3,23 +3,16 @@ package com.github.teamverdeingsis.snippets.controllers
 import com.github.teamverdeingsis.snippets.models.TestDTO
 import com.github.teamverdeingsis.snippets.services.TestServiceUi
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/test")
-class TestController (
-    private val testService : TestServiceUi
-    ){
+class TestController(
+    private val testService: TestServiceUi
+) {
 
     @GetMapping("/snippet/{id}")
-    fun getTestsBySnippetId(@PathVariable id: String): ResponseEntity<List<TestDTO>>{
+    fun getTestsBySnippetId(@PathVariable id: String): ResponseEntity<List<TestDTO>> {
         val test = testService.getTestsBySnippetId(id)
         return ResponseEntity.ok(test.map { TestDTO(it) })
     }
@@ -29,12 +22,11 @@ class TestController (
         @PathVariable id: String,
         @RequestBody testBody: Map<String, Any>
     ): ResponseEntity<TestDTO> {
-        val testDTO = testService.addTestToSnippet(
-            id,
-            name = testBody["name"] as? String ?: "",
-            input = testBody["input"] as? List<String> ?: listOf(),
-            output = testBody["output"] as? List<String> ?: listOf()
-        )
+        val name = testBody["name"] as? String ?: return ResponseEntity.badRequest().build()
+        val input = testBody["input"] as? List<String> ?: emptyList()
+        val output = testBody["output"] as? List<String> ?: emptyList()
+
+        val testDTO = testService.addTestToSnippet(id, name, input, output)
         return ResponseEntity.ok(testDTO)
     }
 
@@ -45,7 +37,10 @@ class TestController (
     }
 
     @PostMapping("/{id}/run")
-    fun runTest(@RequestHeader("Authorization") token: String, @PathVariable id: String): ResponseEntity<String> {
+    fun runTest(
+        @RequestHeader("Authorization") token: String,
+        @PathVariable id: String
+    ): ResponseEntity<String> {
         return testService.executeTest(token, id)
     }
 
@@ -58,4 +53,3 @@ class TestController (
         return ResponseEntity.ok(testResults)
     }
 }
-
