@@ -22,16 +22,13 @@ import kotlin.jvm.optionals.getOrNull
 
 @Service
 class SnippetService(
-    private val restTemplate: RestTemplate,
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
-) {
-    private lateinit var parseService: ParseService
+    private val parseService: ParseService
 
-    fun setParseService(parseService: ParseService) {
-        this.parseService = parseService
-    }
+) {
+
 
     fun createSnippet(createSnippetRequest: CreateSnippetRequest, authorization: String): Snippet {
 

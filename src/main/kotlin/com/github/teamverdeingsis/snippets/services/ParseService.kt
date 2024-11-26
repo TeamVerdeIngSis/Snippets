@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
+import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.models.SnippetMessage
 import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
@@ -19,8 +20,7 @@ import org.springframework.util.MultiValueMap
 
 @Service
 class ParseService(
-    private val restTemplate: RestTemplate,
-    private val snippetService: SnippetService
+    private val restTemplate: RestTemplate
 ) {
 
     private val parseServiceUrl = "http://localhost:8081/v1"
@@ -141,9 +141,9 @@ class ParseService(
         token: String,
         snippetId: String,
         inputs: List<String>,
-        outputs: List<String>
+        outputs: List<String>,
+        snippet: Snippet?
     ): List<String> {
-        val snippet = snippetService.getSnippet(snippetId) // Ya no hay problemas de inicialización
         val testDTO = snippet?.id?.let {
             TestParseDTO(
                 version = "1.1",
