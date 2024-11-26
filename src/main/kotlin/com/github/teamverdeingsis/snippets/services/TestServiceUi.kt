@@ -45,9 +45,9 @@ class TestServiceUi(
         val results = parseService.test(token, test.snippet.id, test.input, test.output)
 
         return if (results.isEmpty()) {
-            ResponseEntity.ok("success")
+            ResponseEntity.ok("test passed")
         } else {
-            ResponseEntity.ok("fail")
+            ResponseEntity.ok("test failed")
         }
     }
 

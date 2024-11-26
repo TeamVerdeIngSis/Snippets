@@ -19,14 +19,10 @@ import org.springframework.util.MultiValueMap
 
 @Service
 class ParseService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val snippetService: SnippetService
 ) {
 
-    private lateinit var snippetService: SnippetService
-
-    fun setSnippetService(snippetService: SnippetService) {
-        this.snippetService = snippetService
-    }
     private val parseServiceUrl = "http://localhost:8081/v1"
 
     fun hey(): String? {
@@ -147,10 +143,11 @@ class ParseService(
         inputs: List<String>,
         outputs: List<String>
     ): List<String> {
-        val snippet = snippetService.getSnippet(snippetId)
+        val snippet = snippetService.getSnippet(snippetId) // Ya no hay problemas de inicialización
         val testDTO = snippet?.id?.let {
             TestParseDTO(
-                snippetId = it.toLong(),
+                version = "1.1",
+                snippetId = it,
                 inputs = inputs,
                 outputs = outputs
             )
@@ -160,7 +157,7 @@ class ParseService(
         val entity = HttpEntity(testDTO, headers)
 
         val response = restTemplate.exchange(
-            "http://parse:8089/api/parser/test",
+            "http://localhost:8089/api/parser/test",
             HttpMethod.POST,
             entity,
             object : ParameterizedTypeReference<List<String>>() {}
@@ -168,11 +165,7 @@ class ParseService(
 
         return response.body ?: emptyList()
     }
-    private fun getJsonHeaders(): MultiValueMap<String, String>? {
-        return HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_JSON
-        }
-    }
+
     private fun getJsonAuthorizedHeaders(token: String): MultiValueMap<String, String> {
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
