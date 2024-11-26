@@ -35,7 +35,9 @@ class TestServiceUi(
     }
 
     fun deleteTestById(token: String, id: String) {
+        println("deleting test with id: $id")
         testRepo.deleteById(id)
+        println("test deleted")
     }
 
     fun executeTest(token: String, testId: String): ResponseEntity<String> {
