@@ -16,23 +16,24 @@ import java.util.UUID
 @Entity
 data class Test(
     @Id
-    val id: String = UUID.randomUUID().toString(), // Generar UUID para el ID
+    val id: String = UUID.randomUUID().toString(),
     val name: String = "",
 
     @ElementCollection
     @CollectionTable(name = "test_input", joinColumns = [JoinColumn(name = "test_id")])
     @Column(name = "input_value")
-    val input: List<String> = listOf(),
+    var input: MutableList<String> = mutableListOf(), // Cambiar a MutableList
 
     @ElementCollection
     @CollectionTable(name = "test_output", joinColumns = [JoinColumn(name = "test_id")])
     @Column(name = "output_value")
-    val output: List<String> = listOf(),
+    var output: MutableList<String> = mutableListOf(), // Cambiar a MutableList
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "snippet_id", nullable = false)
     @JsonBackReference
     val snippet: Snippet
-) {
-    constructor() : this(UUID.randomUUID().toString(), "", listOf(), listOf(), Snippet()) // Ajustar constructor también
+)
+ {
+    constructor() : this(UUID.randomUUID().toString(), "", mutableListOf(), mutableListOf(), Snippet()) // Ajustar constructor también
 }

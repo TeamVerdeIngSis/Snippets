@@ -49,9 +49,11 @@ class TestController(
         @PathVariable testId: String
     ): ResponseEntity<String> {
         println("Received request to run test with ID: $testId")
-        println("Authorization header: $token")
+        val test = testService.getTestById(testId)
+        println("Test data retrieved: $test")
         return testService.executeTest(token, testId)
     }
+
 
 
     @PostMapping("/{snippetId}/all")

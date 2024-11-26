@@ -24,13 +24,27 @@ class TestServiceUi(
             .orElseThrow { IllegalArgumentException("Test not found") }
     }
 
-    fun addTestToSnippet(token: String, snippetId: String, name: String, input: List<String>, output: List<String>): TestDTO {
-        println("Buscando snippet con ID: $snippetId")
+    fun addTestToSnippet(
+        token: String,
+        snippetId: String,
+        name: String,
+        inputs: List<String>,
+        outputs: List<String>
+    ): TestDTO {
+        println("Inputs recibidos: $inputs")
+        println("Outputs recibidos: $outputs")
+
         val snippet = snippetRepository.findById(snippetId)
             .orElseThrow { IllegalArgumentException("Snippet not found") }
-        println("Snippet encontrado: $snippet")
-        val test = Test(name = name, input = input, output = output, snippet = snippet)
-        println("Guardando test: $test")
+
+        val test = Test(
+            name = name,
+            input = inputs.toMutableList(), // Convertir a MutableList
+            output = outputs.toMutableList(), // Convertir a MutableList
+            snippet = snippet
+        )
+
+        println("Test antes de guardar: $test")
         testRepo.save(test)
         return TestDTO(test)
     }
