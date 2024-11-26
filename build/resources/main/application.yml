@@ -1,6 +1,5 @@
 auth0:
   audience: https://snippet-service-api
-
 spring:
   application:
     name: snippets-service
@@ -15,7 +14,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: update
-
   sql:
     init:
       platform: postgres
