@@ -5,8 +5,8 @@ HELP.md
 # Gradle
 .gradle
 gradle.properties
-*.jar
 !gradle/wrapper/gradle-wrapper.jar
+*.jar
 
 # Carpeta de compilación
 build/
