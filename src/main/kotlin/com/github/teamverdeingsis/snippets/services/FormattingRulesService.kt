@@ -69,10 +69,11 @@ class FormattingRulesService(
     private suspend fun updateFormatOfSnippets(authorization: String) {
         println("Actualizando el formato de todos los snippets")
         val userId = AuthorizationDecoder.decode(authorization)
+        val username = AuthorizationDecoder.decodeUsername(authorization)
 
-        snippetService.getAllSnippetsByUser(userId)?.forEach { snippet ->
-            println("Publicando evento para formatear el snippet con ID: ${snippet.id}")
-            producer.publishEvent(authorization, snippet.id)
+        snippetService.getAllSnippetsByUser(userId, username)?.forEach { snippet ->
+            println("Publicando evento para formatear el snippet con ID: ${snippet.snippet.id}")
+            producer.publishEvent(authorization, snippet.snippet.id)
         }
         println("Eventos publicados exitosamente")
     }

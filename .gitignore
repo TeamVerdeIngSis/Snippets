@@ -44,5 +44,3 @@ jacoco.exec
 
 # Archivos de salida específicos de Kotlin/Java
 *.kotlin_module
-
-.env

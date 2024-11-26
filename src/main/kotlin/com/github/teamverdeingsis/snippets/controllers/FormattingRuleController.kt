@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class FormattingRuleController(private val formattingRulesService: FormattingRulesService) {
 
-
     @GetMapping("/getFormattingRules")
     fun getFormattingRules(@RequestHeader("Authorization") authorization: String): ResponseEntity<List<Rule>> {
 
@@ -42,6 +41,4 @@ class FormattingRuleController(private val formattingRulesService: FormattingRul
         val formattedCode = formattingRulesService.formatSnippet(request, authorization)
         return ResponseEntity.ok(formattedCode)
     }
-
-
 }

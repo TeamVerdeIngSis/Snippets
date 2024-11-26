@@ -20,6 +20,9 @@ jobs:
           java-version: 21
           distribution: 'adopt'
 
+      - name: Set Execute Permissions
+        run: chmod +x ./gradlew
+
       - name: Run Build
         run: ./gradlew build
         env:
