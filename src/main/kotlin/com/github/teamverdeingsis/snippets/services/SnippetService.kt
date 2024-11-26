@@ -95,18 +95,23 @@ class SnippetService(
         )
     }
 
-    fun getAllSnippetsByUser(userId: String): List<Snippet>? {
+    fun getAllSnippetsByUser(userId: String, username: String): List<SnippetWithAuthor>? {
         val snippetsID = permissionsService.getAllUserSnippets(userId)
-        val snippets = ArrayList<Snippet>()
+        val snippets = ArrayList<SnippetWithAuthor>()
         if (snippetsID == null) {
             return emptyList()
         }
         for (id in snippetsID) {
             val snippet = getSnippet(id.snippetId)
-            snippets.add(snippet ?: continue)
+            snippets.add(SnippetWithAuthor(snippet ?: continue, username))
         }
         return snippets
     }
+
+    data class SnippetWithAuthor(
+        val snippet: Snippet,
+        val author: String
+    )
 
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
         val response = parseService.validateSnippet(createSnippetRequest)
