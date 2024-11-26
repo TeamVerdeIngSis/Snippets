@@ -1,0 +1,48 @@
+# Ignorar carpetas y archivos generados por Gradle
+/build/
+.gradle/
+out/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.ear
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs y archivos temporales
+*.log
+/tmp/
+
+# Archivos de configuración local
+.env
+gradle.properties
+
+# Archivos de Docker
+.docker/
+docker-compose.override.yml
+
+# Archivos de caché y configuración de sistemas operativos
+.DS_Store
+Thumbs.db
+
+# Archivos generados por el sistema de control de versiones
+*.swp
+*.swo
+*.bak
+
+# Ignorar los volúmenes de Docker si son montados localmente
+db_data/
+blob/
+
+# Archivo de cobertura de pruebas
+jacoco.exec
+
+# Archivos de salida específicos de Kotlin/Java
+*.kotlin_module
+
+.env
