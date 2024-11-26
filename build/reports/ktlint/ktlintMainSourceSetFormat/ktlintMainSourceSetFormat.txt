@@ -1,3 +1,0 @@
-[90mC:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\interceptor\[0mNewRelicInterceptor.kt[90m:[0m10[90m:47:[0m Wildcard import
-[90mC:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\models\[0mCreateSnippetRequest.kt[90m:[0m3[90m:1:[0m Wildcard import
-[90mC:\Users\pablo\projects\ingSis\snippetSearcher\Snippets\src\main\kotlin\com\github\teamverdeingsis\snippets\services\[0mPermissionsSerivce.kt[90m:[0m7[90m:1:[0m Wildcard import

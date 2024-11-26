@@ -39,8 +39,8 @@ class TestServiceUi(
 
         val test = Test(
             name = name,
-            input = inputs.toMutableList(), // Convertir a MutableList
-            output = outputs.toMutableList(), // Convertir a MutableList
+            input = inputs.toMutableList(),
+            output = outputs.toMutableList(),
             snippet = snippet
         )
 
