@@ -1,5 +1,6 @@
 package com.github.teamverdeingsis.snippets.services
 
+import TestParseDTO
 import com.github.teamverdeingsis.snippets.models.Conformance
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -13,10 +14,13 @@ import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
 import com.github.teamverdeingsis.snippets.models.SnippetMessage
 import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.util.MultiValueMap
 
 @Service
 class ParseService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val snippetService: SnippetService
 ) {
 
     private val parseServiceUrl = "http://localhost:8081/v1"
@@ -80,7 +84,7 @@ class ParseService(
 
     fun lintSnippet(snippetID: String, authorization: String) {
 
-        
+
         val userId = AuthorizationDecoder.decode(authorization)
         val url = "http://localhost:8081/api/parser/lint"
         val response = restTemplate.postForObject(url, SnippetMessage(snippetID, userId), String::class.java)
@@ -133,4 +137,39 @@ class ParseService(
     }
 
 
+    fun test(
+        token: String,
+        snippetId: String,
+        inputs: List<String>,
+        outputs: List<String>
+    ): List<String> {
+        val snippet = snippetService.getSnippet(snippetId) // Ya no hay problemas de inicialización
+        val testDTO = snippet?.id?.let {
+            TestParseDTO(
+                version = "1.1",
+                snippetId = it,
+                inputs = inputs,
+                outputs = outputs
+            )
+        }
+
+        val headers = getJsonAuthorizedHeaders(token)
+        val entity = HttpEntity(testDTO, headers)
+
+        val response = restTemplate.exchange(
+            "http://localhost:8089/api/parser/test",
+            HttpMethod.POST,
+            entity,
+            object : ParameterizedTypeReference<List<String>>() {}
+        )
+
+        return response.body ?: emptyList()
+    }
+
+    private fun getJsonAuthorizedHeaders(token: String): MultiValueMap<String, String> {
+        return HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+            set("Authorization", token)
+        }
+    }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 @Service
 class LintingRulesService(private val assetService: AssetService, private val snippetRepository: SnippetRepository,private val snippetService: SnippetService, private val producer: LinterRuleProducer) {
 
-
     suspend fun modifyLintingRules(authorization: String, rules: List<Rule>): List<Rule> {
         println("voy a modificar las reglas")
         val userId = AuthorizationDecoder.decode(authorization)

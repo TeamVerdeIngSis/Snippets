@@ -106,13 +106,10 @@ class SnippetController(private val snippetService: SnippetService) {
     }
 
 
-
     @PostMapping("/analyze")
     fun analyzeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.analyzeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
-
-
 
 }

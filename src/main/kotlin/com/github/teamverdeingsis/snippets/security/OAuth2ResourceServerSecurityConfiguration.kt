@@ -26,28 +26,25 @@ class OAuth2ResourceServerSecurityConfiguration(
     @Value("\${auth0.audience}") val audience: String,
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String
 ) {
+
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.authorizeHttpRequests {
-            it
-                .requestMatchers(POST, "/snippets/create").authenticated()
-                .requestMatchers(POST, "/snippets/delete/{id}").authenticated()
-                .requestMatchers(PUT, "/snippets/{id}").authenticated()
-                .requestMatchers(GET, "/snippets/").authenticated()
-                .anyRequest().authenticated()
-        }
-            .oauth2ResourceServer { it.jwt(withDefaults()) }
+        http.csrf { it.disable() }
             .cors { }
-            .csrf { it.disable() }
+            .authorizeHttpRequests {
+                it.anyRequest().permitAll() // Permitir todas las solicitudes
+            }
         return http.build()
     }
+
 
     @Bean
     fun jwtDecoder(): JwtDecoder {
         val jwtDecoder = NimbusJwtDecoder.withIssuerLocation(issuer).build()
         val audienceValidator: OAuth2TokenValidator<Jwt> = AudienceValidator(audience)
         val withIssuer: OAuth2TokenValidator<Jwt> = JwtValidators.createDefaultWithIssuer(issuer)
-        val withAudience: OAuth2TokenValidator<Jwt> = DelegatingOAuth2TokenValidator(withIssuer, audienceValidator)
+        val withAudience: OAuth2TokenValidator<Jwt> =
+            DelegatingOAuth2TokenValidator(withIssuer, audienceValidator)
         jwtDecoder.setJwtValidator(withAudience)
         return jwtDecoder
     }
@@ -55,9 +52,9 @@ class OAuth2ResourceServerSecurityConfiguration(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*")
-        configuration.allowedMethods = listOf("*")
-        configuration.allowedHeaders = listOf("*")
+        configuration.allowedOrigins = listOf("*") // Permitir todas las solicitudes de origen
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        configuration.allowedHeaders = listOf("*") // Permitir todos los encabezados
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source
