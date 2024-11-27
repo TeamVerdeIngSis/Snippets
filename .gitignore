@@ -1,7 +1,7 @@
 # Archivos comunes
 HELP.md
 .env
-
+.gradle/
 # Carpeta de compilación
 build/
 bin/
