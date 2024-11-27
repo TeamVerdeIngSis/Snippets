@@ -29,6 +29,13 @@ jobs:
       - name: Check Gradlew Permissions
         run: ls -l ./gradlew
 
+      - name: Verify Gradle Wrapper Jar
+        run: jar -tf gradle/wrapper/gradle-wrapper.jar
+
+      - name: Regenerate Gradle Wrapper
+        if: failure()
+        run: gradle wrapper
+
       - name: Clean Gradle Cache
         run: ./gradlew clean
 
