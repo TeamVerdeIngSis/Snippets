@@ -23,12 +23,6 @@ jobs:
       - name: Set Execute Permissions
         run: chmod +x ./gradlew
 
-      - name: Check Gradlew Permissions
-        run: ls -l ./gradlew
-
-      - name: Clean Gradle Cache
-        run: ./gradlew clean
-
       - name: Run Build
         run: ./gradlew build
         env:
