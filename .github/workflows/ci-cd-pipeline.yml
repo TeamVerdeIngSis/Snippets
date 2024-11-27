@@ -33,7 +33,7 @@ jobs:
         run: jar -tf gradle/wrapper/gradle-wrapper.jar
 
       - name: Regenerate Gradle Wrapper
-        if: failure()
+        if: failure() # Solo se ejecuta si falla la validación anterior
         run: gradle wrapper
 
       - name: Clean Gradle Cache
