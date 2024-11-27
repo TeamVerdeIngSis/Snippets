@@ -7,7 +7,7 @@ on:
       - dev
 
 jobs:
-  continous-integration:
+  continuous-integration:
     runs-on: ubuntu-latest
     steps:
       -   name: Checkout
