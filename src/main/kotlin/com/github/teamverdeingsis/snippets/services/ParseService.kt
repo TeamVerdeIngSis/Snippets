@@ -144,25 +144,22 @@ class ParseService(
         outputs: List<String>,
         snippet: Snippet?
     ): List<String> {
-        val testDTO = snippet?.id?.let {
-            TestParseDTO(
-                version = "1.1",
-                snippetId = it,
-                inputs = inputs,
-                outputs = outputs
-            )
-        }
-
+        val testDTO = TestParseDTO(
+            version = "1.1",
+            snippetId = snippetId,
+            inputs = inputs,
+            outputs = outputs
+        )
+        println("Sending to parser: $testDTO")
         val headers = getJsonAuthorizedHeaders(token)
         val entity = HttpEntity(testDTO, headers)
-
         val response = restTemplate.exchange(
             "http://localhost:8089/api/parser/test",
             HttpMethod.POST,
             entity,
             object : ParameterizedTypeReference<List<String>>() {}
         )
-
+        println("Response from parser: ${response.body}")
         return response.body ?: emptyList()
     }
 
