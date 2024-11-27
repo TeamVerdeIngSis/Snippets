@@ -20,9 +20,12 @@ jobs:
             distribution: 'adopt'
 
       -   name: Run Build
-          env:
-            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           run: ./gradlew build
+          env:
+            GITHUB_ACTOR: ${{ secrets.USERNAME }}
+            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+            GRADLE_OPTS: "-Dorg.gradle.internal.http.connectionTimeout=30000"
+
 
   continuous-delivery:
     name: Continuous Delivery
