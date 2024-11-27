@@ -2,9 +2,6 @@
 HELP.md
 .env
 
-
-gradle/wrapper/gradle-wrapper.properties
-
 # Carpeta de compilación
 build/
 bin/
@@ -29,3 +26,4 @@ out/
 # Kotlin
 .kotlin
 
+gradle.properties
