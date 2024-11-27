@@ -8,24 +8,23 @@ on:
 
 jobs:
   continuous-integration:
+    name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
-      -   name: Checkout
-          uses: actions/checkout@v4
+      - name: Check out the code
+        uses: actions/checkout@v4
 
-      -   name: Set up JDK 21
-          uses: actions/setup-java@v2
-          with:
-            java-version: 21
-            distribution: 'adopt'
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: 21
+          distribution: 'adopt'
 
-      -   name: Run Build
-          run: ./gradlew build
-          env:
-            GITHUB_ACTOR: ${{ secrets.USERNAME }}
-            GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-            GRADLE_OPTS: "-Dorg.gradle.internal.http.connectionTimeout=30000"
-
+      - name: Run Build
+        run: ./gradlew build
+        env:
+          GITHUB_ACTOR: ${{ secrets.USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   continuous-delivery:
     name: Continuous Delivery
