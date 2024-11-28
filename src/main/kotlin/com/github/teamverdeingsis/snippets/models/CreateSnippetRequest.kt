@@ -6,7 +6,8 @@ data class CreateSnippetRequest(
     val name: String,
     val content: String,
     val language: String,
-    val extension: String
+    val extension: String,
+    val version: String
 )
 
 data class UpdateSnippetRequest(
@@ -29,6 +30,15 @@ data class Permission(
     val snippetId: String,
     val permission: String,
     val permissionId: String
+)
+
+data class CreateSnippetResponse(
+    val message: String,
+    val name: String,
+    val content: String,
+    val language: String,
+    val extension: String,
+    val version: String
 )
 
 data class FullSnippet(

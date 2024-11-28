@@ -36,15 +36,16 @@ class ParseService(
     }
 
     // funcion para validar un snippet
-    fun validateSnippet(createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_JSON
-        }
-
-        val request = HttpEntity(createSnippetRequest, headers)
-        val url = "http://localhost:8081/parse/validate"
-
-        return restTemplate.exchange(url, HttpMethod.POST, request, String::class.java)
+    fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
+        println("Sending snippet to parse service for validation: ${createSnippetRequest.content}")  // Log del snippet a validar
+        val response = restTemplate.postForObject(
+            "http://localhost:8081/api/parser/validate",
+            mapOf("code" to createSnippetRequest.content, "version" to createSnippetRequest.version),
+            String::class.java
+        )
+        println("Parse validation response desde parseService: $response")  // Log de la respuesta del parser
+        println(response)
+        return response ?: "Error: No response from parser"
     }
 
     // funcion para ejecutar un snippet
@@ -154,7 +155,7 @@ class ParseService(
         val headers = getJsonAuthorizedHeaders(token)
         val entity = HttpEntity(testDTO, headers)
         val response = restTemplate.exchange(
-            "http://localhost:8089/api/parser/test",
+            "http://localhost:8081/api/parser/test",
             HttpMethod.POST,
             entity,
             object : ParameterizedTypeReference<List<String>>() {}
