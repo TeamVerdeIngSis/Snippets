@@ -20,11 +20,6 @@ data class CreatePermissionRequest(
     val permission: String
 )
 
-data class ShareSnippetRequest(
-    val userId: String,
-    val snippetId: String
-)
-
 data class Permission(
     val userId: String,
     val snippetId: String,

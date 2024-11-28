@@ -42,7 +42,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
 
         val response = restTemplate.postForEntity(url, request, String::class.java)
         if (!response.statusCode.is2xxSuccessful) {
-            throw RuntimeException("User with ID $userId not found")
+            throw RuntimeException("Failed to share snippet with $userId")
         }
         return response.body!!
     }
