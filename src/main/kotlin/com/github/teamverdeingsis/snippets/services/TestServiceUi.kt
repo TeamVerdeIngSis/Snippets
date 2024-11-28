@@ -2,6 +2,7 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Test
 import com.github.teamverdeingsis.snippets.models.TestDTO
+import com.github.teamverdeingsis.snippets.models.TestResponse
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.repositories.TestRepo
 import org.springframework.http.ResponseEntity
@@ -12,7 +13,8 @@ class TestServiceUi(
     private val testRepo: TestRepo,
     private val snippetRepository: SnippetRepository,
     private val parseService: ParseService,
-    private val snippetService: SnippetService
+    private val snippetService: SnippetService,
+    private val assetService: AssetService
 ) {
 
     fun getTestsBySnippetId(token: String, snippetId: String): List<Test> {
@@ -24,16 +26,62 @@ class TestServiceUi(
             .orElseThrow { IllegalArgumentException("Test not found") }
     }
 
-    fun addTestToSnippet(token: String, snippetId: String, name: String, input: List<String>, output: List<String>): TestDTO {
-        println("Buscando snippet con ID: $snippetId")
-        val snippet = snippetRepository.findById(snippetId)
-            .orElseThrow { IllegalArgumentException("Snippet not found") }
-        println("Snippet encontrado: $snippet")
-        val test = Test(name = name, input = input, output = output, snippet = snippet)
-        println("Guardando test: $test")
+    fun addTestToSnippet(
+        token: String,
+        snippetId: String,
+        name: String,
+        inputs: List<String>,
+        outputs: List<String>
+    ): TestResponse {
+        println("Inputs recibidos: $inputs")
+        println("Outputs recibidos: $outputs")
+
+        val snippet = snippetRepository.findById(snippetId).orElseThrow {
+            throw IllegalArgumentException("Snippet not found")
+        }
+
+        val snippetContent = assetService.getAsset( snippetId,"snippets")
+        val hasReadInput = snippetContent?.contains("readInput")
+        println("snippet has readInput: $hasReadInput")
+
+        if (!hasReadInput!! && inputs.isNotEmpty()) {
+            return TestResponse(
+                id = "",
+                name = "",
+                input = listOf(),
+                output = listOf(),
+                message = "This snippet does not require inputs"
+            )
+        }
+
+        if (hasReadInput && inputs.isEmpty()) {
+            return TestResponse(
+                id = "",
+                name = "",
+                input = listOf(),
+                output = listOf(),
+                message = "This snippet requires inputs"
+            )
+        }
+
+        val test = Test(
+            name = name,
+            input = inputs.toMutableList(),
+            output = outputs.toMutableList(),
+            snippet = snippet
+        )
+
         testRepo.save(test)
-        return TestDTO(test)
+        println("Test saved")
+        return TestResponse(
+            id = test.id,
+            name = test.name,
+            input = test.input,
+            output = test.output,
+            message = "Test added"
+        )
     }
+
 
     fun deleteTestById(token: String, id: String) {
         println("deleting test with id: $id")

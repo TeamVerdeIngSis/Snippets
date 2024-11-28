@@ -5,6 +5,10 @@ import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FullSnippet
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.teamverdeingsis.snippets.factory.RulesFactory
+import com.github.teamverdeingsis.snippets.models.*
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import org.springframework.http.HttpEntity
@@ -14,6 +18,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.server.ResponseStatusException
+import java.net.http.HttpHeaders
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -26,11 +32,10 @@ class SnippetService(
 
 ) {
 
-
-    fun createSnippet(createSnippetRequest: CreateSnippetRequest, authorization: String): Snippet {
+    fun createSnippet(createSnippetRequest: CreateSnippetRequest, authorization: String): CreateSnippetResponse {
+        println("Creating snippet with request: $createSnippetRequest")  // Log de la solicitud
 
         val userId = AuthorizationDecoder.decode(authorization)
-
         val snippet = Snippet(
             name = createSnippetRequest.name,
             userId = userId,
@@ -38,11 +43,58 @@ class SnippetService(
             languageName = createSnippetRequest.language,
             languageExtension = createSnippetRequest.extension
         )
-        snippetRepository.save(snippet)
-        assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
-        permissionsService.addPermission(userId, snippet.id, "WRITE")
-        parseService.lintSnippet(snippet.id, authorization)
-        return snippet
+
+        println("Snippet object created: $snippet")  // Log del snippet creado
+
+        try {
+            // Llamada al servicio de validación
+            println("Passing snippet to parser for validation")
+            val validationResult = parseService.validateSnippet(createSnippetRequest)
+            println("Parse validation response: $validationResult")
+            println(validationResult.length)
+
+            // Si la respuesta es una lista vacía, el snippet es válido
+            if (validationResult.length == 2) {
+                // El snippet es válido, proceder con la creación en la base de datos
+                println("AAAAAAAAAAAAA")
+                snippetRepository.save(snippet)
+                assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
+                permissionsService.addPermission(userId, snippet.id, "WRITE")
+                println("ey")
+                return CreateSnippetResponse(
+                    message = "",
+                    name = snippet.name,
+                    content = createSnippetRequest.content,
+                    language = snippet.languageName,
+                    extension = snippet.languageExtension,
+                    version = createSnippetRequest.version
+                )
+            } else {
+                // Si la lista no está vacía, significa que hay errores de validación
+                val errorMessages = validationResult
+                val response = CreateSnippetResponse(
+                    message = errorMessages,
+                    name = "",
+                    content = "",
+                    language = "",
+                    extension = "",
+                    version = ""
+                )
+                println("Validation error: $errorMessages")  // Log de errores de validación
+                return response  // Retornar el mensaje de error
+            }
+        } catch (e: Exception) {
+            println("Validation error: ${e.message}")  // Log del error de validación
+
+            return CreateSnippetResponse(
+                message = "Unexpected error",
+                name = "",
+                content = "",
+                language = "",
+                extension = "",
+                version = ""
+            )
+        }
     }
 
     fun helloParse(): ResponseEntity<String> {
@@ -90,8 +142,10 @@ class SnippetService(
     }
 
     fun getAllSnippetsByUser(userId: String, username: String): List<SnippetWithAuthor>? {
+        println("AAAAAAAAAAAAA llegue con $userId y $username")
         val snippetsID = permissionsService.getAllUserSnippets(userId)
         val snippets = ArrayList<SnippetWithAuthor>()
+        println("BBBBBBBBBBBBB")
         if (snippetsID == null) {
             return emptyList()
         }
@@ -99,6 +153,7 @@ class SnippetService(
             val snippet = getSnippet(id.snippetId)
             snippets.add(SnippetWithAuthor(snippet ?: continue, username))
         }
+        println("CCCCCCCCCCCCC")
         return snippets
     }
 
@@ -109,7 +164,7 @@ class SnippetService(
 
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
         val response = parseService.validateSnippet(createSnippetRequest)
-        return response.body ?: throw RuntimeException("Validation failed")
+        return response ?: throw RuntimeException("Validation failed")
     }
 
     fun executeSnippet(createSnippetRequest: CreateSnippetRequest): String {

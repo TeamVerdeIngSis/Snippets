@@ -1,5 +1,6 @@
 package com.github.teamverdeingsis.snippets.controllers
 
+import com.github.teamverdeingsis.snippets.models.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -8,18 +9,13 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
-import com.github.teamverdeingsis.snippets.models.FullSnippet
-import com.github.teamverdeingsis.snippets.models.Rule
-import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
-import com.github.teamverdeingsis.snippets.models.Snippet
-import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
-import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import com.github.teamverdeingsis.snippets.services.SnippetService
 import com.nimbusds.jwt.JWTParser
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/snippets")
@@ -47,7 +43,7 @@ class SnippetController(private val snippetService: SnippetService) {
     fun create(
         @RequestBody snippetRequest: CreateSnippetRequest,
         @RequestHeader("Authorization") authorization: String
-    ): ResponseEntity<Snippet> {
+    ): ResponseEntity<CreateSnippetResponse> {
         val snippet = snippetService.createSnippet(snippetRequest, authorization)
         return ResponseEntity.ok(snippet)
     }
@@ -76,10 +72,9 @@ class SnippetController(private val snippetService: SnippetService) {
     fun getAllSnippetsByUser(
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<SnippetService.SnippetWithAuthor>?> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
-        val username = decodedJWT.jwtClaimsSet.getStringClaim("username")
+        println("Getting all snippets by user with $authorization")
+        val userId = AuthorizationDecoder.decode(authorization)
+        val username = AuthorizationDecoder.decodeUsername(authorization)
         val snippets = snippetService.getAllSnippetsByUser(userId, username)
         return ResponseEntity.ok(snippets)
     }

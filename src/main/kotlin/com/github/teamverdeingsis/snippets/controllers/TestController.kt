@@ -1,6 +1,7 @@
 package com.github.teamverdeingsis.snippets.controllers
 
 import com.github.teamverdeingsis.snippets.models.TestDTO
+import com.github.teamverdeingsis.snippets.models.TestResponse
 import com.github.teamverdeingsis.snippets.services.TestServiceUi
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -25,7 +26,7 @@ class TestController(
         @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String,
         @RequestBody testBody: Map<String, Any>
-    ): ResponseEntity<TestDTO> {
+    ): ResponseEntity<TestResponse> {
         println("Adding test to snippet with ID: $snippetId")
         val name = testBody["name"] as? String ?: return ResponseEntity.badRequest().build()
         val input = testBody["input"] as? List<String> ?: emptyList()
@@ -49,9 +50,11 @@ class TestController(
         @PathVariable testId: String
     ): ResponseEntity<String> {
         println("Received request to run test with ID: $testId")
-        println("Authorization header: $token")
+        val test = testService.getTestById(testId)
+        println("Test data retrieved: $test")
         return testService.executeTest(token, testId)
     }
+
 
 
     @PostMapping("/{snippetId}/all")
