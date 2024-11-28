@@ -91,17 +91,6 @@ class SnippetController(private val snippetService: SnippetService) {
 
     }
 
-    @PostMapping("/share")
-    fun shareSnippet(@RequestBody shareSnippetRequest: ShareSnippetRequest,
-                     @RequestHeader("Authorization") authorization: String
-    ): ResponseEntity<String> {
-        val token = authorization.removePrefix("Bearer ")
-        val decodedJWT = JWTParser.parse(token)
-        val userId = decodedJWT.jwtClaimsSet.subject
-        val result = snippetService.shareSnippet(shareSnippetRequest)
-        return ResponseEntity.ok(result)
-    }
-
     @PostMapping("/execute")
     fun executeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.executeSnippet(createSnippetRequest)
@@ -113,6 +102,15 @@ class SnippetController(private val snippetService: SnippetService) {
     fun analyzeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.analyzeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
+    }
+
+    @PostMapping("/share")
+    fun shareSnippet(
+        @RequestBody shareSnippetRequest: ShareSnippetRequest,
+        @RequestHeader("Authorization") authorization: String
+    ): ResponseEntity<FullSnippet> {
+        val token = authorization.removePrefix("Bearer ")
+        return snippetService.shareSnippet(token, shareSnippetRequest)
     }
 
 }

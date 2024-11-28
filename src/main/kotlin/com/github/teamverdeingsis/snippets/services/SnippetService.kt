@@ -1,23 +1,19 @@
 package com.github.teamverdeingsis.snippets.services
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.github.teamverdeingsis.snippets.factory.RulesFactory
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FullSnippet
-import com.github.teamverdeingsis.snippets.models.Rule
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
-import com.nimbusds.jwt.JWTParser
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
-import java.net.http.HttpHeaders
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -25,7 +21,8 @@ class SnippetService(
     private val snippetRepository: SnippetRepository,
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
-    private val parseService: ParseService
+    private val parseService: ParseService,
+    private val restTemplate: RestTemplate
 
 ) {
 
@@ -56,10 +53,6 @@ class SnippetService(
     fun helloPermissions(): ResponseEntity<String> {
         val response = permissionsService.hey()
         return ResponseEntity.ok(response)
-    }
-
-    fun shareSnippet(shareSnippetRequest: ShareSnippetRequest): String {
-        return permissionsService.addPermission(shareSnippetRequest.userId, shareSnippetRequest.snippetId, "READ")
     }
 
     fun delete(id: String): String? {
@@ -129,4 +122,65 @@ class SnippetService(
         return response.body ?: throw RuntimeException("Analysis failed")
     }
 
+    fun checkIfOwner(snippetId: String, userId: String, token: String): Boolean {
+        val body: Map<String, Any> = mapOf("snippetId" to snippetId, "userId" to userId) // Pasa el userId explícitamente
+        val entity = HttpEntity(body, getJsonAuthorizedHeaders(token))
+
+        val baseUrl = "http://localhost:8082/api/permissions"
+        val checkOwnerEndpoint = "$baseUrl/check-owner"
+
+        return try {
+            val response = restTemplate.postForEntity(checkOwnerEndpoint, entity, String::class.java)
+            response.body?.equals("User is the owner of the snippet", ignoreCase = true) == true
+        } catch (e: Exception) {
+            println("Error checking ownership: ${e.message}")
+            false
+        }
+    }
+
+
+    private fun getJsonAuthorizedHeaders(token: String): MultiValueMap<String, String> {
+        return org.springframework.http.HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+            set("Authorization", token)
+        }
+    }
+
+    fun shareSnippet(token: String, shareSnippetRequest: ShareSnippetRequest): ResponseEntity<FullSnippet> {
+        val snippetId = shareSnippetRequest.snippetId
+        val userId = shareSnippetRequest.userId // Extrae el userId directamente del request
+        val fromEmail = shareSnippetRequest.fromEmail
+        val toEmail = shareSnippetRequest.toEmail
+
+        // Validar que no se comparte con uno mismo
+        if (fromEmail == toEmail) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .header("Share-Status", "You can't share a snippet with yourself")
+                .body(null)
+        }
+
+        // Validar existencia del snippet
+        val snippet = getSnippetWithContent(snippetId)
+            ?: return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .header("Share-Status", "Snippet not found")
+                .body(null)
+
+        // Validar si el usuario tiene permiso para compartir
+        if (!checkIfOwner(snippetId, userId, token)) {
+            return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .header("Share-Status", "You are not the owner of the snippet")
+                .body(null)
+        }
+
+        // Crear permiso para el destinatario
+        permissionsService.addPermission(toEmail, snippetId, "READ")
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .header("Share-Status", "Snippet shared with $toEmail")
+            .body(snippet)
+    }
 }
