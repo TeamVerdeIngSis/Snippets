@@ -76,6 +76,7 @@ jobs:
           username: teamVerde1
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cd infra
             sudo docker stop snippets-service-infra || true
             sudo docker rm snippets-service-infra || true
             sudo docker rmi ghcr.io/teamverdeingsis/snippets:latest || true
