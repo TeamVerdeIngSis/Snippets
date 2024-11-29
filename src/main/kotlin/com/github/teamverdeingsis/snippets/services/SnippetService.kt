@@ -5,9 +5,6 @@ import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FullSnippet
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.github.teamverdeingsis.snippets.factory.RulesFactory
 import com.github.teamverdeingsis.snippets.models.*
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
@@ -18,8 +15,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.server.ResponseStatusException
-import java.net.http.HttpHeaders
 import kotlin.jvm.optionals.getOrNull
 
 @Service
@@ -28,7 +23,8 @@ class SnippetService(
     private val permissionsService: PermissionsSerivce,
     private val assetService: AssetService,
     private val parseService: ParseService,
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
+    private val auth0Service: Auth0Service
 
 ) {
 
@@ -118,8 +114,40 @@ class SnippetService(
         return assetService.deleteAsset(id, "snippets").body
     }
 
-    fun updateSnippet(id: String, content: String): String? {
-        return assetService.updateAsset(id, "snippets", content).body
+    fun updateSnippet(id: String, content: String): UpdateSnippetResponse {
+        val snippet = snippetRepository.findById(id)
+        val validationRequest = CreateSnippetRequest(
+            name = snippet.get().name,
+            content = content,
+            language = snippet.get().languageName,
+            extension = snippet.get().languageExtension,
+            version = "1.1"
+        )
+        val validationResult = parseService.validateSnippet(validationRequest)
+        if (validationResult.length == 2) {
+            println("Contenido a actualizar es valido")
+            assetService.updateAsset(id, "snippets", content)
+            println("Contenido actualizado")
+            return UpdateSnippetResponse(
+                message = "Snippet updated",
+                name = snippet.get().name,
+                content = content,
+                language = snippet.get().languageName,
+                extension = snippet.get().languageExtension,
+                version = "1.1"
+            )
+        } else {
+            println("Contenido a actualizar no es valido")
+            val errorMessages = validationResult
+            return UpdateSnippetResponse(
+                message = errorMessages,
+                name = "",
+                content = "",
+                language = "",
+                extension = "",
+                version = ""
+            )
+        }
     }
 
     fun getSnippet(id: String): Snippet? {
@@ -151,7 +179,11 @@ class SnippetService(
         }
         for (id in snippetsID) {
             val snippet = getSnippet(id.snippetId)
-            snippets.add(SnippetWithAuthor(snippet ?: continue, username))
+            val user = snippet?.userId?.let { auth0Service.getUserById(it) }
+            if (user != null) {
+                snippets.add(SnippetWithAuthor(snippet ?: continue, user.body?.nickname ?: "Unknown"))
+
+            }
         }
         println("CCCCCCCCCCCCC")
         return snippets
@@ -178,7 +210,7 @@ class SnippetService(
     }
 
     fun checkIfOwner(snippetId: String, userId: String, token: String): Boolean {
-        val body: Map<String, Any> = mapOf("snippetId" to snippetId, "userId" to userId) // Pasa el userId explícitamente
+        val body: Map<String, Any> = mapOf("snippetId" to snippetId, "userId" to userId)
         val entity = HttpEntity(body, getJsonAuthorizedHeaders(token))
 
         val baseUrl = "http://permissions-service-infra:8080/api/permissions"
@@ -203,39 +235,20 @@ class SnippetService(
 
     fun shareSnippet(token: String, shareSnippetRequest: ShareSnippetRequest): ResponseEntity<FullSnippet> {
         val snippetId = shareSnippetRequest.snippetId
-        val userId = shareSnippetRequest.userId // Extrae el userId directamente del request
-        val fromEmail = shareSnippetRequest.fromEmail
-        val toEmail = shareSnippetRequest.toEmail
+        val toUserId = shareSnippetRequest.userId // Usa directamente el userId
+        val fromUserId = AuthorizationDecoder.decode(token)
 
-        // Validar que no se comparte con uno mismo
-        if (fromEmail == toEmail) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .header("Share-Status", "You can't share a snippet with yourself")
-                .body(null)
-        }
-
-        // Validar existencia del snippet
+        // Verifica que el snippet exista y el usuario tenga permiso
         val snippet = getSnippetWithContent(snippetId)
-            ?: return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .header("Share-Status", "Snippet not found")
-                .body(null)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
 
-        // Validar si el usuario tiene permiso para compartir
-        if (!checkIfOwner(snippetId, userId, token)) {
-            return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .header("Share-Status", "You are not the owner of the snippet")
-                .body(null)
+        if (!checkIfOwner(snippetId, fromUserId, token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null)
         }
 
-        // Crear permiso para el destinatario
-        permissionsService.addPermission(toEmail, snippetId, "READ")
+        // Asigna permiso al destinatario
+        permissionsService.addPermission(toUserId, snippetId, "READ")
 
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .header("Share-Status", "Snippet shared with $toEmail")
-            .body(snippet)
+        return ResponseEntity.ok(snippet)
     }
 }
