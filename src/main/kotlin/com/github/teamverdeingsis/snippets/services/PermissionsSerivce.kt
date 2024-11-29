@@ -28,7 +28,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     }
 
     public fun hey(): String? {
-        val url = "http://localhost:8082/api/permissions/helloNga"
+        val url = "http://permission_api:8080/api/permissions/helloNga"
         val response = restTemplate.getForObject(url, String::class.java)
         if (response == null) {
             println("nada")

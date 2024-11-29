@@ -26,7 +26,7 @@ class ParseService(
     private val parseServiceUrl = "http://localhost:8081/v1"
 
     fun hey(): String? {
-        val url = "http://localhost:8081/api/parser/hola"
+        val url = "https://teamverde.westus2.cloudapp.azure.com/api/parser/hola"
 
         val response = restTemplate.getForObject(url, String::class.java)
         if (response == null) {
