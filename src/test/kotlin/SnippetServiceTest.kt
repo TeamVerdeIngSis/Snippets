@@ -6,12 +6,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 import java.util.*
@@ -20,7 +22,7 @@ import java.util.*
 class SnippetServiceTest {
     private lateinit var snippetService: SnippetService
     private val snippetRepository: SnippetRepository = mock()
-    private val permissionsService: PermissionsSerivce = mock()
+    private val permissionsService: PermissionsService = mock()
     private val assetService: AssetService = mock()
     private val parseService: ParseService = mock()
     private val restTemplate: RestTemplate = mock()
@@ -113,5 +115,152 @@ class SnippetServiceTest {
         assertEquals(fullSnippet, result)
         verify(snippetRepository).findById(id)
         verify(assetService).getAsset(id, "snippets")
+    }
+
+    @Test
+    fun `checkIfOwner should return true if user is the owner`() {
+        val snippetId = "123"
+        val userId = "user123"
+        val token = "Bearer some_valid_token"
+        val responseBody = "User is the owner of the snippet"
+        val response = ResponseEntity(responseBody, HttpStatus.OK)
+
+        whenever(restTemplate.postForEntity(anyString(), any(), eq(String::class.java)))
+            .thenReturn(response)
+
+        val result = snippetService.checkIfOwner(snippetId, userId, token)
+
+        assertTrue(result)
+        verify(restTemplate).postForEntity(anyString(), any(), eq(String::class.java))  // Verificamos la llamada
+    }
+
+    @Test
+    fun `executeSnippet should return the execution result`() {
+        val request = CreateSnippetRequest(name = "Test Snippet", content = "println('Hello World')", language = "kotlin", extension = "kt", version = "1.0")
+        val executionResult = "Execution result: Hello World"
+
+        whenever(parseService.executeSnippet(request)).thenReturn(ResponseEntity.ok(executionResult))
+
+        val result = snippetService.executeSnippet(request)
+
+        assertEquals(executionResult, result)
+    }
+
+    @Test
+    fun `validateSnippet should return validation errors if invalid`() {
+        val request = CreateSnippetRequest(name = "Test Snippet", content = "println('Hello World')", language = "kotlin", extension = "kt", version = "1.0")
+        val validationResult = "Error: Invalid syntax"
+
+        whenever(parseService.validateSnippet(request)).thenReturn(validationResult)
+
+        val result = snippetService.validateSnippet(request)
+
+        assertEquals(validationResult, result)
+    }
+
+    @Test
+    fun `validateSnippet should return empty string if valid`() {
+        val request = CreateSnippetRequest(name = "Test Snippet", content = "println('Hello World')", language = "kotlin", extension = "kt", version = "1.0")
+        val validationResult = "[]"
+
+        whenever(parseService.validateSnippet(request)).thenReturn(validationResult)
+
+        val result = snippetService.validateSnippet(request)
+
+        assertEquals("[]", result)  // Si es válido, no hay mensajes de error
+    }
+
+    @Test
+    fun `getSnippet should return snippet if found`() {
+        val id = "123"
+        val snippet = Snippet(id, "Test Snippet", "user123", Conformance.PENDING, "Kotlin", "kt")
+
+        whenever(snippetRepository.findById(id)).thenReturn(Optional.of(snippet))
+
+        val result = snippetService.getSnippet(id)
+
+        assertNotNull(result)
+        assertEquals(snippet, result)
+    }
+
+    @Test
+    fun `getSnippet should return null if snippet is not found`() {
+        val id = "123"
+
+        whenever(snippetRepository.findById(id)).thenReturn(Optional.empty())
+
+        val result = snippetService.getSnippet(id)
+
+        assertNull(result)
+    }
+
+    // Nuevos Tests para mejorar la cobertura
+
+    @Test
+    fun `helloParse should return response from parse service`() {
+        // Arrange
+        val responseMessage = "Hello Parse"
+        whenever(parseService.hey()).thenReturn(responseMessage)
+
+        // Act
+        val result = snippetService.helloParse()
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertEquals(responseMessage, result.body)
+    }
+
+    @Test
+    fun `helloPermissions should return response from permissions service`() {
+        // Arrange
+        val responseMessage = "Hello Permissions"
+        whenever(permissionsService.hey()).thenReturn(responseMessage)
+
+        // Act
+        val result = snippetService.helloPermissions()
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.statusCode)
+        assertEquals(responseMessage, result.body)
+    }
+
+//    @Test
+//    fun `getAllSnippetsByUser should return a list of snippets with authors`() {
+//        // Arrange
+//        val userId = "user123"
+//        val username = "JohnDoe"
+//        val snippetId = "123"
+//        val snippet = Snippet(id = snippetId, name = "Test Snippet", userId = userId, conformance = Conformance.PENDING, languageName = "Kotlin", languageExtension = "kt")
+//        val user = User(id = userId, nickname = username)
+//        val snippetWithAuthor = SnippetService.SnippetWithAuthor(snippet, username)
+//
+//        whenever(permissionsService.getAllUserSnippets(userId)).thenReturn(listOf())
+//        whenever(snippetRepository.findById(snippetId)).thenReturn(Optional.of(snippet))
+//        whenever(auth0Service.getUserById(userId)).thenReturn(ResponseEntity.ok(user))
+//
+//        // Act
+//        val result = snippetService.getAllSnippetsByUser(userId, username)
+//
+//        // Assert
+//        assertNotNull(result)
+//        if (result != null) {
+//            assertEquals(1, result.size)
+//        }
+//        assertEquals(snippetWithAuthor, result?.get(0) ?: SnippetService.SnippetWithAuthor(Snippet(), ""))
+//    }
+
+    @Test
+    fun `shareSnippet should return NOT_FOUND if snippet not found`() {
+        // Arrange
+        val token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        val shareSnippetRequest = ShareSnippetRequest("nonExistentSnippetId", "user456")
+
+        whenever(snippetRepository.findById(shareSnippetRequest.snippetId)).thenReturn(Optional.empty())
+
+        // Act
+        val response = snippetService.shareSnippet(token, shareSnippetRequest)
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
     }
 }

@@ -1,5 +1,6 @@
 package com.github.teamverdeingsis.snippets.services
 
+import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
 import org.junit.jupiter.api.Test
@@ -134,4 +135,55 @@ class ParseServiceTest {
         assertEquals(expectedResponse, result)
         verify(restTemplate).exchange(eq(url), eq(HttpMethod.POST), any(), eq(object : ParameterizedTypeReference<List<String>>() {}))
     }
+
+    // Test para el método 'lintSnippet'
+    @Test
+    fun `lintSnippet should update conformance based on linting result`() {
+        val snippetId = "123"
+        val authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        val lintResponse = "[]"
+        val expectedConformance = Conformance.COMPLIANT
+
+        val urlLint = "http://parse-service-infra:8080/api/parser/lint"
+        val urlUpdateConformance = "http://snippets-service-infra:8080/updateConformance"
+
+        // Mock de la respuesta del RestTemplate para linting
+        whenever(restTemplate.postForObject(eq(urlLint), any(), eq(String::class.java)))
+            .thenReturn(lintResponse)
+
+        // Mock de la llamada para actualizar la conformidad
+        whenever(restTemplate.postForObject(eq(urlUpdateConformance), any(), eq(String::class.java)))
+            .thenReturn("Conformance updated")
+
+        // Llamada al método que estás probando
+        parseService.lintSnippet(snippetId, authorization)
+
+        // Verificar las llamadas y el flujo
+        verify(restTemplate).postForObject(eq(urlLint), any(), eq(String::class.java))
+        verify(restTemplate).postForObject(eq(urlUpdateConformance), any(), eq(String::class.java))
+    }
+
+    @Test
+    fun `formatSnippet should return formatted snippet response with token`() {
+        // Arrange
+        val formatSnippetRequest = FormatSnippetRequest(snippetId = "123", content = "sample code")
+        val authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        val expectedResponse = "Formatted snippet"
+        val url = "http://parse-service-infra:8080/api/parser/format"
+
+        // Mock de la respuesta del RestTemplate
+        whenever(restTemplate.postForObject(eq(url), any(), eq(String::class.java)))
+            .thenReturn(expectedResponse)
+
+        // Act
+        val result = parseService.formatSnippet(formatSnippetRequest, authorization)
+
+        // Assert
+        assertNotNull(result)
+        assertEquals(expectedResponse, result)
+        verify(restTemplate).postForObject(eq(url), any(), eq(String::class.java))
+    }
+
+
+
 }

@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class SnippetService(
     private val snippetRepository: SnippetRepository,
-    private val permissionsService: PermissionsSerivce,
+    private val permissionsService: PermissionsService,
     private val assetService: AssetService,
     private val parseService: ParseService,
     private val restTemplate: RestTemplate,

@@ -66,7 +66,7 @@ class FormattingRulesService(
     /**
      * Publica eventos para re-formatear todos los snippets del usuario.
      */
-    private suspend fun updateFormatOfSnippets(authorization: String) {
+    suspend fun updateFormatOfSnippets(authorization: String) {
         println("Actualizando el formato de todos los snippets")
         val userId = AuthorizationDecoder.decode(authorization)
         val username = AuthorizationDecoder.decodeUsername(authorization)

@@ -55,7 +55,7 @@ class LintingRulesService(
         }
     }
 
-    private suspend fun updateAllSnippetsStatus(authorization: String) {
+    suspend fun updateAllSnippetsStatus(authorization: String) {
         println("voy a actualizar todos los snippets a pending")
         val userId = AuthorizationDecoder.decode(authorization)
         val username = AuthorizationDecoder.decodeUsername(authorization)

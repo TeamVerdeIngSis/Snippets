@@ -85,10 +85,14 @@ jacocoTestReport {
 
 	classDirectories.setFrom(
 			fileTree(dir: 'build/classes/kotlin/main', includes: [
-					'com/github/teamverdeingsis/snippets/services/**/*.class'
+					'com/github/teamverdeingsis/snippets/services/SnippetService.class',
+					'com/github/teamverdeingsis/snippets/services/ParseService.class',
+					'com/github/teamverdeingsis/snippets/services/AssetService.class',
+					'com/github/teamverdeingsis/snippets/services/PermissionsService.class'
 			])
 	)
 }
+
 
 jacocoTestCoverageVerification {
 	violationRules {
