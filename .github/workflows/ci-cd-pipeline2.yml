@@ -81,7 +81,7 @@ jobs:
             sudo docker rm snippets-service-infra || true
             sudo docker rmi ghcr.io/teamverdeingsis/snippets:latest || true
             sudo docker pull ghcr.io/teamverdeingsis/snippets:latest
-            sudo docker compose up snippetsServiceInfra
+            sudo docker compose up snippetsServiceInfra -d
 
 
 #sudo docker run -d --name snippets-service-infra -p 8082:8080 ghcr.io/teamverdeingsis/snippets:latest
