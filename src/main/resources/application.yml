@@ -1,5 +1,7 @@
 auth0:
-  audience: https://snippet-service-api
+  audience: https://dev-ppmfishyt4u8fel3.us.auth0.com/api/v2/
+  token: ${AUTH0_TOKEN}
+
 spring:
   application:
     name: snippets-service

@@ -10,12 +10,14 @@ import org.springframework.context.annotation.ComponentScan
 @ComponentScan(basePackages = ["com.github.teamverdeingsis.snippets", "com.github.teamverdeingsis.snippets.security"])
 class SnippetsApplication(
     @Value("\${auth0.audience}") val audience: String,
-    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String
+    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String,
+    @Value("\${auth0.token}") val token: String,
 ) {
     @PostConstruct
     fun init() {
         println("Audience: $audience")
         println("Issuer: $issuer")
+        println("Token: $token")
     }
 }
 
