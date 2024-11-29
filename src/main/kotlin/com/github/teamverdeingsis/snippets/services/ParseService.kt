@@ -23,7 +23,7 @@ class ParseService(
     private val restTemplate: RestTemplate
 ) {
 
-    private val parseServiceUrl = "http://localhost:8081/v1"
+    private val parseServiceUrl = "http://parse-service-infra:8080/v1"
 
     fun hey(): String? {
         val url = "https://teamverde.westus2.cloudapp.azure.com/api/parser/hola"
@@ -39,7 +39,7 @@ class ParseService(
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
         println("Sending snippet to parse service for validation: ${createSnippetRequest.content}")  // Log del snippet a validar
         val response = restTemplate.postForObject(
-            "http://localhost:8081/api/parser/validate",
+            "http://parse-service-infra:8080/api/parser/validate",
             mapOf("code" to createSnippetRequest.content, "version" to createSnippetRequest.version),
             String::class.java
         )
@@ -87,7 +87,7 @@ class ParseService(
 
 
         val userId = AuthorizationDecoder.decode(authorization)
-        val url = "http://localhost:8081/api/parser/lint"
+        val url = "http://parse-service-infra:8080/api/parser/lint"
         val response = restTemplate.postForObject(url, SnippetMessage(snippetID, userId), String::class.java)
 
 
@@ -100,7 +100,7 @@ class ParseService(
             Conformance.COMPLIANT
         }
 
-        val updateUrl = "http://localhost:8083/updateConformance"
+        val updateUrl = "http://snippets-service-infra:8080/updateConformance"
         val requestBody = UpdateConformanceRequest(snippetID, conformance)
         val headers = HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
@@ -124,7 +124,7 @@ class ParseService(
         )
         println("Request body created: $requestBody")
 
-        val url = "http://localhost:8081/api/parser/format"
+        val url = "http://parse-service-infra:8080/api/parser/format"
         println("URL set: $url")
 
         return try {
@@ -155,7 +155,7 @@ class ParseService(
         val headers = getJsonAuthorizedHeaders(token)
         val entity = HttpEntity(testDTO, headers)
         val response = restTemplate.exchange(
-            "http://localhost:8081/api/parser/test",
+            "http://parse-service-infra:8080/api/parser/test",
             HttpMethod.POST,
             entity,
             object : ParameterizedTypeReference<List<String>>() {}

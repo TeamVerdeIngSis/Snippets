@@ -181,7 +181,7 @@ class SnippetService(
         val body: Map<String, Any> = mapOf("snippetId" to snippetId, "userId" to userId) // Pasa el userId explícitamente
         val entity = HttpEntity(body, getJsonAuthorizedHeaders(token))
 
-        val baseUrl = "http://localhost:8082/api/permissions"
+        val baseUrl = "http://permissions-service-infra:8080/api/permissions"
         val checkOwnerEndpoint = "$baseUrl/check-owner"
 
         return try {

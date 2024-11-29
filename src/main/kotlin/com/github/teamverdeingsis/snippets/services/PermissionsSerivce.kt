@@ -16,7 +16,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
 
     public fun getAllUserSnippets(userId: String): List<Permission> {
 
-        val url = "http://localhost:8082/api/permissions/user/$userId"
+        val url = "http://permissions-service-infra:8080/api/permissions/user/$userId"
         val response = restTemplate.getForEntity(url, Array<Permission>::class.java)
         if (!response.statusCode.is2xxSuccessful) {
 
@@ -28,7 +28,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     }
 
     public fun hey(): String? {
-        val url = "http://permission_api:8080/api/permissions/helloNga"
+        val url = "http://permissions-service-infra:8080/api/permissions/helloNga"
         val response = restTemplate.getForObject(url, String::class.java)
         if (response == null) {
             println("nada")
@@ -37,7 +37,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     }
 
     public fun addPermission(userId: String, snippetId: String, permission: String): String {
-        val url = "http://localhost:8082/api/permissions/create"
+        val url = "http://permissions-service-infra:8080/api/permissions/create"
         val request = CreatePermissionRequest(userId, snippetId, permission)
 
         val response = restTemplate.postForEntity(url, request, String::class.java)
@@ -56,7 +56,7 @@ class PermissionsSerivce(private val restTemplate: RestTemplate) {
     }
     public fun getUsernameById(userId: String): String {
         try {
-            val request = "http://localhost :8082/getUsernameById/$userId"
+            val request = "http://permissions-service-infra:8080/getUsernameById/$userId"
             return restTemplate.getForObject(request, String::class.java)!!
         } catch (e: Exception) {
             throw RuntimeException("User with ID $userId not found")
