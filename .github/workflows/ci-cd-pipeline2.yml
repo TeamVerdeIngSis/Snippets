@@ -65,10 +65,14 @@ jobs:
     needs: continuous-delivery
     runs-on: ubuntu-latest
     steps:
+      - name: Set host dynamically
+        id: set-host
+        run: echo "::set-output name=host::$(if [ '${{ github.ref_name }}' == 'main' ]; then echo '4.242.32.158'; else echo '172.179.233.92'; fi)"
+
       - name: Execute Remote SSH Commands
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ github.ref_name == 'main' &&'4.242.32.158' || '172.179.233.92' }}
+          host: ${{ steps.set-host.outputs.host }}
           username: teamVerde1
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
@@ -77,6 +81,6 @@ jobs:
             sudo docker rmi ghcr.io/teamverdeingsis/snippets:latest || true
             sudo docker pull ghcr.io/teamverdeingsis/snippets:latest
             sudo docker compose up snippets-service-infra
-            
+
 
 #sudo docker run -d --name snippets-service-infra -p 8082:8080 ghcr.io/teamverdeingsis/snippets:latest
