@@ -6,7 +6,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class AssetService(private val restTemplate: RestTemplate) {
-    public fun addAsset(content: String, directory: String, id: String): ResponseEntity<String> {
+    fun addAsset(content: String, directory: String, id: String): ResponseEntity<String> {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$id"
         restTemplate.put(assetServiceUrl, content, String::class.java)
         return ResponseEntity.ok().body("Asset with ID $id added")
@@ -23,7 +23,7 @@ class AssetService(private val restTemplate: RestTemplate) {
         }
     }
 
-    public fun deleteAsset(snippetId: String, directory: String): ResponseEntity<String> {
+    fun deleteAsset(snippetId: String, directory: String): ResponseEntity<String> {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$snippetId"
         try {
             restTemplate.delete(assetServiceUrl)
@@ -32,7 +32,7 @@ class AssetService(private val restTemplate: RestTemplate) {
             throw RuntimeException("Asset with ID $snippetId not found")
         }
     }
-    public fun getAsset(snippetId: String, directory: String): String? {
+    fun getAsset(snippetId: String, directory: String): String? {
         val assetServiceUrl = "http://localhost:8080/v1/asset/$directory/$snippetId"
         return try {
             restTemplate.getForObject(assetServiceUrl, String::class.java)
