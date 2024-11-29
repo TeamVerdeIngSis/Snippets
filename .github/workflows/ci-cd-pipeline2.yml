@@ -68,7 +68,7 @@ jobs:
       - name: Execute Remote SSH Commands
         uses: appleboy/ssh-action@v1.1.0
         with:
-          host: ${{ github.ref_name == 'main' && '172.179.233.92' || '4.242.32.158' }}
+          host: ${{ github.ref_name == 'main' &&'4.242.32.158' || '172.179.233.92' }}
           username: teamVerde1
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
