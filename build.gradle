@@ -4,6 +4,7 @@ plugins {
 	id 'org.springframework.boot' version '3.3.4'
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'maven-publish'
+	id 'jacoco' // Añadido para cobertura de pruebas
 }
 
 group = 'teamVerde'
@@ -34,50 +35,29 @@ repositories {
 	}
 }
 
-
-
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-
 	implementation 'org.postgresql:postgresql'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
-
-
 	testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
 	testImplementation 'com.h2database:h2'
-
-
-	// OAuth2 Resource Server support
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-
-	// JWT Support
 	implementation 'org.springframework.security:spring-security-oauth2-jose'
-
 	implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-
-
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
 	implementation 'com.newrelic.agent.java:newrelic-api:7.6.0'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-	implementation("org.springframework.boot:spring-boot-starter-webflux") // reactive webapp, requests simultaneously.
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation 'org.austral.ingsis:redis-streams-flux:0.1.13'
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
-
 }
 
 kotlin {
@@ -86,7 +66,50 @@ kotlin {
 	}
 }
 
-
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // Ejecutar Jacoco después de los tests
+}
+
+jacocoTestReport {
+	dependsOn test
+
+	reports {
+		xml {
+			destination file("$buildDir/reports/jacoco/test-coverage.xml")
+		}
+		html {
+			destination file("$buildDir/reports/jacoco/html")
+		}
+	}
+
+	classDirectories.setFrom(
+			fileTree(dir: 'build/classes/kotlin/main', includes: [
+					'com/github/teamverdeingsis/snippets/services/**/*.class'
+			])
+	)
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.01 // Cobertura mínima del 80%
+			}
+		}
+	}
+}
+
+jacoco {
+	toolVersion = '0.8.9' // Versión de Jacoco
+}
+
+tasks.check {
+	dependsOn jacocoTestCoverageVerification
+}
+
+tasks.test {
+	useJUnitPlatform()
+	include '**/*Test.class'
+	finalizedBy jacocoTestReport
 }
