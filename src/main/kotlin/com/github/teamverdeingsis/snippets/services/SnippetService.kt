@@ -118,8 +118,40 @@ class SnippetService(
         return assetService.deleteAsset(id, "snippets").body
     }
 
-    fun updateSnippet(id: String, content: String): String? {
-        return assetService.updateAsset(id, "snippets", content).body
+    fun updateSnippet(id: String, content: String): UpdateSnippetResponse {
+        val snippet = snippetRepository.findById(id)
+        val validationRequest = CreateSnippetRequest(
+            name = snippet.get().name,
+            content = content,
+            language = snippet.get().languageName,
+            extension = snippet.get().languageExtension,
+            version = "1.1"
+        )
+        val validationResult = parseService.validateSnippet(validationRequest)
+        if (validationResult.length == 2) {
+            println("Contenido a actualizar es valido")
+            assetService.updateAsset(id, "snippets", content)
+            println("Contenido actualizado")
+            return UpdateSnippetResponse(
+                message = "Snippet updated",
+                name = snippet.get().name,
+                content = content,
+                language = snippet.get().languageName,
+                extension = snippet.get().languageExtension,
+                version = "1.1"
+            )
+        } else {
+            println("Contenido a actualizar no es valido")
+            val errorMessages = validationResult
+            return UpdateSnippetResponse(
+                message = errorMessages,
+                name = "",
+                content = "",
+                language = "",
+                extension = "",
+                version = ""
+            )
+        }
     }
 
     fun getSnippet(id: String): Snippet? {
