@@ -16,15 +16,17 @@ class LinterRuleController(private val lintingRulesService: LintingRulesService)
 
     @GetMapping("/getLintingRules")
     fun getLintingRules(@RequestHeader("Authorization") authorization: String): ResponseEntity<List<Rule>> {
-
+        println("GetLintingRules checkpoint 1")
+        println("Llegue a /getLintingRules con $authorization")
         val userId = AuthorizationDecoder.decode(authorization)
+        println("GetLintingRules checkpoint 2")
+        println("El userId es $userId")
         // Delegar la operación al servicio
         return ResponseEntity.ok(lintingRulesService.getLintingRules(userId))
     }
 
     @PostMapping("/updateConformance")
     fun updateConformance(@RequestBody request: UpdateConformanceRequest): ResponseEntity<String> {
-        println("llegue a updateConformance")
         lintingRulesService.updateConformance(request.snippetId, request.conformance)
         return ResponseEntity.ok("Conformance updated")
     }

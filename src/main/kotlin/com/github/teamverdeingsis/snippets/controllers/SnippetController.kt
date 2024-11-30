@@ -45,6 +45,8 @@ class SnippetController(private val snippetService: SnippetService) {
         @RequestBody snippetRequest: CreateSnippetRequest,
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<CreateSnippetResponse> {
+        println("Create checkpoint 1")
+        println("Llegue a /create con $snippetRequest y $authorization")
         val snippet = snippetService.createSnippet(snippetRequest, authorization)
         return ResponseEntity.ok(snippet)
     }
@@ -73,9 +75,12 @@ class SnippetController(private val snippetService: SnippetService) {
     fun getAllSnippetsByUser(
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<SnippetService.SnippetWithAuthor>?> {
-        println("Getting all snippets by user with $authorization")
+        println("getAllSnippetsByUser checkpoint 1")
+        println("Llegue a / con $authorization")
         val userId = AuthorizationDecoder.decode(authorization)
+        println("getAllSnippetsByUser checkpoint 2, decoded userId: $userId")
         val username = AuthorizationDecoder.decodeUsername(authorization)
+        println("getAllSnippetsByUser checkpoint 3, decoded username: $username")
         val snippets = snippetService.getAllSnippetsByUser(userId, username)
         return ResponseEntity.ok(snippets)
     }

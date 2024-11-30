@@ -29,9 +29,11 @@ class SnippetService(
 ) {
 
     fun createSnippet(createSnippetRequest: CreateSnippetRequest, authorization: String): CreateSnippetResponse {
-        println("Creating snippet with request: $createSnippetRequest")  // Log de la solicitud
-
+        println("create checkpoint 2")
+        println("Llegue a SnippetService.createSnippet() con $createSnippetRequest y $authorization")
         val userId = AuthorizationDecoder.decode(authorization)
+        println("create checkpoint 3")
+        println("Decodificado el userId: $userId")
         val snippet = Snippet(
             name = createSnippetRequest.name,
             userId = userId,
@@ -40,24 +42,19 @@ class SnippetService(
             languageExtension = createSnippetRequest.extension
         )
 
-        println("Snippet object created: $snippet")  // Log del snippet creado
-
         try {
-            // Llamada al servicio de validación
-            println("Passing snippet to parser for validation")
+            println("create checkpoint 4, voy a validar el snippet")
             val validationResult = parseService.validateSnippet(createSnippetRequest)
-            println("Parse validation response: $validationResult")
-            println(validationResult.length)
-
-            // Si la respuesta es una lista vacía, el snippet es válido
+            println("create checkpoint 5, validé el snippet")
             if (validationResult.length == 2) {
-                // El snippet es válido, proceder con la creación en la base de datos
-                println("AAAAAAAAAAAAA")
+                println("create checkpoint 6, el snippet se puede parsear, voy a guardar el snippet")
                 snippetRepository.save(snippet)
+                println("create checkpoint 7, guardé el snippet")
                 assetService.addAsset(createSnippetRequest.content, "snippets", snippet.id)
+                println("create checkpoint 8, guardé el asset")
                 permissionsService.addPermission(userId, snippet.id, "WRITE")
-                println("ey")
-                return CreateSnippetResponse(
+                println("create checkpoint 9, guardé los permisos")
+                val response = CreateSnippetResponse(
                     message = "",
                     name = snippet.name,
                     content = createSnippetRequest.content,
@@ -65,8 +62,10 @@ class SnippetService(
                     extension = snippet.languageExtension,
                     version = createSnippetRequest.version
                 )
+                println("create checkpoint 10, voy a retornar el snippet $response")
+                return response
             } else {
-                // Si la lista no está vacía, significa que hay errores de validación
+                println("Hubo un error de validación, no se puede guardar el snippet")
                 val errorMessages = validationResult
                 val response = CreateSnippetResponse(
                     message = errorMessages,
@@ -76,12 +75,11 @@ class SnippetService(
                     extension = "",
                     version = ""
                 )
-                println("Validation error: $errorMessages")  // Log de errores de validación
-                return response  // Retornar el mensaje de error
+                println("Validation error: $errorMessages")
+                return response
             }
         } catch (e: Exception) {
-            println("Validation error: ${e.message}")  // Log del error de validación
-
+            println("Error creating snippet: ${e.message}")
             return CreateSnippetResponse(
                 message = "Unexpected error",
                 name = "",
@@ -110,7 +108,6 @@ class SnippetService(
             return null
         }
         snippetRepository.delete(snippet)
-        println("Snippet with ID $id deleted")
         return assetService.deleteAsset(id, "snippets").body
     }
 
@@ -125,9 +122,7 @@ class SnippetService(
         )
         val validationResult = parseService.validateSnippet(validationRequest)
         if (validationResult.length == 2) {
-            println("Contenido a actualizar es valido")
             assetService.updateAsset(id, "snippets", content)
-            println("Contenido actualizado")
             return UpdateSnippetResponse(
                 message = "Snippet updated",
                 name = snippet.get().name,
@@ -137,7 +132,6 @@ class SnippetService(
                 version = "1.1"
             )
         } else {
-            println("Contenido a actualizar no es valido")
             val errorMessages = validationResult
             return UpdateSnippetResponse(
                 message = errorMessages,
@@ -170,13 +164,15 @@ class SnippetService(
     }
 
     fun getAllSnippetsByUser(userId: String, username: String): List<SnippetWithAuthor>? {
-        println("AAAAAAAAAAAAA llegue con $userId y $username")
+        println("getAllSnippetsByUser checkpoint 4, llegue a getAllSnippetsByUser con $userId y $username")
         val snippetsID = permissionsService.getAllUserSnippets(userId)
+        println("getAllSnippetsByUser checkpoint 5, obtuve los snippets")
         val snippets = ArrayList<SnippetWithAuthor>()
-        println("BBBBBBBBBBBBB")
-        if (snippetsID == null) {
+        if (snippetsID == emptyList<Permission>()) {
+            println("no hay snippets")
             return emptyList()
         }
+        println("getAllSnippetsByUser checkpoint 6, voy a iterar sobre los snippets")
         for (id in snippetsID) {
             val snippet = getSnippet(id.snippetId)
             val user = snippet?.userId?.let { auth0Service.getUserById(it) }
@@ -185,7 +181,7 @@ class SnippetService(
 
             }
         }
-        println("CCCCCCCCCCCCC")
+        println("getAllSnippetsByUser checkpoint 7, voy a retornar los snippets")
         return snippets
     }
 

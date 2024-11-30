@@ -37,14 +37,13 @@ class ParseService(
 
     // funcion para validar un snippet
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
-        println("Sending snippet to parse service for validation: ${createSnippetRequest.content}")  // Log del snippet a validar
+        println("Validating snippet")
         val response = restTemplate.postForObject(
             "http://parse-service-infra:8080/api/parser/validate",
             mapOf("code" to createSnippetRequest.content, "version" to createSnippetRequest.version),
             String::class.java
         )
-        println("Parse validation response desde parseService: $response")  // Log de la respuesta del parser
-        println(response)
+        println("Finished validating snippet, result is $response")
         return response ?: "Error: No response from parser"
     }
 
@@ -93,10 +92,8 @@ class ParseService(
 
         // Define conformance según el resultado
         val conformance = if (response != "[]") {
-            println("El snippet no cumple con las reglas de linting")
             Conformance.NOT_COMPLIANT
         } else {
-            println("El snippet cumple con las reglas de linting")
             Conformance.COMPLIANT
         }
 
@@ -111,10 +108,8 @@ class ParseService(
     }
 
     fun formatSnippet(request: FormatSnippetRequest, authorization: String): String? {
-        println("Starting formatSnippet function")
 
         val userId = AuthorizationDecoder.decode(authorization)
-        println("Decoded userId: $userId")
 
         // Construye el cuerpo de la solicitud correctamente
         val requestBody = mapOf(
@@ -122,14 +117,11 @@ class ParseService(
             "userId" to userId,
             "content" to request.content
         )
-        println("Request body created: $requestBody")
 
         val url = "http://parse-service-infra:8080/api/parser/format"
-        println("URL set: $url")
 
         return try {
             val response = restTemplate.postForObject(url, requestBody, String::class.java)
-            println("Response received: $response")
             response
         } catch (e: Exception) {
             println("Error formatting snippet: ${e.message}")
@@ -151,7 +143,6 @@ class ParseService(
             inputs = inputs,
             outputs = outputs
         )
-        println("Sending to parser: $testDTO")
         val headers = getJsonAuthorizedHeaders(token)
         val entity = HttpEntity(testDTO, headers)
         val response = restTemplate.exchange(
@@ -160,7 +151,6 @@ class ParseService(
             entity,
             object : ParameterizedTypeReference<List<String>>() {}
         )
-        println("Response from parser: ${response.body}")
         return response.body ?: emptyList()
     }
 

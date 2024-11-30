@@ -19,7 +19,6 @@ class LintingRulesService(
 ) {
 
     suspend fun modifyLintingRules(authorization: String, rules: List<Rule>): List<Rule> {
-        println("voy a modificar las reglas")
         val userId = AuthorizationDecoder.decode(authorization)
 
         val mapper = jacksonObjectMapper()
@@ -27,23 +26,29 @@ class LintingRulesService(
 
         if (assetService.assetExists("linting", userId)) {
             assetService.updateAsset(userId, "linting", rulesString)
-            println("actualice las reglas de linting")
             updateAllSnippetsStatus(authorization)
             return rules
         }
         assetService.addAsset(rulesString, "linting", userId)
-        println("agregue las reglas de linting")
         updateAllSnippetsStatus(authorization)
         return rules
     }
 
     fun getLintingRules(userId: String): List<Rule> {
+        println("GetLintingRules checkpoint 3, llegue a getLintingRules con $userId")
         if (!assetService.assetExists("linting", userId)) {
-            return RulesFactory().getDefaultLintingRules()
+            println("GetLintingRules checkpoint 4, no existe el asset, voy a devolver las reglas por defecto")
+            val rules = RulesFactory().getDefaultLintingRules()
+            println("GetLintingRules checkpoint 5, las reglas por defecto son $rules")
+            return rules
         }
+        println("GetLintingRules checkpoint 6, el asset existe, voy a devolver las reglas personalizadas del usuario")
         val rulesString = assetService.getAsset(userId, "linting")
+        println("GetLintingRules checkpoint 7, las reglas personalizadas son $rulesString")
         val mapper = jacksonObjectMapper()
-        return mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
+        val response = mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
+        println("GetLintingRules checkpoint 8, las reglas en el formato que necesita el front son $response")
+        return response
     }
 
     fun updateConformance(snippetId: String, conformance: Conformance) {
@@ -56,15 +61,12 @@ class LintingRulesService(
     }
 
     suspend fun updateAllSnippetsStatus(authorization: String) {
-        println("voy a actualizar todos los snippets a pending")
         val userId = AuthorizationDecoder.decode(authorization)
         val username = AuthorizationDecoder.decodeUsername(authorization)
 
-        println("voy a publicar")
         snippetService.getAllSnippetsByUser(userId, username)?.forEach { snippet ->
             updateConformance(snippet.snippet.id, Conformance.PENDING)
             producer.publishEvent(authorization, snippet.snippet.id)
         }
-        println("publiqué")
     }
 }

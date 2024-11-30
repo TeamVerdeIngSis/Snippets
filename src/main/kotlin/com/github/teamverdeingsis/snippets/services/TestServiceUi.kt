@@ -33,8 +33,6 @@ class TestServiceUi(
         inputs: List<String>,
         outputs: List<String>
     ): TestResponse {
-        println("Inputs recibidos: $inputs")
-        println("Outputs recibidos: $outputs")
 
         val snippet = snippetRepository.findById(snippetId).orElseThrow {
             throw IllegalArgumentException("Snippet not found")
@@ -42,7 +40,6 @@ class TestServiceUi(
 
         val snippetContent = assetService.getAsset( snippetId,"snippets")
         val hasReadInput = snippetContent?.contains("readInput")
-        println("snippet has readInput: $hasReadInput")
 
         if (!hasReadInput!! && inputs.isNotEmpty()) {
             return TestResponse(
@@ -72,7 +69,6 @@ class TestServiceUi(
         )
 
         testRepo.save(test)
-        println("Test saved")
         return TestResponse(
             id = test.id,
             name = test.name,
@@ -82,11 +78,8 @@ class TestServiceUi(
         )
     }
 
-
     fun deleteTestById(token: String, id: String) {
-        println("deleting test with id: $id")
         testRepo.deleteById(id)
-        println("test deleted")
     }
 
     fun executeTest(token: String, testId: String): ResponseEntity<String> {

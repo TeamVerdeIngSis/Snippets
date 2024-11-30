@@ -21,23 +21,17 @@ class FormattingRulesService(
      * Modifica las reglas de formateo existentes o crea un nuevo asset si no existen.
      */
     suspend fun modifyFormattingRules(authorization: String, rules: List<Rule>): List<Rule> {
-        println("Modificando las reglas de formateo")
         val userId = AuthorizationDecoder.decode(authorization)
 
         val mapper = jacksonObjectMapper()
         val rulesString = mapper.writeValueAsString(rules)
 
         if (assetService.assetExists("format", userId)) {
-            println("El asset de reglas ya existe, actualizando...")
             assetService.updateAsset(userId, "format", rulesString)
-            println("Reglas de formateo actualizadas correctamente")
         } else {
-            println("El asset de reglas no existe, creando uno nuevo...")
             assetService.addAsset(rulesString, "format", userId)
-            println("Reglas de formateo creadas correctamente")
         }
         val result = assetService.getAsset(userId, "format")
-        println("Reglas de formateo despues de actualizarlas: $result")
         updateFormatOfSnippets(authorization)
         return rules
     }
@@ -46,20 +40,26 @@ class FormattingRulesService(
      * Obtiene las reglas de formateo del usuario. Si no existen, devuelve las reglas predeterminadas.
      */
     fun getFormattingRules(userId: String): List<Rule> {
+        println("GetFormattingRules checkpoint 3, llegue a getFormattingRules con $userId")
         if (!assetService.assetExists("format", userId)) {
-            println("No se encontraron reglas para el usuario, devolviendo reglas predeterminadas")
-            return RulesFactory().getDefaultFormattingRules()
+            println("GetFormattingRules checkpoint 4, no existe el asset, voy a devolver las reglas por defecto")
+            val rules = RulesFactory().getDefaultFormattingRules()
+            println("GetFormattingRules checkpoint 5, las reglas por defecto son $rules")
+            return rules
         }
+        println("GetFormattingRules checkpoint 6, el asset existe, voy a devolver las reglas personalizadas del usuario")
         val rulesString = assetService.getAsset(userId, "format")
+        println("GetFormattingRules checkpoint 7, las reglas personalizadas son $rulesString")
         val mapper = jacksonObjectMapper()
-        return mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
+        val rules = mapper.readValue(rulesString, object : TypeReference<List<Rule>>() {})
+        println("GetFormattingRules checkpoint 8, las reglas en el formato que necesita el front son $rules")
+        return rules
     }
 
     /**
      * Llama al servicio Parse para delegar el formateo del snippet.
      */
     fun formatSnippet(snippetContent: FormatSnippetRequest, authorization: String): String? {
-        println("Delegando el formateo al ParseService")
         return parseService.formatSnippet(snippetContent, authorization)
     }
 
@@ -67,14 +67,11 @@ class FormattingRulesService(
      * Publica eventos para re-formatear todos los snippets del usuario.
      */
     suspend fun updateFormatOfSnippets(authorization: String) {
-        println("Actualizando el formato de todos los snippets")
         val userId = AuthorizationDecoder.decode(authorization)
         val username = AuthorizationDecoder.decodeUsername(authorization)
 
         snippetService.getAllSnippetsByUser(userId, username)?.forEach { snippet ->
-            println("Publicando evento para formatear el snippet con ID: ${snippet.snippet.id}")
             producer.publishEvent(authorization, snippet.snippet.id)
         }
-        println("Eventos publicados exitosamente")
     }
 }

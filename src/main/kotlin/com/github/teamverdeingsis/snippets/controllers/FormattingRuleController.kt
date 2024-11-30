@@ -17,8 +17,10 @@ class FormattingRuleController(private val formattingRulesService: FormattingRul
 
     @GetMapping("/getFormattingRules")
     fun getFormattingRules(@RequestHeader("Authorization") authorization: String): ResponseEntity<List<Rule>> {
-
+        println("GetFormattingRules checkpoint 1")
+        println("Llegue a /getFormattingRules con $authorization")
         val userId = AuthorizationDecoder.decode(authorization)
+        println("GetFormattingRules checkpoint 2, el userId es $userId")
         return ResponseEntity.ok(formattingRulesService.getFormattingRules(userId))
     }
 
@@ -28,13 +30,11 @@ class FormattingRuleController(private val formattingRulesService: FormattingRul
         @RequestBody rules: List<Rule>,
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Rule>> {
-        println("llegue al controller con ${rules.size} reglas y $authorization")
         return ResponseEntity.ok(formattingRulesService.modifyFormattingRules(authorization, rules))
     }
 
     @PostMapping("/formatSnippet")
     fun formatSnippet(@RequestBody request: FormatSnippetRequest, @RequestHeader authorization: String): ResponseEntity<String> {
-        println("Llegue al formato con: snippetId=${request.snippetId}, content=${request.content}, authorization=$authorization")
         if (request.snippetId.isEmpty() || request.content.isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid request body")
         }

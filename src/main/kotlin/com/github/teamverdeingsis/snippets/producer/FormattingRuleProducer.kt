@@ -15,7 +15,6 @@ class FormattingRuleProducer(
     private val objectMapper: ObjectMapper
 ): ProductCreatedProducer, RedisStreamProducer(streamKey, redis)  {
     override suspend fun publishEvent(authorization: String, snippetId: String) {
-        println("Llegue al publisher con estos valores: token=$authorization, snippetId=$snippetId")
 
         // Crear el mensaje y serializarlo
         val message = SnippetMessage(authorization, snippetId)
@@ -24,7 +23,6 @@ class FormattingRuleProducer(
         // Publicar el mensaje serializado
 
         emit(serializedMessage).awaitSingle()
-        println("Mensaje enviado exitosamente")
     }
 
 }

@@ -27,7 +27,6 @@ class TestController(
         @PathVariable snippetId: String,
         @RequestBody testBody: Map<String, Any>
     ): ResponseEntity<TestResponse> {
-        println("Adding test to snippet with ID: $snippetId")
         val name = testBody["name"] as? String ?: return ResponseEntity.badRequest().build()
         val input = testBody["input"] as? List<String> ?: emptyList()
         val output = testBody["output"] as? List<String> ?: emptyList()
@@ -49,9 +48,7 @@ class TestController(
         @RequestHeader("Authorization") token: String,
         @PathVariable testId: String
     ): ResponseEntity<String> {
-        println("Received request to run test with ID: $testId")
         val test = testService.getTestById(testId)
-        println("Test data retrieved: $test")
         return testService.executeTest(token, testId)
     }
 
