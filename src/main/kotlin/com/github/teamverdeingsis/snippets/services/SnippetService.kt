@@ -175,6 +175,8 @@ class SnippetService(
         println("getAllSnippetsByUser checkpoint 6, voy a iterar sobre los snippets")
         for (id in snippetsID) {
             val snippet = getSnippet(id.snippetId)
+            println("iterando sobre los snippets")
+            println(snippet?.userId)
             val user = snippet?.userId?.let { auth0Service.getUserById(it) }
             if (user != null) {
                 snippets.add(SnippetWithAuthor(snippet ?: continue, user.body?.nickname ?: "Unknown"))
