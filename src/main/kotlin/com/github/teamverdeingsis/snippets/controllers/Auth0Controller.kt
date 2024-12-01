@@ -15,6 +15,7 @@ class Auth0Controller(private val auth0Service: Auth0Service) {
         @RequestParam perPage: Int,
         @RequestParam nickname: String
     ): ResponseEntity<List<GetUserDTO>> {
+        println("ESTOY EN EL CONTROLADOR DE AUTH0")
         return try {
             val users = auth0Service.getUsers(page, perPage, nickname)
             ResponseEntity.ok(users.body)
