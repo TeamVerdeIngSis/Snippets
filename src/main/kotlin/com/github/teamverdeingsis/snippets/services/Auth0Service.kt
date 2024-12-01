@@ -45,6 +45,7 @@ constructor(
             throw e
         }
     }
+
     fun getUserById(userId: String): ResponseEntity<GetUserDTO> {
         try {
             val request: HttpEntity<Void> = HttpEntity(getHeaders())
@@ -55,13 +56,9 @@ constructor(
                 GetUserDTO::class.java,
             )
         } catch (e: HttpClientErrorException) {
-            println("Error during request: ${e.message}")
-            println("Response body: ${e.responseBodyAsString}")
-            println("Status code: ${e.statusCode}")
             throw e
         }
     }
-
 
     private fun getHeaders(): HttpHeaders {
         return HttpHeaders().apply {

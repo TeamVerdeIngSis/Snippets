@@ -38,6 +38,7 @@ class LinterRuleController(private val lintingRulesService: LintingRulesService)
         @RequestBody rules: List<Rule>,
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Rule>> {
+        println("ModifyLintingRules checkpoint 1, llegue a /modifyLintingRules con $authorization y $rules")
         return ResponseEntity.ok(lintingRulesService.modifyLintingRules(authorization, rules))
     }
 

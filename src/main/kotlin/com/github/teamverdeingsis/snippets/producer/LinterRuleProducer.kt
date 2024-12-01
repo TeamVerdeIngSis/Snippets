@@ -21,7 +21,7 @@ class LinterRuleProducer(
 ): ProductCreatedProducer, RedisStreamProducer(streamKey, redis)  {
 
     override suspend fun publishEvent(authorization: String, snippetId: String) {
-
+        println("Publicando mensaje en el stream")
         // Crear el mensaje y serializarlo
         val message = SnippetMessage(authorization, snippetId)
         val serializedMessage = objectMapper.writeValueAsString(message)

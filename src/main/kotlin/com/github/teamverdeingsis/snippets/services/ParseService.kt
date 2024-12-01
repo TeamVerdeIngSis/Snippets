@@ -83,12 +83,11 @@ class ParseService(
     }
 
     fun lintSnippet(snippetID: String, authorization: String) {
-
-
+        println("Linting snippet $snippetID")
         val userId = AuthorizationDecoder.decode(authorization)
         val url = "http://parse-service-infra:8080/api/parser/lint"
         val response = restTemplate.postForObject(url, SnippetMessage(snippetID, userId), String::class.java)
-
+        println("Response from linting: $response")
 
         // Define conformance según el resultado
         val conformance = if (response != "[]") {
@@ -96,7 +95,8 @@ class ParseService(
         } else {
             Conformance.COMPLIANT
         }
-
+        println("Conformance: $conformance")
+        println("Updating conformance for snippet $snippetID")
         val updateUrl = "http://snippets-service-infra:8080/updateConformance"
         val requestBody = UpdateConformanceRequest(snippetID, conformance)
         val headers = HttpHeaders().apply {
@@ -104,7 +104,13 @@ class ParseService(
             set("Authorization", authorization)
         }
         val request = HttpEntity(requestBody, headers)
-        restTemplate.postForObject(updateUrl, request, String::class.java)
+        try {
+            restTemplate.postForObject(updateUrl, request, String::class.java)
+        }
+        catch (e: Exception) {
+            println("Error updating conformance: ${e.message}")
+        }
+        println("Conformance updated")
     }
 
     fun formatSnippet(request: FormatSnippetRequest, authorization: String): String? {

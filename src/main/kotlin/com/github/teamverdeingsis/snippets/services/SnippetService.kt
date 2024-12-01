@@ -63,6 +63,8 @@ class SnippetService(
                     version = createSnippetRequest.version
                 )
                 println("create checkpoint 10, voy a retornar el snippet $response")
+                parseService.lintSnippet(snippet.id, authorization)
+                println(" create checkpoint 11, linted the snippet")
                 return response
             } else {
                 println("Hubo un error de validación, no se puede guardar el snippet")
@@ -164,18 +166,13 @@ class SnippetService(
     }
 
     fun getAllSnippetsByUser(userId: String, username: String): List<SnippetWithAuthor>? {
-        println("getAllSnippetsByUser checkpoint 4, llegue a getAllSnippetsByUser con $userId y $username")
         val snippetsID = permissionsService.getAllUserSnippets(userId)
-        println("getAllSnippetsByUser checkpoint 5, obtuve los snippets")
         val snippets = ArrayList<SnippetWithAuthor>()
         if (snippetsID == emptyList<Permission>()) {
-            println("no hay snippets")
             return emptyList()
         }
-        println("getAllSnippetsByUser checkpoint 6, voy a iterar sobre los snippets")
         for (id in snippetsID) {
             val snippet = getSnippet(id.snippetId)
-            println("iterando sobre los snippets")
             println(snippet?.userId)
             val user = snippet?.userId?.let { auth0Service.getUserById(it) }
             if (user != null) {
@@ -183,7 +180,6 @@ class SnippetService(
 
             }
         }
-        println("getAllSnippetsByUser checkpoint 7, voy a retornar los snippets")
         return snippets
     }
 
