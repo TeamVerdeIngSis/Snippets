@@ -7,12 +7,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/snippets")
 class TestController(
     private val testService: TestServiceUi
 ) {
 
-    @GetMapping("/snippet/{snippetId}")
+    @GetMapping("/api/test/snippet/{snippetId}")
     fun getTestsBySnippetId(
         @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String,
@@ -21,7 +21,7 @@ class TestController(
         return ResponseEntity.ok(test.map { TestDTO(it) })
     }
 
-    @PostMapping("/snippet/{snippetId}")
+    @PostMapping("/api/test/snippet/{snippetId}")
     fun addTestToSnippet(
         @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String,
@@ -35,7 +35,7 @@ class TestController(
         return ResponseEntity.ok(testDTO)
     }
 
-    @DeleteMapping("/{testId}")
+    @DeleteMapping("/api/test/{testId}")
     fun deleteTestById(
         @RequestHeader ("Authorization") token: String,
         @PathVariable testId: String): ResponseEntity<Void> {
@@ -43,7 +43,7 @@ class TestController(
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/{testId}/run")
+    @PostMapping("/api/test/{testId}/run")
     fun runTest(
         @RequestHeader("Authorization") token: String,
         @PathVariable testId: String
@@ -54,7 +54,7 @@ class TestController(
 
 
 
-    @PostMapping("/{snippetId}/all")
+    @PostMapping("/api/test/{snippetId}/all")
     fun runAllTests(
         @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String

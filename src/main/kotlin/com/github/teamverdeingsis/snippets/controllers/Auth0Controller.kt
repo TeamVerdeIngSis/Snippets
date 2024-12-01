@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/auth0/users")
+@RequestMapping("/snippets")
 class Auth0Controller(private val auth0Service: Auth0Service) {
 
-    @GetMapping
+    @GetMapping("/api/auth0/users")
     fun getUsers(
         @RequestParam page: Int,
         @RequestParam perPage: Int,
