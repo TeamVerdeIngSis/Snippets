@@ -32,6 +32,7 @@ class FormattingRuleController(private val formattingRulesService: FormattingRul
         @RequestBody rules: List<Rule>,
         @RequestHeader("Authorization") authorization: String
     ): ResponseEntity<List<Rule>> {
+        println("ModifyFormattingRules checkpoint 1, llegue a /modifyFormattingRules con $rules y $authorization")
         return ResponseEntity.ok(formattingRulesService.modifyFormattingRules(authorization, rules))
     }
 

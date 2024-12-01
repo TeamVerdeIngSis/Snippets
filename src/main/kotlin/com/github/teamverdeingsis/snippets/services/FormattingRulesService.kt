@@ -21,18 +21,26 @@ class FormattingRulesService(
      * Modifica las reglas de formateo existentes o crea un nuevo asset si no existen.
      */
     suspend fun modifyFormattingRules(authorization: String, rules: List<Rule>): List<Rule> {
+        println("ModifyFormattingRules checkpoint 1, llegue a /modifyFormattingRules con $rules y $authorization")
         val userId = AuthorizationDecoder.decode(authorization)
-
+        println("ModifyFormattingRules checkpoint 2, el userId es $userId")
         val mapper = jacksonObjectMapper()
         val rulesString = mapper.writeValueAsString(rules)
-
+        println("ModifyFormattingRules checkpoint 3, las reglas en string son $rulesString")
         if (assetService.assetExists("format", userId)) {
+            println("ModifyFormattingRules checkpoint 4, el asset existe, voy a actualizarlo")
             assetService.updateAsset(userId, "format", rulesString)
+            println("ModifyFormattingRules checkpoint 5, actualice el asset")
         } else {
+            println("ModifyFormattingRules checkpoint 6, el asset no existe, voy a crearlo")
             assetService.addAsset(rulesString, "format", userId)
+            println("ModifyFormattingRules checkpoint 7, cree el asset")
         }
+        println("ModifyFormattingRules checkpoint 8, voy a actualizar el formato de todos los snippets")
         val result = assetService.getAsset(userId, "format")
+        println("ModifyFormattingRules checkpoint 9, el asset es $result")
         updateFormatOfSnippets(authorization)
+        println("ModifyFormattingRules checkpoint 10, actualice el formato de todos los snippets")
         return rules
     }
 
@@ -67,9 +75,10 @@ class FormattingRulesService(
      * Publica eventos para re-formatear todos los snippets del usuario.
      */
     suspend fun updateFormatOfSnippets(authorization: String) {
+        println("UpdateFormatOfSnippets checkpoint 1, llegue a updateFormatOfSnippets con $authorization")
         val userId = AuthorizationDecoder.decode(authorization)
         val username = AuthorizationDecoder.decodeUsername(authorization)
-
+        println("UpdateFormatOfSnippets checkpoint 2, el userId es $userId y el username es $username")
         snippetService.getAllSnippetsByUser(userId, username)?.forEach { snippet ->
             producer.publishEvent(authorization, snippet.snippet.id)
         }
