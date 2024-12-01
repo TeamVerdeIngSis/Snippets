@@ -145,7 +145,7 @@ class ParseServiceTest {
         val expectedConformance = Conformance.COMPLIANT
 
         val urlLint = "http://parse-service-infra:8080/api/parser/lint"
-        val urlUpdateConformance = "http://snippets-service-infra:8080/updateConformance"
+        val urlUpdateConformance = "http://snippets-service-infra:8080/snippets/updateConformance"
 
         // Mock de la respuesta del RestTemplate para linting
         whenever(restTemplate.postForObject(eq(urlLint), any(), eq(String::class.java)))

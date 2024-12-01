@@ -9,7 +9,7 @@ class AssetService(private val restTemplate: RestTemplate) {
     public fun addAsset(content: String, directory: String, id: String): ResponseEntity<String> {
         println("Voy a agregar un asset con $content, $directory y $id")
         val assetServiceUrl = "http://asset-service-infra:8080/v1/asset/$directory/$id"
-        restTemplate.put(assetServiceUrl, content, String::class.java)
+        restTemplate.postForObject(assetServiceUrl, content, String::class.java)
         return ResponseEntity.ok().body("Asset with ID $id added")
     }
 

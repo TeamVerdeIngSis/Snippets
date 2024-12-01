@@ -97,7 +97,7 @@ class ParseService(
         }
         println("Conformance: $conformance")
         println("Updating conformance for snippet $snippetID")
-        val updateUrl = "http://snippets-service-infra:8080/updateConformance"
+        val updateUrl = "http://snippets-service-infra:8080/snippets/updateConformance"
         val requestBody = UpdateConformanceRequest(snippetID, conformance)
         val headers = HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
