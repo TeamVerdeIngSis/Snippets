@@ -27,16 +27,17 @@ constructor(
     fun getUsers(
         page: Int,
         perPage: Int,
-        nickname: String,
+        nickname: String
     ): ResponseEntity<List<GetUserDTO>> {
         try {
+            val queryParam = if (nickname.isNotBlank()) "&q=nickname:*$nickname*" else ""
             val request: HttpEntity<Void> = HttpEntity(getHeaders())
             return rest.exchange(
                 "$auth0URL/api/v2/users?" +
                         "filter=user_id,nickname" +
                         "&per_page=$perPage" +
                         "&page=$page" +
-                        "&q=nickname:*$nickname*",
+                        queryParam,
                 HttpMethod.GET,
                 request,
                 object : ParameterizedTypeReference<List<GetUserDTO>>() {},
@@ -45,6 +46,7 @@ constructor(
             throw e
         }
     }
+
 
     fun getUserById(userId: String): ResponseEntity<GetUserDTO> {
         try {
