@@ -1,22 +1,22 @@
-//package com.github.teamverdeingsis.snippets.services
+// package com.github.teamverdeingsis.snippets.services
 //
-//import com.github.teamverdeingsis.snippets.factory.RulesFactory
-//import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
-//import com.github.teamverdeingsis.snippets.models.Rule
-//import com.github.teamverdeingsis.snippets.producer.FormattingRuleProducer
+// import com.github.teamverdeingsis.snippets.factory.RulesFactory
+// import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
+// import com.github.teamverdeingsis.snippets.models.Rule
+// import com.github.teamverdeingsis.snippets.producer.FormattingRuleProducer
 //
-//import org.junit.jupiter.api.Test
-//import org.mockito.Mockito
-//import org.mockito.kotlin.whenever
+// import org.junit.jupiter.api.Test
+// import org.mockito.Mockito
+// import org.mockito.kotlin.whenever
 //
-//import org.junit.jupiter.api.Assertions.*
-//import org.mockito.InjectMocks
-//import org.mockito.Mock
-//import org.mockito.junit.jupiter.MockitoExtension
-//import org.junit.jupiter.api.extension.ExtendWith
+// import org.junit.jupiter.api.Assertions.*
+// import org.mockito.InjectMocks
+// import org.mockito.Mock
+// import org.mockito.junit.jupiter.MockitoExtension
+// import org.junit.jupiter.api.extension.ExtendWith
 //
-//@ExtendWith(MockitoExtension::class)
-//class FormattingRulesServiceTest {
+// @ExtendWith(MockitoExtension::class)
+// class FormattingRulesServiceTest {
 //
 //    @Mock
 //    private lateinit var assetService: AssetService
@@ -90,4 +90,4 @@
 //        assertEquals(formattedSnippet, result)
 //        Mockito.verify(parseService).formatSnippet(snippetContent, authorization)
 //    }
-//}
+// }

@@ -15,11 +15,9 @@ class PermissionsService(private val restTemplate: RestTemplate) {
     }
 
     public fun getAllUserSnippets(userId: String): List<Permission> {
-
         val url = "http://permissions-service-infra:8080/api/permissions/user/$userId"
         val response = restTemplate.getForEntity(url, Array<Permission>::class.java)
         if (!response.statusCode.is2xxSuccessful) {
-
             throw RuntimeException("User with ID $userId not found")
         } else if (response.body!!.isEmpty()) {
             return emptyList()

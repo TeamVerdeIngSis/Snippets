@@ -1,28 +1,28 @@
-//package com.github.teamverdeingsis.snippets.services
+// package com.github.teamverdeingsis.snippets.services
 //
-//import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-//import com.github.teamverdeingsis.snippets.factory.RulesFactory
-//import com.github.teamverdeingsis.snippets.models.Conformance
-//import com.github.teamverdeingsis.snippets.models.Rule
-//import com.github.teamverdeingsis.snippets.models.Snippet
-//import com.github.teamverdeingsis.snippets.producer.LinterRuleProducer
-//import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
-//import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
-//import kotlinx.coroutines.runBlocking
-//import org.junit.jupiter.api.Test
-//import org.mockito.kotlin.whenever
-//import org.mockito.kotlin.mock
-//import org.mockito.kotlin.verify
-//import org.junit.jupiter.api.Assertions.*
-//import org.mockito.InjectMocks
-//import org.mockito.Mock
-//import org.mockito.junit.jupiter.MockitoExtension
-//import org.junit.jupiter.api.extension.ExtendWith
-//import org.mockito.kotlin.doReturn
-//import org.springframework.http.ResponseEntity
+// import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+// import com.github.teamverdeingsis.snippets.factory.RulesFactory
+// import com.github.teamverdeingsis.snippets.models.Conformance
+// import com.github.teamverdeingsis.snippets.models.Rule
+// import com.github.teamverdeingsis.snippets.models.Snippet
+// import com.github.teamverdeingsis.snippets.producer.LinterRuleProducer
+// import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
+// import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
+// import kotlinx.coroutines.runBlocking
+// import org.junit.jupiter.api.Test
+// import org.mockito.kotlin.whenever
+// import org.mockito.kotlin.mock
+// import org.mockito.kotlin.verify
+// import org.junit.jupiter.api.Assertions.*
+// import org.mockito.InjectMocks
+// import org.mockito.Mock
+// import org.mockito.junit.jupiter.MockitoExtension
+// import org.junit.jupiter.api.extension.ExtendWith
+// import org.mockito.kotlin.doReturn
+// import org.springframework.http.ResponseEntity
 //
-//@ExtendWith(MockitoExtension::class)
-//class LintingRulesServiceTest {
+// @ExtendWith(MockitoExtension::class)
+// class LintingRulesServiceTest {
 //
 //    @Mock
 //    private lateinit var assetService: AssetService
@@ -103,4 +103,4 @@
 //        verify(snippetRepository).save(snippet)
 //        assertEquals(mocked_conformance, snippet.conformance)
 //    }
-//}
+// }

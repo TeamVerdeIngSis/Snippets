@@ -1,14 +1,27 @@
-import com.github.teamverdeingsis.snippets.models.*
+import com.github.teamverdeingsis.snippets.models.Conformance
+import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.FullSnippet
+import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
+import com.github.teamverdeingsis.snippets.models.Snippet
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
-import com.github.teamverdeingsis.snippets.services.*
+import com.github.teamverdeingsis.snippets.services.AssetService
+import com.github.teamverdeingsis.snippets.services.Auth0Service
+import com.github.teamverdeingsis.snippets.services.ParseService
+import com.github.teamverdeingsis.snippets.services.PermissionsService
+import com.github.teamverdeingsis.snippets.services.SnippetService
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.*
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
@@ -41,7 +54,7 @@ class SnippetServiceTest {
             content = "This is a test",
             language = "kotlin",
             extension = "kt",
-            version = "1.1"
+            version = "1.1",
         )
         val authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         val userId = "user123"
@@ -51,7 +64,7 @@ class SnippetServiceTest {
             userId = userId,
             conformance = Conformance.PENDING,
             languageName = createSnippetRequest.language,
-            languageExtension = createSnippetRequest.extension
+            languageExtension = createSnippetRequest.extension,
         )
 
         whenever(authorizationDecoder.decode(authorization)).thenReturn(userId)
@@ -131,7 +144,7 @@ class SnippetServiceTest {
         val result = snippetService.checkIfOwner(snippetId, userId, token)
 
         assertTrue(result)
-        verify(restTemplate).postForEntity(anyString(), any(), eq(String::class.java))  // Verificamos la llamada
+        verify(restTemplate).postForEntity(anyString(), any(), eq(String::class.java)) // Verificamos la llamada
     }
 
     @Test
@@ -167,7 +180,7 @@ class SnippetServiceTest {
 
         val result = snippetService.validateSnippet(request)
 
-        assertEquals("[]", result)  // Si es válido, no hay mensajes de error
+        assertEquals("[]", result) // Si es válido, no hay mensajes de error
     }
 
     @Test

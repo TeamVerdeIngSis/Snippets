@@ -27,7 +27,7 @@ constructor(
     fun getUsers(
         page: Int,
         perPage: Int,
-        nickname: String
+        nickname: String,
     ): ResponseEntity<List<GetUserDTO>> {
         try {
             val queryParam = if (nickname.isNotBlank()) "&q=nickname:*$nickname*" else ""
@@ -46,7 +46,6 @@ constructor(
             throw e
         }
     }
-
 
     fun getUserById(userId: String): ResponseEntity<GetUserDTO> {
         try {

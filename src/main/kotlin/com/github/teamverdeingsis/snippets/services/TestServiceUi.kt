@@ -1,7 +1,6 @@
 package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Test
-import com.github.teamverdeingsis.snippets.models.TestDTO
 import com.github.teamverdeingsis.snippets.models.TestResponse
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.repositories.TestRepo
@@ -14,7 +13,7 @@ class TestServiceUi(
     private val snippetRepository: SnippetRepository,
     private val parseService: ParseService,
     private val snippetService: SnippetService,
-    private val assetService: AssetService
+    private val assetService: AssetService,
 ) {
 
     fun getTestsBySnippetId(token: String, snippetId: String): List<Test> {
@@ -31,18 +30,14 @@ class TestServiceUi(
         snippetId: String,
         name: String,
         inputs: List<String>,
-        outputs: List<String>
+        outputs: List<String>,
     ): TestResponse {
-        println("Inputs recibidos: $inputs")
-        println("Outputs recibidos: $outputs")
-
         val snippet = snippetRepository.findById(snippetId).orElseThrow {
             throw IllegalArgumentException("Snippet not found")
         }
 
-        val snippetContent = assetService.getAsset( snippetId,"snippets")
+        val snippetContent = assetService.getAsset(snippetId, "snippets")
         val hasReadInput = snippetContent?.contains("readInput")
-        println("snippet has readInput: $hasReadInput")
 
         if (!hasReadInput!! && inputs.isNotEmpty()) {
             return TestResponse(
@@ -50,7 +45,7 @@ class TestServiceUi(
                 name = "",
                 input = listOf(),
                 output = listOf(),
-                message = "This snippet does not require inputs"
+                message = "This snippet does not require inputs",
             )
         }
 
@@ -60,7 +55,7 @@ class TestServiceUi(
                 name = "",
                 input = listOf(),
                 output = listOf(),
-                message = "This snippet requires inputs"
+                message = "This snippet requires inputs",
             )
         }
 
@@ -68,31 +63,27 @@ class TestServiceUi(
             name = name,
             input = inputs.toMutableList(),
             output = outputs.toMutableList(),
-            snippet = snippet
+            snippet = snippet,
         )
 
         testRepo.save(test)
-        println("Test saved")
         return TestResponse(
             id = test.id,
             name = test.name,
             input = test.input,
             output = test.output,
-            message = "Test added"
+            message = "Test added",
         )
     }
 
-
     fun deleteTestById(token: String, id: String) {
-        println("deleting test with id: $id")
         testRepo.deleteById(id)
-        println("test deleted")
     }
 
     fun executeTest(token: String, testId: String): ResponseEntity<String> {
         val test = getTestById(testId)
         val snippet = snippetService.getSnippet(test.snippet.id)
-        val results = parseService.test(token, test.snippet.id, test.input, test.output,snippet)
+        val results = parseService.test(token, test.snippet.id, test.input, test.output, snippet)
 
         return if (results.isEmpty()) {
             ResponseEntity.ok("test passed")
@@ -105,7 +96,7 @@ class TestServiceUi(
         val tests = getTestsBySnippetId(token, snippetId)
         val snippet = snippetService.getSnippet(snippetId)
         return tests.associate { test ->
-            val errors = parseService.test(token, test.snippet.id, test.input, test.output,snippet)
+            val errors = parseService.test(token, test.snippet.id, test.input, test.output, snippet)
             test.name to errors
         }
     }

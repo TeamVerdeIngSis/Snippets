@@ -4,15 +4,22 @@ import com.github.teamverdeingsis.snippets.models.TestDTO
 import com.github.teamverdeingsis.snippets.models.TestResponse
 import com.github.teamverdeingsis.snippets.services.TestServiceUi
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/snippets")
 class TestController(
-    private val testService: TestServiceUi
+    private val testService: TestServiceUi,
 ) {
 
-    @GetMapping("/snippet/{snippetId}")
+    @GetMapping("/api/test/snippet/{snippetId}")
     fun getTestsBySnippetId(
         @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String,
@@ -21,46 +28,41 @@ class TestController(
         return ResponseEntity.ok(test.map { TestDTO(it) })
     }
 
-    @PostMapping("/snippet/{snippetId}")
+    @PostMapping("/api/test/snippet/{snippetId}")
     fun addTestToSnippet(
         @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String,
-        @RequestBody testBody: Map<String, Any>
+        @RequestBody testBody: Map<String, String>,
     ): ResponseEntity<TestResponse> {
-        println("Adding test to snippet with ID: $snippetId")
-        val name = testBody["name"] as? String ?: return ResponseEntity.badRequest().build()
-        val input = testBody["input"] as? List<String> ?: emptyList()
-        val output = testBody["output"] as? List<String> ?: emptyList()
-
+        val name = testBody["name"] ?: return ResponseEntity.badRequest().build()
+        val input: List<String> = testBody["input"]?.split(",") ?: emptyList()
+        val output: List<String> = testBody["output"]?.split(",") ?: emptyList()
         val testDTO = testService.addTestToSnippet(token, snippetId, name, input, output)
         return ResponseEntity.ok(testDTO)
     }
 
-    @DeleteMapping("/{testId}")
+    @DeleteMapping("/api/test/{testId}")
     fun deleteTestById(
-        @RequestHeader ("Authorization") token: String,
-        @PathVariable testId: String): ResponseEntity<Void> {
+        @RequestHeader("Authorization") token: String,
+        @PathVariable testId: String,
+    ): ResponseEntity<Void> {
         testService.deleteTestById(token, testId)
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/{testId}/run")
+    @PostMapping("/api/test/{testId}/run")
     fun runTest(
         @RequestHeader("Authorization") token: String,
-        @PathVariable testId: String
+        @PathVariable testId: String,
     ): ResponseEntity<String> {
-        println("Received request to run test with ID: $testId")
-        val test = testService.getTestById(testId)
-        println("Test data retrieved: $test")
+        testService.getTestById(testId)
         return testService.executeTest(token, testId)
     }
 
-
-
-    @PostMapping("/{snippetId}/all")
+    @PostMapping("/api/test/{snippetId}/all")
     fun runAllTests(
         @RequestHeader("Authorization") token: String,
-        @PathVariable snippetId: String
+        @PathVariable snippetId: String,
     ): ResponseEntity<Map<String, List<String>>> {
         val testResults = testService.executeAllSnippetTests(token, snippetId)
         return ResponseEntity.ok(testResults)

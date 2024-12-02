@@ -5,5 +5,5 @@ data class TestResponse(
     val name: String,
     val input: List<String>,
     val output: List<String>,
-    val message : String
+    val message: String,
 )

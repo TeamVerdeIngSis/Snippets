@@ -1,13 +1,16 @@
-package com.github.teamverdeingsis.snippets.services
-
 import com.github.teamverdeingsis.snippets.models.CreatePermissionRequest
 import com.github.teamverdeingsis.snippets.models.Permission
+import com.github.teamverdeingsis.snippets.services.PermissionsService
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.assertThrows
-import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito.*
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -107,7 +110,6 @@ class PermissionsServiceTest {
     fun `hey should return hello message`() {
         val url = "http://permissions-service-infra:8080/api/permissions/helloNga"
         val responseMessage = "Hello, Nga!"
-        val response = ResponseEntity(responseMessage, HttpStatus.OK)
 
         `when`(restTemplate.getForObject(url, String::class.java)).thenReturn(responseMessage)
 

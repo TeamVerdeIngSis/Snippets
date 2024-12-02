@@ -17,7 +17,6 @@ class SnippetsApplication(
     fun init() {
         println("Audience: $audience")
         println("Issuer: $issuer")
-        println("Token: $token")
     }
 }
 

@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component
 class FormattingRuleProducer(
     @Value("\${stream.formattingKey}") streamKey: String,
     redis: ReactiveRedisTemplate<String, String>,
-    private val objectMapper: ObjectMapper
-): ProductCreatedProducer, RedisStreamProducer(streamKey, redis)  {
+    private val objectMapper: ObjectMapper,
+) : ProductCreatedProducer, RedisStreamProducer(streamKey, redis) {
     override suspend fun publishEvent(authorization: String, snippetId: String) {
-        println("Llegue al publisher con estos valores: token=$authorization, snippetId=$snippetId")
-
+        println("Publicando mensaje en el stream")
         // Crear el mensaje y serializarlo
         val message = SnippetMessage(authorization, snippetId)
         val serializedMessage = objectMapper.writeValueAsString(message)
@@ -26,6 +25,4 @@ class FormattingRuleProducer(
         emit(serializedMessage).awaitSingle()
         println("Mensaje enviado exitosamente")
     }
-
 }
-

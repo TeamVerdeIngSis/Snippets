@@ -5,5 +5,5 @@ data class TestParseDTO(
     val version: String,
     val snippetId: String,
     val inputs: List<String>,
-    val outputs: List<String>
+    val outputs: List<String>,
 )
