@@ -16,7 +16,7 @@ class Auth0Controller(private val auth0Service: Auth0Service) {
     fun getUsers(
         @RequestParam page: Int,
         @RequestParam perPage: Int,
-        @RequestParam(required = false, defaultValue = "") nickname: String
+        @RequestParam(required = false, defaultValue = "") nickname: String,
     ): ResponseEntity<List<GetUserDTO>> {
         println("ESTOY EN EL CONTROLADOR DE AUTH0")
         return try {
