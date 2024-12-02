@@ -1,4 +1,4 @@
-package  com.github.teamverdeingsis.snippets.config
+package com.github.teamverdeingsis.snippets.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -13,7 +13,7 @@ class ConnectionFactory(@Value("\${spring.data.redis.host}") private val hostNam
     @Bean
     fun redisConnectionFactory(): LettuceConnectionFactory {
         return LettuceConnectionFactory(
-            RedisStandaloneConfiguration(hostName, port)
+            RedisStandaloneConfiguration(hostName, port),
         )
     }
 }

@@ -12,7 +12,6 @@ data class Config(
     val readInputWithSimpleArgument: String = "none",
 )
 
-
 class RulesFactory {
     fun getDefaultLintingRules(): List<Rule> {
         return listOf(
@@ -20,26 +19,26 @@ class RulesFactory {
                 id = "1",
                 name = "snake-case-variables",
                 isActive = true,
-                value = null
+                value = null,
             ),
             Rule(
                 id = "2",
                 name = "camel-case-variables",
                 isActive = true,
-                value = null
-        ),
+                value = null,
+            ),
             Rule(
                 id = "3",
                 name = "mandatory-variable-or-literal-in-println",
                 isActive = true,
-                value = null
+                value = null,
             ),
             Rule(
                 id = "4",
                 name = "read-input-with-simple-argument",
                 isActive = true,
-                value = null
-            )
+                value = null,
+            ),
         )
     }
 
@@ -53,7 +52,7 @@ class RulesFactory {
             Rule(
                 id = "2",
                 name = "space-after-colon",
-                isActive = false
+                isActive = false,
             ),
             Rule(
                 id = "3",
@@ -64,14 +63,14 @@ class RulesFactory {
                 id = "4",
                 name = "newline-before-println",
                 isActive = false,
-                value= 0
+                value = 0,
             ),
             Rule(
                 id = "5",
                 name = "indentation",
                 isActive = false,
-                value = 4
-            )
+                value = 4,
+            ),
         )
     }
 }

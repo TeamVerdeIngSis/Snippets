@@ -12,19 +12,19 @@ data class Snippet(
     val userId: String,
     var conformance: Conformance = Conformance.PENDING,
     val languageName: String,
-    val languageExtension: String
+    val languageExtension: String,
 ) {
     constructor() : this(
         id = UUID.randomUUID().toString(),
         name = "",
         userId = "",
         languageName = "",
-        languageExtension = ""
+        languageExtension = "",
     )
 }
 
 enum class Conformance {
     PENDING,
     COMPLIANT,
-    NOT_COMPLIANT
+    NOT_COMPLIANT,
 }

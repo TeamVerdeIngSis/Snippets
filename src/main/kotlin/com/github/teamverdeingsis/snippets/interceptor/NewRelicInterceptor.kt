@@ -15,7 +15,6 @@ class NewRelicInterceptor : ClientHttpRequestInterceptor {
     @Trace(dispatcher = true)
     @Throws(IOException::class)
     override fun intercept(request: HttpRequest, body: ByteArray, execution: ClientHttpRequestExecution): ClientHttpResponse {
-
         val id = MDC.get(CorrelationIdFilter.CORRELATION_ID_KEY) ?: UUID.randomUUID().toString()
         request.headers.add(CorrelationIdFilter.CORRELATION_ID_HEADER, id)
 

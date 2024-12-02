@@ -14,7 +14,7 @@ class FormattingRulesService(
     private val assetService: AssetService,
     private val snippetService: SnippetService,
     private val producer: FormattingRuleProducer,
-    private val parseService: ParseService
+    private val parseService: ParseService,
 ) {
 
     /**

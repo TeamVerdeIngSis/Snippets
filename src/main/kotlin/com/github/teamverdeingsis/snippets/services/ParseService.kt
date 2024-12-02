@@ -2,13 +2,6 @@ package com.github.teamverdeingsis.snippets.services
 
 import TestParseDTO
 import com.github.teamverdeingsis.snippets.models.Conformance
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
@@ -16,11 +9,18 @@ import com.github.teamverdeingsis.snippets.models.SnippetMessage
 import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
+import org.springframework.web.client.RestTemplate
 
 @Service
 class ParseService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
 ) {
 
     private val parseServiceUrl = "http://parse-service-infra:8080/v1"
@@ -41,7 +41,7 @@ class ParseService(
         val response = restTemplate.postForObject(
             "http://parse-service-infra:8080/api/parser/validate",
             mapOf("code" to createSnippetRequest.content, "version" to createSnippetRequest.version),
-            String::class.java
+            String::class.java,
         )
         println("Finished validating snippet, result is $response")
         return response ?: "Error: No response from parser"
@@ -106,22 +106,20 @@ class ParseService(
         val request = HttpEntity(requestBody, headers)
         try {
             restTemplate.postForObject(updateUrl, request, String::class.java)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error updating conformance: ${e.message}")
         }
         println("Conformance updated")
     }
 
     fun formatSnippet(request: FormatSnippetRequest, authorization: String): String? {
-
         val userId = AuthorizationDecoder.decode(authorization)
 
         // Construye el cuerpo de la solicitud correctamente
         val requestBody = mapOf(
             "snippetId" to request.snippetId,
             "userId" to userId,
-            "content" to request.content
+            "content" to request.content,
         )
 
         val url = "http://parse-service-infra:8080/api/parser/format"
@@ -135,19 +133,18 @@ class ParseService(
         }
     }
 
-
     fun test(
         token: String,
         snippetId: String,
         inputs: List<String>,
         outputs: List<String>,
-        snippet: Snippet?
+        snippet: Snippet?,
     ): List<String> {
         val testDTO = TestParseDTO(
             version = "1.1",
             snippetId = snippetId,
             inputs = inputs,
-            outputs = outputs
+            outputs = outputs,
         )
         val headers = getJsonAuthorizedHeaders(token)
         val entity = HttpEntity(testDTO, headers)
@@ -155,7 +152,7 @@ class ParseService(
             "http://parse-service-infra:8080/api/parser/test",
             HttpMethod.POST,
             entity,
-            object : ParameterizedTypeReference<List<String>>() {}
+            object : ParameterizedTypeReference<List<String>>() {},
         )
         return response.body ?: emptyList()
     }

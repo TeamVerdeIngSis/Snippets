@@ -5,6 +5,8 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.6'
 	id 'maven-publish'
 	id 'jacoco' // Añadido para cobertura de pruebas
+	id 'com.diffplug.spotless' version '6.22.0'
+
 }
 
 group = 'teamVerde'
@@ -116,4 +118,17 @@ tasks.test {
 	useJUnitPlatform()
 	include '**/*Test.class'
 	finalizedBy jacocoTestReport
+}
+
+spotless {
+	kotlin {
+		// Usa ktlint para linteo y formateo
+		ktlint('0.50.0') // Versión de ktlint
+		target 'src/**/*.kt'
+	}
+	kotlinGradle {
+		// Aplica linteo y formateo a scripts de Gradle en Kotlin (*.kts)
+		ktlint()
+		target '*.gradle.kts'
+	}
 }

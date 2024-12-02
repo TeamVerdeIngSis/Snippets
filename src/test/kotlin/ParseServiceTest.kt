@@ -1,20 +1,22 @@
-package com.github.teamverdeingsis.snippets.services
-
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
 import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
+import com.github.teamverdeingsis.snippets.services.ParseService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.*
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.client.RestTemplate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-
 
 @ExtendWith(SpringExtension::class)
 class ParseServiceTest {
@@ -43,7 +45,7 @@ class ParseServiceTest {
 
     @Test
     fun `validateSnippet should return validation response`() {
-        val createSnippetRequest = CreateSnippetRequest(name="name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
+        val createSnippetRequest = CreateSnippetRequest(name = "name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
         val expectedResponse = "Valid snippet"
         val url = "http://parse-service-infra:8080/api/parser/validate"
 
@@ -61,7 +63,7 @@ class ParseServiceTest {
     // Test para el método 'executeSnippet'
     @Test
     fun `executeSnippet should return response entity with content`() {
-        val createSnippetRequest = CreateSnippetRequest(name="name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
+        val createSnippetRequest = CreateSnippetRequest(name = "name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
         val expectedResponse = "Execution result"
         val url = "http://parse-service-infra:8080/v1/execute"
 
@@ -79,7 +81,7 @@ class ParseServiceTest {
     // Test para el método 'formatSnippet'
     @Test
     fun `formatSnippet should return formatted snippet response`() {
-        val createSnippetRequest = CreateSnippetRequest(name="name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
+        val createSnippetRequest = CreateSnippetRequest(name = "name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
         val expectedResponse = "Formatted snippet"
         val url = "http://parse-service-infra:8080/v1/format"
 
@@ -97,7 +99,7 @@ class ParseServiceTest {
     // Test para el método 'analyzeSnippet'
     @Test
     fun `analyzeSnippet should return analysis response`() {
-        val createSnippetRequest = CreateSnippetRequest(name="name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
+        val createSnippetRequest = CreateSnippetRequest(name = "name", content = "sample code", language = "PrintScript", extension = "prs", version = "1.1")
         val expectedResponse = "Analysis result"
         val url = "http://parse-service-infra:8080/v1/analyze"
 
@@ -111,7 +113,6 @@ class ParseServiceTest {
         assertEquals(expectedResponse, result.body)
         verify(restTemplate).exchange(eq(url), eq(HttpMethod.POST), any(), eq(String::class.java))
     }
-
 
     // Test para el método 'test' (con DTO y parámetros)
     @Test
@@ -142,7 +143,7 @@ class ParseServiceTest {
         val snippetId = "123"
         val authorization = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMTIzIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         val lintResponse = "[]"
-        val expectedConformance = Conformance.COMPLIANT
+        Conformance.COMPLIANT
 
         val urlLint = "http://parse-service-infra:8080/api/parser/lint"
         val urlUpdateConformance = "http://snippets-service-infra:8080/snippets/updateConformance"
@@ -183,7 +184,4 @@ class ParseServiceTest {
         assertEquals(expectedResponse, result)
         verify(restTemplate).postForObject(eq(url), any(), eq(String::class.java))
     }
-
-
-
 }

@@ -3,7 +3,10 @@ package com.github.teamverdeingsis.snippets.controllers
 import com.github.teamverdeingsis.snippets.models.GetUserDTO
 import com.github.teamverdeingsis.snippets.services.Auth0Service
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/snippets")
@@ -13,7 +16,7 @@ class Auth0Controller(private val auth0Service: Auth0Service) {
     fun getUsers(
         @RequestParam page: Int,
         @RequestParam perPage: Int,
-        @RequestParam nickname: String
+        @RequestParam nickname: String,
     ): ResponseEntity<List<GetUserDTO>> {
         println("ESTOY EN EL CONTROLADOR DE AUTH0")
         return try {

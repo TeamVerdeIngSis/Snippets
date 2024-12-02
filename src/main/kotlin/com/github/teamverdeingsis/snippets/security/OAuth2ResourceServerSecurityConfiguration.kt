@@ -3,9 +3,6 @@ package com.github.teamverdeingsis.snippets.security
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
-import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.Customizer.withDefaults
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -24,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 class OAuth2ResourceServerSecurityConfiguration(
     @Value("\${auth0.audience}") val audience: String,
-    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String
+    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri}") val issuer: String,
 ) {
 
     @Bean
@@ -42,8 +39,6 @@ class OAuth2ResourceServerSecurityConfiguration(
             }
         return http.build()
     }
-
-
 
     @Bean
     fun jwtDecoder(): JwtDecoder {

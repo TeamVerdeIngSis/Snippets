@@ -1,23 +1,23 @@
 package com.github.teamverdeingsis.snippets.controllers
 
-import com.github.teamverdeingsis.snippets.models.*
+import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.CreateSnippetResponse
+import com.github.teamverdeingsis.snippets.models.FullSnippet
+import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
+import com.github.teamverdeingsis.snippets.models.UpdateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.UpdateSnippetResponse
+import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
+import com.github.teamverdeingsis.snippets.services.SnippetService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
-import com.github.teamverdeingsis.snippets.services.SnippetService
-import com.nimbusds.jwt.JWTParser
-import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.server.ResponseStatusException
-
 @RestController
 @RequestMapping("/snippets")
 class SnippetController(private val snippetService: SnippetService) {
@@ -26,6 +26,7 @@ class SnippetController(private val snippetService: SnippetService) {
     fun helloParse(): ResponseEntity<String> {
         return snippetService.helloParse()
     }
+
     @GetMapping("/hello/permissions")
     fun helloPermissions(): ResponseEntity<String> {
         return snippetService.helloPermissions()
@@ -35,6 +36,7 @@ class SnippetController(private val snippetService: SnippetService) {
     fun helloPablo(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, Pablo!")
     }
+
     @GetMapping("/hello/peter")
     fun helloPeter(): ResponseEntity<String> {
         return ResponseEntity.ok("Hello, Peter!")
@@ -43,7 +45,7 @@ class SnippetController(private val snippetService: SnippetService) {
     @PostMapping("/create")
     fun create(
         @RequestBody snippetRequest: CreateSnippetRequest,
-        @RequestHeader("Authorization") authorization: String
+        @RequestHeader("Authorization") authorization: String,
     ): ResponseEntity<CreateSnippetResponse> {
         println("Create checkpoint 1")
         println("Llegue a /create con $snippetRequest y $authorization")
@@ -73,7 +75,7 @@ class SnippetController(private val snippetService: SnippetService) {
 
     @GetMapping("/")
     fun getAllSnippetsByUser(
-        @RequestHeader("Authorization") authorization: String
+        @RequestHeader("Authorization") authorization: String,
     ): ResponseEntity<List<SnippetService.SnippetWithAuthor>?> {
         println("getAllSnippetsByUser checkpoint 1")
         println("Llegue a / con $authorization")
@@ -89,7 +91,6 @@ class SnippetController(private val snippetService: SnippetService) {
     fun validateSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
         val result = snippetService.validateSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
-
     }
 
     @PostMapping("/execute")
@@ -97,7 +98,6 @@ class SnippetController(private val snippetService: SnippetService) {
         val result = snippetService.executeSnippet(createSnippetRequest)
         return ResponseEntity.ok(result)
     }
-
 
     @PostMapping("/analyze")
     fun analyzeSnippet(@RequestBody createSnippetRequest: CreateSnippetRequest): ResponseEntity<String> {
@@ -108,10 +108,9 @@ class SnippetController(private val snippetService: SnippetService) {
     @PostMapping("/share")
     fun shareSnippet(
         @RequestBody shareSnippetRequest: ShareSnippetRequest,
-        @RequestHeader("Authorization") authorization: String
+        @RequestHeader("Authorization") authorization: String,
     ): ResponseEntity<FullSnippet> {
         val token = authorization.removePrefix("Bearer ")
         return snippetService.shareSnippet(token, shareSnippetRequest)
     }
-
 }

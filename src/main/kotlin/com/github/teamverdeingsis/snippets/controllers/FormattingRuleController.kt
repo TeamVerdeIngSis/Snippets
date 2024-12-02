@@ -2,7 +2,6 @@ package com.github.teamverdeingsis.snippets.controllers
 
 import com.github.teamverdeingsis.snippets.models.FormatSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Rule
-import com.github.teamverdeingsis.snippets.models.UpdateConformanceRequest
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import com.github.teamverdeingsis.snippets.services.FormattingRulesService
 import org.springframework.http.ResponseEntity
@@ -26,11 +25,10 @@ class FormattingRuleController(private val formattingRulesService: FormattingRul
         return ResponseEntity.ok(formattingRulesService.getFormattingRules(userId))
     }
 
-
     @PostMapping("/modifyFormattingRules")
     suspend fun modifyFormattingRules(
         @RequestBody rules: List<Rule>,
-        @RequestHeader("Authorization") authorization: String
+        @RequestHeader("Authorization") authorization: String,
     ): ResponseEntity<List<Rule>> {
         println("ModifyFormattingRules checkpoint 1, llegue a /modifyFormattingRules con $rules y $authorization")
         return ResponseEntity.ok(formattingRulesService.modifyFormattingRules(authorization, rules))

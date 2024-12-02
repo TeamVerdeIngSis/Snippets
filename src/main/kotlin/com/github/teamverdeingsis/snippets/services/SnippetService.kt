@@ -2,10 +2,12 @@ package com.github.teamverdeingsis.snippets.services
 
 import com.github.teamverdeingsis.snippets.models.Conformance
 import com.github.teamverdeingsis.snippets.models.CreateSnippetRequest
+import com.github.teamverdeingsis.snippets.models.CreateSnippetResponse
 import com.github.teamverdeingsis.snippets.models.FullSnippet
+import com.github.teamverdeingsis.snippets.models.Permission
 import com.github.teamverdeingsis.snippets.models.ShareSnippetRequest
 import com.github.teamverdeingsis.snippets.models.Snippet
-import com.github.teamverdeingsis.snippets.models.*
+import com.github.teamverdeingsis.snippets.models.UpdateSnippetResponse
 import com.github.teamverdeingsis.snippets.repositories.SnippetRepository
 import com.github.teamverdeingsis.snippets.security.AuthorizationDecoder
 import org.springframework.http.HttpEntity
@@ -24,7 +26,7 @@ class SnippetService(
     private val assetService: AssetService,
     private val parseService: ParseService,
     private val restTemplate: RestTemplate,
-    private val auth0Service: Auth0Service
+    private val auth0Service: Auth0Service,
 
 ) {
 
@@ -39,7 +41,7 @@ class SnippetService(
             userId = userId,
             conformance = Conformance.PENDING,
             languageName = createSnippetRequest.language,
-            languageExtension = createSnippetRequest.extension
+            languageExtension = createSnippetRequest.extension,
         )
 
         try {
@@ -60,7 +62,7 @@ class SnippetService(
                     content = createSnippetRequest.content,
                     language = snippet.languageName,
                     extension = snippet.languageExtension,
-                    version = createSnippetRequest.version
+                    version = createSnippetRequest.version,
                 )
                 println("create checkpoint 10, voy a retornar el snippet $response")
                 parseService.lintSnippet(snippet.id, authorization)
@@ -75,7 +77,7 @@ class SnippetService(
                     content = "",
                     language = "",
                     extension = "",
-                    version = ""
+                    version = "",
                 )
                 println("Validation error: $errorMessages")
                 return response
@@ -88,7 +90,7 @@ class SnippetService(
                 content = "",
                 language = "",
                 extension = "",
-                version = ""
+                version = "",
             )
         }
     }
@@ -120,7 +122,7 @@ class SnippetService(
             content = content,
             language = snippet.get().languageName,
             extension = snippet.get().languageExtension,
-            version = "1.1"
+            version = "1.1",
         )
         val validationResult = parseService.validateSnippet(validationRequest)
         if (validationResult.length == 2) {
@@ -131,7 +133,7 @@ class SnippetService(
                 content = content,
                 language = snippet.get().languageName,
                 extension = snippet.get().languageExtension,
-                version = "1.1"
+                version = "1.1",
             )
         } else {
             val errorMessages = validationResult
@@ -141,7 +143,7 @@ class SnippetService(
                 content = "",
                 language = "",
                 extension = "",
-                version = ""
+                version = "",
             )
         }
     }
@@ -161,7 +163,7 @@ class SnippetService(
             conformance = snippet.conformance,
             languageName = snippet.languageName,
             languageExtension = snippet.languageExtension,
-            content = content ?: ""
+            content = content ?: "",
         )
     }
 
@@ -177,7 +179,6 @@ class SnippetService(
             val user = snippet?.userId?.let { auth0Service.getUserById(it) }
             if (user != null) {
                 snippets.add(SnippetWithAuthor(snippet ?: continue, user.body?.nickname ?: "Unknown"))
-
             }
         }
         return snippets
@@ -185,7 +186,7 @@ class SnippetService(
 
     data class SnippetWithAuthor(
         val snippet: Snippet,
-        val author: String
+        val author: String,
     )
 
     fun validateSnippet(createSnippetRequest: CreateSnippetRequest): String {
@@ -218,7 +219,6 @@ class SnippetService(
             false
         }
     }
-
 
     private fun getJsonAuthorizedHeaders(token: String): MultiValueMap<String, String> {
         return org.springframework.http.HttpHeaders().apply {

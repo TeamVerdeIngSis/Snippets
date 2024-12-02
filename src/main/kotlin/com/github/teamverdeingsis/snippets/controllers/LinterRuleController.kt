@@ -31,10 +31,8 @@ class LinterRuleController(private val lintingRulesService: LintingRulesService)
     @PostMapping("/modifyLintingRules")
     suspend fun modifyLintingRules(
         @RequestBody rules: List<Rule>,
-        @RequestHeader("Authorization") authorization: String
+        @RequestHeader("Authorization") authorization: String,
     ): ResponseEntity<List<Rule>> {
         return ResponseEntity.ok(lintingRulesService.modifyLintingRules(authorization, rules))
     }
-
-
 }

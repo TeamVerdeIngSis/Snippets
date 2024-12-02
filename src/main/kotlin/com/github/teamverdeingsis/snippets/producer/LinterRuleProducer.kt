@@ -7,7 +7,6 @@ import org.austral.ingsis.redis.RedisStreamProducer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Component
-import java.time.Duration
 
 interface ProductCreatedProducer {
     suspend fun publishEvent(authorization: String, snippetId: String)
@@ -15,10 +14,10 @@ interface ProductCreatedProducer {
 
 @Component
 class LinterRuleProducer(
-   @Value("\${stream.lintingKey}") streamKey: String,
+    @Value("\${stream.lintingKey}") streamKey: String,
     redis: ReactiveRedisTemplate<String, String>,
-    private val objectMapper: ObjectMapper
-): ProductCreatedProducer, RedisStreamProducer(streamKey, redis)  {
+    private val objectMapper: ObjectMapper,
+) : ProductCreatedProducer, RedisStreamProducer(streamKey, redis) {
 
     override suspend fun publishEvent(authorization: String, snippetId: String) {
         println("Publicando mensaje en el stream")
