@@ -30,13 +30,16 @@ class TestController(
 
     @PostMapping("/api/test/snippet/{snippetId}")
     fun addTestToSnippet(
-        @RequestHeader("Authorization") token: String,
         @PathVariable snippetId: String,
         @RequestBody testBody: Map<String, String>,
+        @RequestHeader("Authorization") token: String,
     ): ResponseEntity<TestResponse> {
+        println("checkpoint0, me llego este token: $token")
+        println("checkpoint1, me llego esto del front: $testBody")
         val name = testBody["name"] ?: return ResponseEntity.badRequest().build()
         val input: List<String> = testBody["input"]?.split(",") ?: emptyList()
         val output: List<String> = testBody["output"]?.split(",") ?: emptyList()
+        println("checkpoint2, armando dto con esto: $name, $input, $output")
         val testDTO = testService.addTestToSnippet(token, snippetId, name, input, output)
         return ResponseEntity.ok(testDTO)
     }

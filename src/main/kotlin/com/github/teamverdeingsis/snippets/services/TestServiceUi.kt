@@ -32,14 +32,17 @@ class TestServiceUi(
         inputs: List<String>,
         outputs: List<String>,
     ): TestResponse {
+        println("checkpoint3, llegue al service con esto: $name, $inputs, $outputs")
         val snippet = snippetRepository.findById(snippetId).orElseThrow {
             throw IllegalArgumentException("Snippet not found")
         }
-
+        println("checkpoint4, busque el snippet y es: $snippet")
         val snippetContent = assetService.getAsset(snippetId, "snippets")
+        println("checkpoint5, el contenido del snippet es: $snippetContent")
         val hasReadInput = snippetContent?.contains("readInput")
-
+        println("checkpoint6, el snippet tiene readInput: $hasReadInput")
         if (!hasReadInput!! && inputs.isNotEmpty()) {
+            println("checkpoint7, el snippet no tiene readInput y se le pasaron inputs, devolviendo response con msg")
             return TestResponse(
                 id = "",
                 name = "",
@@ -50,6 +53,7 @@ class TestServiceUi(
         }
 
         if (hasReadInput && inputs.isEmpty()) {
+            println("checkpoint8, el snippet tiene readInput y no se le pasaron inputs, devolviendo response con msg")
             return TestResponse(
                 id = "",
                 name = "",
@@ -59,14 +63,18 @@ class TestServiceUi(
             )
         }
 
+        println("checkpoint9, continuando con la creacion del test")
+
         val test = Test(
             name = name,
             input = inputs.toMutableList(),
             output = outputs.toMutableList(),
             snippet = snippet,
         )
-
+        println("checkpoint10, cree el test: $test")
         testRepo.save(test)
+        println("checkpoint11, guarde el test")
+        println("checkpoint12, devolviendo response completa")
         return TestResponse(
             id = test.id,
             name = test.name,
