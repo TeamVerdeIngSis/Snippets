@@ -1,6 +1,7 @@
 package com.github.teamverdeingsis.snippets.controllers
 
 import com.github.teamverdeingsis.snippets.models.TestDTO
+import com.github.teamverdeingsis.snippets.models.TestRequest
 import com.github.teamverdeingsis.snippets.models.TestResponse
 import com.github.teamverdeingsis.snippets.services.TestServiceUi
 import org.springframework.http.ResponseEntity
@@ -31,18 +32,21 @@ class TestController(
     @PostMapping("/api/test/snippet/{snippetId}")
     fun addTestToSnippet(
         @PathVariable snippetId: String,
-        @RequestBody testBody: Map<String, String>,
-        @RequestHeader("Authorization") token: String,
+        @RequestBody testRequest: TestRequest,
+        @RequestHeader("Authorization") token: String
     ): ResponseEntity<TestResponse> {
         println("checkpoint0, me llego este token: $token")
-        println("checkpoint1, me llego esto del front: $testBody")
-        val name = testBody["name"] ?: return ResponseEntity.badRequest().build()
-        val input: List<String> = testBody["input"]?.split(",") ?: emptyList()
-        val output: List<String> = testBody["output"]?.split(",") ?: emptyList()
-        println("checkpoint2, armando dto con esto: $name, $input, $output")
-        val testDTO = testService.addTestToSnippet(token, snippetId, name, input, output)
+        println("checkpoint1, me llego esto del front: $testRequest")
+        val testDTO = testService.addTestToSnippet(
+            token,
+            snippetId,
+            testRequest.name,
+            testRequest.input,
+            testRequest.output
+        )
         return ResponseEntity.ok(testDTO)
     }
+
 
     @DeleteMapping("/api/test/{testId}")
     fun deleteTestById(
