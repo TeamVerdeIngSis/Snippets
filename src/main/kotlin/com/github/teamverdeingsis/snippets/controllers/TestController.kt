@@ -33,7 +33,7 @@ class TestController(
     fun addTestToSnippet(
         @PathVariable snippetId: String,
         @RequestBody testRequest: TestRequest,
-        @RequestHeader("Authorization") token: String
+        @RequestHeader("Authorization") token: String,
     ): ResponseEntity<TestResponse> {
         println("checkpoint0, me llego este token: $token")
         println("checkpoint1, me llego esto del front: $testRequest")
@@ -42,11 +42,10 @@ class TestController(
             snippetId,
             testRequest.name,
             testRequest.input,
-            testRequest.output
+            testRequest.output,
         )
         return ResponseEntity.ok(testDTO)
     }
-
 
     @DeleteMapping("/api/test/{testId}")
     fun deleteTestById(
