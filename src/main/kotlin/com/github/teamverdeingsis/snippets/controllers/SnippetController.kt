@@ -27,6 +27,11 @@ class SnippetController(private val snippetService: SnippetService) {
         return snippetService.helloParse()
     }
 
+    @GetMapping("/testAlert")
+    fun testAlert(): ResponseEntity<String> {
+        return ResponseEntity.internalServerError().body("This is an alert")
+    }
+
     @GetMapping("/hello/permissions")
     fun helloPermissions(): ResponseEntity<String> {
         return snippetService.helloPermissions()
